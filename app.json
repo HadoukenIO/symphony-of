@@ -1,0 +1,25 @@
+{
+    "devtools_port": 9090,
+    "startup_app": {
+        "name": "OpenFin Symphony Cient",
+        "description": "Experimental client for Symphony - running OpenFin",
+        "url": "https://my.symphony.com",
+        "uuid": "OpenFin-Symphony-udbrf2z9sehilik9",
+        "autoShow": true,
+        "defaultCentered": true,
+        "frame": true,
+        "defaultHeight": 600,
+        "defaultWidth": 800,
+        "preload": "http://localhost:8080/ssf.js"
+    },
+    "runtime": {
+        "arguments": "",
+        "version": "stable"
+    },
+    "shortcut": {
+        "company": "OpenFin",
+        "description": "Experimental client for Symphony - running OpenFin",
+        "name": "Symphony OpenFin",
+        "icon": "http://localhost:8080/img/openfin.ico"
+    }
+}

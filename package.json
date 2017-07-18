@@ -1,0 +1,22 @@
+{
+    "name": "Symphony-OF",
+    "version": "0.0.1",
+    "description": "OpenFin Symphony Client",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/openfin/symphony-of"
+    },
+    "author": "Nicholas Kolba",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/openfin/symphony-of/issues"
+    },
+    "homepage": "https://github.com/openfin/symphony-of",
+    "scripts": {
+       "start": "http-server -c-1"
+     },
+     "devDependencies": {
+       "http-server": "0.8.5",
+       "openfin-cli": "1.1.5"
+     }
+}
