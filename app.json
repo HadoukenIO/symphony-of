@@ -13,8 +13,8 @@
         "preload": "http://localhost:8080/ssf.js"
     },
     "runtime": {
-        "arguments": "",
-        "version": "stable"
+        "arguments": "--noerrdialogs",
+        "version": "6.49.21.23"
     },
     "shortcut": {
         "company": "OpenFin",

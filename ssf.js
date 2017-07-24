@@ -1,13 +1,56 @@
-console.log("SSF is here!!");
 
-window.SYM_API = {
-  Notification:function(title, options){
-    console.log("SSF Notification!!")
-    return new fin.desktop.Notification({
+/*
+* Class representing a Symphony notification
+*/
+class Notify {
+
+  constructor(title,options){
+      console.log("SSF Notify " + JSON.stringify(title) + JSON.stringify(options));
+      let msg = options;
+      msg.title =  title;
+      let notification = new window.fin.desktop.Notification({
       url:"http://localhost:8080/notification.html",
-      message:title
+      message:msg
     });
-  },
+
+    this._data = options.data || null;
+  }
+
+  static get permission(){
+    return "granted";
+  }
+
+  get data(){
+    return this.data;
+  }
+
+  close(){
+
+  }
+
+  addEventListener(event, cb) {
+
+  }
+
+  removeEventListener(event, cb){
+
+  }
+
+  removeAllEvents(){
+
+  }
+
+  destroy(){
+
+  }
+}
+
+/*
+  core symphony API
+*/
+window.SYM_API = {
+  Notification:Notify,
+
   setBadgeCount:function(Number){
     console.log("SSF Badgecount " + Number);
   },
@@ -20,7 +63,7 @@ window.SYM_API = {
   },
   //undoced
   registerLogger:function(){
-    console.log("registerLogger!!");
+    console.log("SSF registerLogger!!");
   },
   registerBoundsChange:function(callback){
     console.log("SSF boundschange!")
@@ -35,6 +78,8 @@ window.SYM_API = {
   }
 
 }
+
+
 
 window.ssf = window.SYM_API;
 window.ssf.activate();
