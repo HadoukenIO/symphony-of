@@ -1,4 +1,22 @@
+/* override window.open to fix name issue */
+var originalOpen = window.open;
+window.open = (...args) => {
+   let w = originalOpen.apply(this, args);
+    //Try catch for cross domain safeguard
+    try {
+       w.name = args[1];
+     } catch (e) {
+     }
 
+     return w;
+}
+
+/*
+  to do:
+    - events for notifications
+    - fix pop-out (talk to Lynn)
+
+*/
 /*
 * Class representing a Symphony notification
 */
