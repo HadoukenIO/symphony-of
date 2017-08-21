@@ -14,8 +14,7 @@
     },
     "runtime": {
         "arguments": "--noerrdialogs",
-         "version": "7.53.21.10"
-
+        "version": "7.53.23.17"
     },
     "shortcut": {
         "company": "OpenFin",
