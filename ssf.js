@@ -26,13 +26,14 @@ class Notify {
     constructor(title,options){
         console.log("SSF Notify " + JSON.stringify(title) + JSON.stringify(options));
         let msg = options;
+        console.log('options', options)
         msg.title =  title;
         let app = fin.desktop.Application.getCurrent();
+        this.eventListeners = {};
         this.notification = new window.fin.desktop.Notification({
-            // timeout: 1000,
             url: "http://localhost:8080/notification.html",
             message: msg,
-            onClick: function () {
+            onClick: () => {
                 app.window.setAsForeground();
             }
         });
@@ -52,19 +53,32 @@ class Notify {
     }
 
     addEventListener(event, cb) {
-
+        console.log('add event listener', event, cb);
+        this.eventListeners[event] = cb; // NEED THIS FOR REMOVE ALL... ASSUMES ONLY ONE CB PER EVENT... 
+        // ADD ON SYSTEM? WINDOW? GETS CALLED WITH CLICK CLOSE AND ERROR AUTOMATICALLY... THIS FUNCTIONALITY SHOULD BE ON NOTIFICATION OBJECT
+        fin.desktop.System.addEventListener(event, cb, () => {
+            console.log("The registration was successful");
+        }, function (err) {
+            console.log("failure: " + err);
+        });
     }
 
     removeEventListener(event, cb){
-   
+        fin.desktop.System.removeEventListener(event, cb, () => {
+            console.log("The removal was successful");
+            delete this.eventListeners[event];
+        }, function (err) {
+            console.log("failure: " + err);
+        });
     }
 
     removeAllEvents(){
-
+        // NEEDS TO BE TESTED
+        Object.keys(this.eventListeners).forEach(key => removeEventListener(key, this.eventListeners.key))
     }
 
     destroy(){
-
+        // How is this different from close?
     }
 }
 
@@ -100,15 +114,25 @@ window.SYM_API = {
     registerBoundsChange:function(callback) {
         console.log("SSF boundschange!")
         var cb = callback;
-        fin.desktop.Window.getCurrent().addEventListener("bounds-changed",obj => {
+        fin.desktop.Window.getCurrent().addEventListener("bounds-changed", obj => {
         cb({x:obj.left,
             y:obj.top,
             width:obj.width,
             height:obj.height,
-        windowName:obj.name});
+            windowName:obj.name});
+        })
+    },
+
+    getVersionInfo: function() {
+        return new Promise((resolve, reject) => {
+            let version = {
+                containerIdentifier: "SymphonyOpenFin",
+                containerVer: "0.0.1",
+                apiVer: "1.0.0"
+            }
+            resolve(version)
         })
     }
-
 }
 
 window.ssf = window.SYM_API;
