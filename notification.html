@@ -64,13 +64,13 @@
     </body>
 
     <script type="text/javascript">
-        // messages received from the application creating the application
-        function onNotificationMessage(message) {
-            document.querySelectorAll('#title')[0].innerText = message.title;
-            document.querySelectorAll('#message')[0].innerText = message.body;
-            document.querySelectorAll('#image')[0].src = message.icon;
-        }
-
-
+      // messages received from the application creating the application
+      function onNotificationMessage(message) {
+          document.querySelectorAll('#title')[0].innerText = message.title;
+          document.querySelectorAll('#message')[0].innerText = message.body;
+          document.querySelectorAll('#image')[0].src = message.icon;
+          document.body.style.backgroundColor = message.color;
+          
+      }
     </script>
 </html>
