@@ -1,7 +1,3 @@
-window.open = require('./window.js');
-const Notify = require('./notify.js');
-
-console.log('note in main', Notify)
 
 /*
   core symphony API

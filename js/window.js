@@ -1,6 +1,6 @@
 /* override window.open to fix name issue */
 var originalOpen = window.open;
-module.exports = (...args) => {
+window.open = (...args) => {
    let w = originalOpen.apply(this, args);
     //Try catch for cross domain safeguard
     try {
