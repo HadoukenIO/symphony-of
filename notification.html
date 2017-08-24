@@ -69,8 +69,7 @@
           document.querySelectorAll('#title')[0].innerText = message.title;
           document.querySelectorAll('#message')[0].innerText = message.body;
           document.querySelectorAll('#image')[0].src = message.icon;
-          document.body.style.backgroundColor = message.color;
-          
+          message.color && document.body.style.backgroundColor = message.color;
       }
     </script>
 </html>
