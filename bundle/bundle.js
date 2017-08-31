@@ -71,11 +71,11 @@ class Notify {
         console.log('SSF Notify Event Listener Removed', event, cb);
 
         if(event === 'click') {
-            this.notification.noteWin.onClick = () => {}
+            this.notification.noteWin.onClick = () => {};
         } else if(event === 'close') {
-            this.notification.noteWin.onClose = () => {}
+            this.notification.noteWin.onClose = () => {};
         } else if(event === 'error') {
-            this.notification.noteWin.onError = () => {}
+            this.notification.noteWin.onError = () => {};
         }
 
 
@@ -88,9 +88,8 @@ class Notify {
     }
 
     removeAllEvents(){
-        while(this.notification.events.length) {
-            let current = this.notification.events.pop();
-            removeEventListener(current);
+        while(this.eventListeners.length) {
+            removeEventListener(this.eventListeners.pop());
         }
     }
 
@@ -103,8 +102,19 @@ class Notify {
 */
 window.SYM_API = {
     Notification:Notify,
-    setBadgeCount:function(Number) {
-        console.log("SSF Badgecount " + Number);
+    setBadgeCount:function(number) {
+
+        console.log("SSF Badgecount " + number);
+
+        let win = fin.desktop.Window.getCurrent();        
+        number = number > 9 ? 9 : number;
+        if (number > 0) {
+            win.updateOptions({ icon: 'http://localhost:8080/icon/icon' + number + '.png' });
+            win.flash();
+        } else {
+            win.updateOptions({ icon: 'http://localhost:8080/symphony-symbol.png' });            
+        }
+        
     },
     ScreenSnippet:function(cb) {
         console.log("SSF Screen Snippet requested");

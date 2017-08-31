@@ -1,1 +1,4 @@
 node_modules
+icon/icon.html
+.DS_Store
+canvas2image.js

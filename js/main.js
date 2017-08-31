@@ -4,8 +4,19 @@
 */
 window.SYM_API = {
     Notification:Notify,
-    setBadgeCount:function(Number) {
-        console.log("SSF Badgecount " + Number);
+    setBadgeCount:function(number) {
+
+        console.log("SSF Badgecount " + number);
+
+        let win = fin.desktop.Window.getCurrent();        
+        number = number > 9 ? 9 : number;
+        if (number > 0) {
+            win.updateOptions({ icon: 'http://localhost:8080/icon/icon' + number + '.png' });
+            win.flash();
+        } else {
+            win.updateOptions({ icon: 'http://localhost:8080/symphony-symbol.png' });            
+        }
+        
     },
     ScreenSnippet:function(cb) {
         console.log("SSF Screen Snippet requested");

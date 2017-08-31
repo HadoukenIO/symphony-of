@@ -14,7 +14,7 @@
     },
     "runtime": {
         "arguments": "--noerrdialogs",
-        "version": "7.53.23.17"
+        "version": "canary"
     },
     "shortcut": {
         "company": "OpenFin",
