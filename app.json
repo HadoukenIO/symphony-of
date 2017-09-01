@@ -20,6 +20,14 @@
         "company": "OpenFin",
         "description": "Experimental client for Symphony - running OpenFin",
         "name": "Symphony OpenFin",
-        "icon": "http://localhost:8080/img/openfin.ico"
-    }
+        "icon": "http://localhost:8080/symphony-symbol.png"
+    },
+    "appAssets": [
+        {
+            "src": "http://localhost:8080/ScreenSnippet.zip",
+            "version": "2.1.0",
+            "alias": "nodeScreenSnippet",
+            "target": "ScreenSnippet/node_6.5.0.exe"
+        }
+    ]
 }
