@@ -10,7 +10,8 @@ window.open = (...args) => {
      }
 
      return w;
-}/*
+}
+/*
 * Class representing a Symphony notification
 */
 
@@ -97,24 +98,23 @@ class Notify {
         // How is this different from close?
     }
 }
+/*
+* Class representing a Symphony screen snippet
+*/
+
 class ScreenSnippet {
     constructor() {
         this.data;
         this.flag = false;
 
         // THIS WOULD GET ALL SNIPPETS... IS THIS MEANT TO BE SINGLETON OR MORE THAN ONE INSTANCE?
-        this.listener = (msg, uuid) => {
+        this.listener = msg => {
             this.data = msg;
         }
-
-        fin.desktop.InterApplicationBus.subscribe('*', 'snippet', this.listener);
-        // (msg, uuid) => {
-        //     this.data = msg;
-        // });
+        fin.desktop.InterApplicationBus.subscribe('*', 'snippet', this.listener);            
     }
 
     capture() {
-        console.log('top flag', this.flag)
         if (this.flag) return;
 
         function launchNodeService(port) {
@@ -122,7 +122,7 @@ class ScreenSnippet {
             return new Promise((resolve, reject) => {
                 fin.desktop.System.launchExternalProcess({
                     alias: 'nodeScreenSnippet',
-                    arguments: 'ScreenSnippet/ScreenSnippet.js --port ' + 9696,
+                    arguments: 'ScreenSnippet/start.js --port ' + 9696,
                     lifetime: 'window',
                     listener: function (result) {
                         console.log('the exit code', result.exitCode);
@@ -137,7 +137,7 @@ class ScreenSnippet {
             if (!this.data) {
                 setTimeout(() => waitForData(resolve, uuid),100);
             } else {
-                console.log('external uuid', uuid)
+                // Terminate the node screen snippet process
                 fin.desktop.System.terminateExternalProcess(uuid, 1, true, 
                     info => console.log("Termination result " + info.result), 
                     reason => console.log("failure: " + reason)
@@ -149,93 +149,42 @@ class ScreenSnippet {
 
         return launchNodeService()
         .then((uuid) => {
-            console.log('this in prom chain', this);
+            console.log(uuid);
             return new Promise ((resolve, reject) => {
                 waitForData(resolve, uuid)
             })
         })
         .then(data => {
             fin.desktop.InterApplicationBus.unsubscribe('*', 'snippet', this.listener);
-            console.log('flag1', this.flag)
             this.flag=true;
-            console.log('flag2', this.flag)
             return data;
         })
         .catch((reason, err) => console.log(reason, err));
     }
 }
 
+
 /*
   core symphony API
 */
+let holdNote = window.Notification;
+
 window.SYM_API = {
-    Notification:Notify,
+    Notification:holdNote,
     ScreenSnippet,
-
-        // let data;
-        
-        // // THIS WOULD GET ALL SNIPPETS... IS THIS MEANT TO BE SINGLETON OR MORE THAN ONE INSTANCE?
-        // let listener = (msg, uuid) => {
-        //     data = msg;
-        // }
-
-        // fin.desktop.InterApplicationBus.subscribe('*', 'snippet', listener);
-
-        // function launchNodeService(port) {
-        //     console.log('lns')
-        //     return new Promise((resolve, reject) => {
-        //         fin.desktop.System.launchExternalProcess({
-        //             alias: 'nodeScreenSnippet',
-        //             arguments: 'ScreenSnippet/ScreenSnippet.js --port ' + 9696,
-        //             lifetime: 'persist',
-        //             listener: function (result) {
-        //                 console.log('the exit code', result.exitCode);
-        //             }
-        //         }, () => {
-        //             resolve()
-        //         }, (reason, error) => reject(reason, error));
-        //     });
-        // };
-
-        // const waitForData = (resolve) => {
-        //     if (!data) {
-        //         setTimeout(() => waitForData(resolve),100);
-        //     } else {
-        //         resolve(data)
-        //     }
-        // }
-
-        // return launchNodeService()
-        // .then(() => console.log('node service is running'))
-        // .then(() => {
-        //     console.log('this in prom chain', this);
-        //     return new Promise ((resolve, reject) => {
-        //         waitForData(resolve)
-        //     })
-        // })
-        // .then(data => {
-        //     fin.desktop.InterApplicationBus.unsubscribe('*', 'snippet', listener)
-        //     return data;
-        // })
-        // .catch((reason, err) => console.log(reason, err));
-
-
-    // },
     setBadgeCount:function(number) {
 
         console.log("SSF Badgecount " + number);
 
         let win = fin.desktop.Window.getCurrent();        
-        number = number > 9 ? 9 : number;
-        if (number > 0) {
+        number = number > 9 ? '9+' : number;
+        if (number === '9+' || number > 0) {
             win.updateOptions({ icon: 'http://localhost:8080/icon/icon' + number + '.png' });
             win.flash();
         } else {
             win.updateOptions({ icon: 'http://localhost:8080/symphony-symbol.png' });            
-        }
-        
+        };
     },
-
     activate:function() {
         console.log("SSF Activate!");
         fin.desktop.Window.getCurrent().bringToFront();
