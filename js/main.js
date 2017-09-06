@@ -3,10 +3,9 @@
 /*
   core symphony API
 */
-let holdNote = window.Notification;
 
 window.SYM_API = {
-    Notification:holdNote,
+    Notification:Notify,
     ScreenSnippet,
     setBadgeCount:function(number) {
 
