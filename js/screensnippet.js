@@ -2,62 +2,64 @@
 * Class representing a Symphony screen snippet
 */
 
+let holdChrome = chrome;
+
 class ScreenSnippet {
     constructor() {
         this.data;
         this.flag = false;
+        this.id = Math.floor(Math.random()*10000)
 
-        // THIS WOULD GET ALL SNIPPETS... IS THIS MEANT TO BE SINGLETON OR MORE THAN ONE INSTANCE?
         this.listener = msg => {
             this.data = msg;
         }
-        fin.desktop.InterApplicationBus.subscribe('*', 'snippet', this.listener);            
+        fin.desktop.InterApplicationBus.subscribe('*', 'snippet' + this.id, this.listener);            
     }
 
     capture() {
         if (this.flag) return;
 
-        function launchNodeService(port) {
-            console.log('lns')
+        function getPort() {
+            return new Promise((resolve, reject) => {
+                holdChrome.desktop.getDetails(d => resolve(d.port));
+            });
+        }
+
+        function launchSnippetTool(port, id) {
             return new Promise((resolve, reject) => {
                 fin.desktop.System.launchExternalProcess({
-                    alias: 'nodeScreenSnippet',
-                    arguments: 'ScreenSnippet/start.js --port ' + 9696,
+                    alias: 'ScreenSnippet',
+                    arguments: port + ' OpenFin-Symphony-udbrf2z9sehilik9 snippet' + id,
                     lifetime: 'window',
                     listener: function (result) {
                         console.log('the exit code', result.exitCode);
                     }
                 }, (payload) => {
-                    resolve(payload.uuid)
+                    resolve()
                 }, (reason, error) => reject(reason, error));
             });
         };
 
-        const waitForData = (resolve, uuid) => {
+        const waitForData = (resolve) => {
             if (!this.data) {
-                setTimeout(() => waitForData(resolve, uuid),100);
+                setTimeout(() => waitForData(resolve),100);
             } else {
-                // Terminate the node screen snippet process
-                fin.desktop.System.terminateExternalProcess(uuid, 1, true, 
-                    info => console.log("Termination result " + info.result), 
-                    reason => console.log("failure: " + reason)
-                )
-        
                 resolve(this.data)
             }
         }
 
-        return launchNodeService()
-        .then((uuid) => {
-            console.log(uuid);
-            return new Promise ((resolve, reject) => {
-                waitForData(resolve, uuid)
+        return getPort().then(port => {
+            launchSnippetTool(port, this.id)
+        })
+        .then(() => {
+            return new Promise (resolve => {
+                waitForData(resolve)
             })
         })
         .then(data => {
-            fin.desktop.InterApplicationBus.unsubscribe('*', 'snippet', this.listener);
+            fin.desktop.InterApplicationBus.unsubscribe('*', 'snippet' + this.id, this.listener);
             this.flag=true;
-            return data;
+            return { type: 'image/jpg;base64', data };
         })
         .catch((reason, err) => console.log(reason, err));
     }

@@ -59,8 +59,7 @@
         		</svg>
         	</div>
         </div>
-
-
+        <audio src="http://localhost:8080/notification.wav" autoplay></audio>
     </body>
 
     <script type="text/javascript">
@@ -69,10 +68,10 @@
           document.querySelectorAll('#title')[0].innerText = message.title;
           document.querySelectorAll('#message')[0].innerText = message.body;
           document.querySelectorAll('#image')[0].src = message.icon;
-          // if(message.color) {
-          //   // currently sending hex color without '#'
-          //   document.body.style.backgroundColor = '#' + message.color;
-          // }
+          if(message.color) {
+            // currently sending hex color without '#'
+            document.body.style.backgroundColor = '#' + message.color;
+          }
       }
     </script>
 </html>
