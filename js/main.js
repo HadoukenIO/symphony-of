@@ -7,11 +7,10 @@
 window.SYM_API = {
     Notification:Notify,
     ScreenSnippet,
+    
     setBadgeCount:function(number) {
-
         console.log("SSF Badgecount " + number);
-
-        let win = fin.desktop.Window.getCurrent();        
+        let win = fin.desktop.Window.getCurrent();      
         number = number > 9 ? '9+' : number;
         if (number === '9+' || number > 0) {
             win.updateOptions({ icon: 'http://localhost:8080/icon/icon' + number + '.png' });

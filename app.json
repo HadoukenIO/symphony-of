@@ -24,10 +24,10 @@
     },
     "appAssets": [
         {
-            "src": "http://localhost:8080/ScreenSnippet.zip",
-            "version": "4.1.0",
-            "alias": "nodeScreenSnippet",
-            "target": "ScreenSnippet/node_6.5.0.exe"
+            "src": "http://localhost:8080/OF-ScreenSnippet.zip",
+            "version": "4.6.0",
+            "alias": "ScreenSnippet",
+            "target": "OF-ScreenSnippet/ScreenSnippet.exe"
         }
     ]
 }

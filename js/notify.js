@@ -29,12 +29,13 @@ class Notify {
     }
 
     close(cb) {
+        // This gets called immediately on a new notification...so commented out for now. 
         // this.notification.close(cb)
     }
 
     addEventListener(event, cb) {
         console.log('SSF Notify Event Listener', event, cb);
-        // Utilize the OF notification object to accomplish - can re-write to accomplish multiple cb / listeners per event 
+        // Utilize the OF notification object to accomplish
         this.eventListeners.push(event)
 
         if(event === 'click') {
@@ -45,14 +46,6 @@ class Notify {
             this.notification.noteWin.onError = cb
             console.log(this.notification.noteWin.onError)
         }
-
-        // this.eventListeners[event] = cb; // NEED THIS FOR REMOVE ALL... ASSUMES ONLY ONE CB PER EVENT... 
-        // // ADD ON SYSTEM? WINDOW? GETS CALLED WITH CLICK CLOSE AND ERROR AUTOMATICALLY... THIS FUNCTIONALITY SHOULD BE ON NOTIFICATION OBJECT
-        // fin.desktop.System.addEventListener(event, cb, () => {
-        //     console.log("The registration was successful");
-        // }, function (err) {
-        //     console.log("failure: " + err);
-        // });
     }
 
     removeEventListener(event, cb){
@@ -65,14 +58,6 @@ class Notify {
         } else if(event === 'error') {
             this.notification.noteWin.onError = () => {};
         }
-
-
-        // fin.desktop.System.removeEventListener(event, cb, () => {
-        //     console.log("The removal was successful");
-        //     delete this.eventListeners[event];
-        // }, function (err) {
-        //     console.log("failure: " + err);
-        // });
     }
 
     removeAllEvents(){

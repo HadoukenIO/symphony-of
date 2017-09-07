@@ -42,12 +42,13 @@ class Notify {
     }
 
     close(cb) {
+        // This gets called immediately on a new notification...so commented out for now. 
         // this.notification.close(cb)
     }
 
     addEventListener(event, cb) {
         console.log('SSF Notify Event Listener', event, cb);
-        // Utilize the OF notification object to accomplish - can re-write to accomplish multiple cb / listeners per event 
+        // Utilize the OF notification object to accomplish
         this.eventListeners.push(event)
 
         if(event === 'click') {
@@ -58,14 +59,6 @@ class Notify {
             this.notification.noteWin.onError = cb
             console.log(this.notification.noteWin.onError)
         }
-
-        // this.eventListeners[event] = cb; // NEED THIS FOR REMOVE ALL... ASSUMES ONLY ONE CB PER EVENT... 
-        // // ADD ON SYSTEM? WINDOW? GETS CALLED WITH CLICK CLOSE AND ERROR AUTOMATICALLY... THIS FUNCTIONALITY SHOULD BE ON NOTIFICATION OBJECT
-        // fin.desktop.System.addEventListener(event, cb, () => {
-        //     console.log("The registration was successful");
-        // }, function (err) {
-        //     console.log("failure: " + err);
-        // });
     }
 
     removeEventListener(event, cb){
@@ -78,14 +71,6 @@ class Notify {
         } else if(event === 'error') {
             this.notification.noteWin.onError = () => {};
         }
-
-
-        // fin.desktop.System.removeEventListener(event, cb, () => {
-        //     console.log("The removal was successful");
-        //     delete this.eventListeners[event];
-        // }, function (err) {
-        //     console.log("failure: " + err);
-        // });
     }
 
     removeAllEvents(){
@@ -97,67 +82,68 @@ class Notify {
     destroy(){
         // How is this different from close?
     }
-}
-/*
+}/*
 * Class representing a Symphony screen snippet
 */
+
+let holdChrome = chrome;
 
 class ScreenSnippet {
     constructor() {
         this.data;
         this.flag = false;
+        this.id = Math.floor(Math.random()*10000)
 
-        // THIS WOULD GET ALL SNIPPETS... IS THIS MEANT TO BE SINGLETON OR MORE THAN ONE INSTANCE?
         this.listener = msg => {
             this.data = msg;
         }
-        fin.desktop.InterApplicationBus.subscribe('*', 'snippet', this.listener);            
+        fin.desktop.InterApplicationBus.subscribe('*', 'snippet' + this.id, this.listener);            
     }
 
     capture() {
         if (this.flag) return;
 
-        function launchNodeService(port) {
-            console.log('lns')
+        function getPort() {
+            return new Promise((resolve, reject) => {
+                holdChrome.desktop.getDetails(d => resolve(d.port));
+            });
+        }
+
+        function launchSnippetTool(port, id) {
             return new Promise((resolve, reject) => {
                 fin.desktop.System.launchExternalProcess({
-                    alias: 'nodeScreenSnippet',
-                    arguments: 'ScreenSnippet/start.js --port ' + 9696,
+                    alias: 'ScreenSnippet',
+                    arguments: port + ' OpenFin-Symphony-udbrf2z9sehilik9 snippet' + id,
                     lifetime: 'window',
                     listener: function (result) {
                         console.log('the exit code', result.exitCode);
                     }
                 }, (payload) => {
-                    resolve(payload.uuid)
+                    resolve()
                 }, (reason, error) => reject(reason, error));
             });
         };
 
-        const waitForData = (resolve, uuid) => {
+        const waitForData = (resolve) => {
             if (!this.data) {
-                setTimeout(() => waitForData(resolve, uuid),100);
+                setTimeout(() => waitForData(resolve),100);
             } else {
-                // Terminate the node screen snippet process
-                fin.desktop.System.terminateExternalProcess(uuid, 1, true, 
-                    info => console.log("Termination result " + info.result), 
-                    reason => console.log("failure: " + reason)
-                )
-        
                 resolve(this.data)
             }
         }
 
-        return launchNodeService()
-        .then((uuid) => {
-            console.log(uuid);
-            return new Promise ((resolve, reject) => {
-                waitForData(resolve, uuid)
+        return getPort().then(port => {
+            launchSnippetTool(port, this.id)
+        })
+        .then(() => {
+            return new Promise (resolve => {
+                waitForData(resolve)
             })
         })
         .then(data => {
-            fin.desktop.InterApplicationBus.unsubscribe('*', 'snippet', this.listener);
+            fin.desktop.InterApplicationBus.unsubscribe('*', 'snippet' + this.id, this.listener);
             this.flag=true;
-            return data;
+            return { type: 'image/jpg;base64', data };
         })
         .catch((reason, err) => console.log(reason, err));
     }
@@ -171,11 +157,10 @@ class ScreenSnippet {
 window.SYM_API = {
     Notification:Notify,
     ScreenSnippet,
+    
     setBadgeCount:function(number) {
-
         console.log("SSF Badgecount " + number);
-
-        let win = fin.desktop.Window.getCurrent();        
+        let win = fin.desktop.Window.getCurrent();      
         number = number > 9 ? '9+' : number;
         if (number === '9+' || number > 0) {
             win.updateOptions({ icon: 'http://localhost:8080/icon/icon' + number + '.png' });
