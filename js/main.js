@@ -40,6 +40,7 @@ window.SYM_API = {
     },
     getVersionInfo: function() {
         return new Promise((resolve, reject) => {
+            // Where to keep version information?
             let version = {
                 containerIdentifier: "SymphonyOpenFin",
                 containerVer: "0.0.1",
