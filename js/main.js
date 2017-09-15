@@ -1,8 +1,21 @@
 
-
 /*
   core symphony API
 */
+// document.addEventListener("DOMContentLoaded", event => {
+//     console.log("DOM fully loaded and parsed");
+//     let header = document.createElement('link');
+//     header.rel = 'import';
+//     header.href = 'http://localhost:8080/header.html';
+//     document.body.insertBefore(header, document.body.firstChild);
+// });
+
+// document.addEventListener("DOMContentLoaded", event => {
+//     console.log("DOM fully loaded and parsed");
+//     let header = document.createElement('div');
+//     header.innerHTML='<object type="text/html" data="http://localhost:8080/header.html" ></object>'
+//     document.body.insertBefore(header, document.body.firstChild);
+// });
 
 window.SYM_API = {
     Notification:Notify,
@@ -29,7 +42,7 @@ window.SYM_API = {
     },
     registerBoundsChange:function(callback) {
         console.log("SSF boundschange!")
-        var cb = callback;
+        let cb = callback;
         fin.desktop.Window.getCurrent().addEventListener("bounds-changed", obj => {
         cb({x:obj.left,
             y:obj.top,
