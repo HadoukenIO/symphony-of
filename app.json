@@ -10,7 +10,7 @@
         "frame": true,
         "defaultHeight": 600,
         "defaultWidth": 800,
-        "preload": "http://localhost:8080/bundle/bundle.js"
+        "preload": "https://openfin.github.io/symphony-of/bundle/bundle.js"
     },
     "runtime": {
         "arguments": "--noerrdialogs",
@@ -20,11 +20,11 @@
         "company": "OpenFin",
         "description": "Experimental client for Symphony - running OpenFin",
         "name": "Symphony OpenFin",
-        "icon": "http://localhost:8080/symphony-symbol.png"
+        "icon": "https://openfin.github.io/symphony-of/symphony-symbol.png"
     },
     "appAssets": [
         {
-            "src": "http://localhost:8080/OF-ScreenSnippet.zip",
+            "src": "https://openfin.github.io/symphony-of/OF-ScreenSnippet.zip",
             "version": "4.6.0",
             "alias": "ScreenSnippet",
             "target": "OF-ScreenSnippet/ScreenSnippet.exe"

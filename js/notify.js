@@ -11,7 +11,7 @@ class Notify {
         let app = fin.desktop.Application.getCurrent();
         this.eventListeners = [];
         this.notification = new window.fin.desktop.Notification({
-            url: "http://localhost:8080/notification.html",
+            url: "https://openfin.github.io/symphony-of/notification.html",
             message: msg,
             onClick: () => {
                 app.window.setAsForeground();

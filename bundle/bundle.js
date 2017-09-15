@@ -24,7 +24,7 @@ class Notify {
         let app = fin.desktop.Application.getCurrent();
         this.eventListeners = [];
         this.notification = new window.fin.desktop.Notification({
-            url: "http://localhost:8080/notification.html",
+            url: "https://openfin.github.io/symphony-of/notification.html",
             message: msg,
             onClick: () => {
                 app.window.setAsForeground();
@@ -141,10 +141,10 @@ window.SYM_API = {
         let win = fin.desktop.Window.getCurrent();      
         if (number > 0) {
             number = number > 9 ? '9+' : number;            
-            win.updateOptions({ icon: 'http://localhost:8080/icon/icon' + number + '.png' });
+            win.updateOptions({ icon: 'https://openfin.github.io/symphony-of/icon/icon' + number + '.png' });
             win.flash();
         } else {
-            win.updateOptions({ icon: 'http://localhost:8080/symphony-symbol.png' });            
+            win.updateOptions({ icon: 'https://openfin.github.io/symphony-of/symphony-symbol.png' });            
         };
     },
     activate:function() {
