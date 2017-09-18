@@ -1,5 +1,5 @@
-<script> 
     let targetURL = sourceURL.split('?')[1];
+    console.log(targetURL)
     let JSConfig = { devtools_port: 9090,
         startup_app: 
          { name: 'OpenFin Symphony Client',
@@ -26,5 +26,3 @@
 
     JSConfig['startup_app'].url = targetURL;
     return JSON.stringify(JSConfig);
-
-</script>
