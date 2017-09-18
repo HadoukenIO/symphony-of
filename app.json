@@ -3,7 +3,7 @@
     "startup_app": {
         "name": "OpenFin Symphony Client",
         "description": "Experimental client for Symphony - running OpenFin",
-        "url": "https://my.symphony.com",
+        "url": "http://chartiq.symphony.com/",
         "uuid": "OpenFin-Symphony-udbrf2z9sehilik9",
         "autoShow": true,
         "defaultCentered": true,
