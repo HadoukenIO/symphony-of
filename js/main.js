@@ -2,20 +2,6 @@
 /*
   core symphony API
 */
-// document.addEventListener("DOMContentLoaded", event => {
-//     console.log("DOM fully loaded and parsed");
-//     let header = document.createElement('link');
-//     header.rel = 'import';
-//     header.href = 'http://localhost:8080/header.html';
-//     document.body.insertBefore(header, document.body.firstChild);
-// });
-
-// document.addEventListener("DOMContentLoaded", event => {
-//     console.log("DOM fully loaded and parsed");
-//     let header = document.createElement('div');
-//     header.innerHTML='<object type="text/html" data="http://localhost:8080/header.html" ></object>'
-//     document.body.insertBefore(header, document.body.firstChild);
-// });
 
 window.SYM_API = {
     Notification:Notify,
@@ -29,11 +15,13 @@ window.SYM_API = {
             win.updateOptions({ icon: 'http://localhost:8080/icon/icon' + number + '.png' });
             win.flash();
         } else {
-            win.updateOptions({ icon: 'http://localhost:8080/symphony-symbol.png' });            
+            win.updateOptions({ icon: 'http://localhost:8080/icon/symphony.png' });            
         };
     },
     activate:function() {
         console.log("SSF Activate!");
+        let win = fin.desktop.Window.getCurrent();      
+        win.updateOptions({ icon: 'http://localhost:8080/icon/symphony.png' });        
         fin.desktop.Window.getCurrent().bringToFront();
     },
     //undoced
