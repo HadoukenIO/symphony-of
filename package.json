@@ -19,8 +19,5 @@
   "devDependencies": {
     "http-server": "0.8.5",
     "openfin-cli": "1.1.5"
-  },
-  "dependencies": {
-    "favico.js": "^0.3.10"
   }
 }

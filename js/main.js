@@ -1,5 +1,4 @@
 
-
 /*
   core symphony API
 */
@@ -16,11 +15,13 @@ window.SYM_API = {
             win.updateOptions({ icon: 'http://localhost:8080/icon/icon' + number + '.png' });
             win.flash();
         } else {
-            win.updateOptions({ icon: 'http://localhost:8080/symphony-symbol.png' });            
+            win.updateOptions({ icon: 'http://localhost:8080/icon/symphony.png' });            
         };
     },
     activate:function() {
         console.log("SSF Activate!");
+        let win = fin.desktop.Window.getCurrent();      
+        win.updateOptions({ icon: 'http://localhost:8080/icon/symphony.png' });        
         fin.desktop.Window.getCurrent().bringToFront();
     },
     //undoced
@@ -29,7 +30,7 @@ window.SYM_API = {
     },
     registerBoundsChange:function(callback) {
         console.log("SSF boundschange!")
-        var cb = callback;
+        let cb = callback;
         fin.desktop.Window.getCurrent().addEventListener("bounds-changed", obj => {
         cb({x:obj.left,
             y:obj.top,

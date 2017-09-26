@@ -68,10 +68,10 @@
           document.querySelectorAll('#title')[0].innerText = message.title;
           document.querySelectorAll('#message')[0].innerText = message.body;
           document.querySelectorAll('#image')[0].src = message.icon;
-          if(message.color) {
-            // currently sending hex color without '#'
-            document.body.style.backgroundColor = '#' + message.color;
-          }
+          // if(message.color) {
+          //   // currently sending hex color without '#'
+          //   document.body.style.backgroundColor = '#' + message.color;
+          // }
       }
     </script>
 </html>

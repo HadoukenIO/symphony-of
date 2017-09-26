@@ -39,7 +39,7 @@ class Notify {
         this.eventListeners.push(event)
 
         if(event === 'click') {
-            this.notification.noteWin.onClick = cb
+            // this.notification.noteWin.onClick = cb
         } else if(event === 'close') {
             this.notification.noteWin.onClose = cb
         } else if(event === 'error') {
@@ -50,7 +50,6 @@ class Notify {
 
     removeEventListener(event, cb){
         console.log('SSF Notify Event Listener Removed', event, cb);
-
         if(event === 'click') {
             this.notification.noteWin.onClick = () => {};
         } else if(event === 'close') {

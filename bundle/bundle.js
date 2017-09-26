@@ -52,7 +52,7 @@ class Notify {
         this.eventListeners.push(event)
 
         if(event === 'click') {
-            this.notification.noteWin.onClick = cb
+            // this.notification.noteWin.onClick = cb
         } else if(event === 'close') {
             this.notification.noteWin.onClose = cb
         } else if(event === 'error') {
@@ -63,7 +63,6 @@ class Notify {
 
     removeEventListener(event, cb){
         console.log('SSF Notify Event Listener Removed', event, cb);
-
         if(event === 'click') {
             this.notification.noteWin.onClick = () => {};
         } else if(event === 'close') {
@@ -127,7 +126,6 @@ class ScreenSnippet {
     }
 }
 
-
 /*
   core symphony API
 */
@@ -144,11 +142,13 @@ window.SYM_API = {
             win.updateOptions({ icon: 'http://localhost:8080/icon/icon' + number + '.png' });
             win.flash();
         } else {
-            win.updateOptions({ icon: 'http://localhost:8080/symphony-symbol.png' });            
+            win.updateOptions({ icon: 'http://localhost:8080/icon/symphony.png' });            
         };
     },
     activate:function() {
         console.log("SSF Activate!");
+        let win = fin.desktop.Window.getCurrent();      
+        win.updateOptions({ icon: 'http://localhost:8080/icon/symphony.png' });        
         fin.desktop.Window.getCurrent().bringToFront();
     },
     //undoced
@@ -157,7 +157,7 @@ window.SYM_API = {
     },
     registerBoundsChange:function(callback) {
         console.log("SSF boundschange!")
-        var cb = callback;
+        let cb = callback;
         fin.desktop.Window.getCurrent().addEventListener("bounds-changed", obj => {
         cb({x:obj.left,
             y:obj.top,
