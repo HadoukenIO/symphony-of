@@ -134,22 +134,22 @@ class ScreenSnippet {
 window.SYM_API = {
     Notification:Notify,
     ScreenSnippet,
-    
+
     setBadgeCount:function(number) {
         console.log("SSF Badgecount " + number);
-        let win = fin.desktop.Window.getCurrent();      
+        let win = fin.desktop.Window.getCurrent();
         if (number > 0) {
-            number = number > 9 ? '9+' : number;            
-            win.updateOptions({ icon: 'http://localhost:8080/icon/icon' + number + '.png' });
-            win.flash();
+            let n = number > 9 ? '9+' : number;
+            win.updateOptions({ icon: 'http://localhost:8080/icon/icon' + n + '.png' },() => {win.flash();},() => {console.log("update options failed");});
+//            win.flash();
         } else {
-            win.updateOptions({ icon: 'http://localhost:8080/icon/symphony.png' });            
+            win.updateOptions({ icon: 'http://localhost:8080/icon/symphony.png' });
         };
     },
     activate:function() {
         console.log("SSF Activate!");
-        let win = fin.desktop.Window.getCurrent();      
-        win.updateOptions({ icon: 'http://localhost:8080/icon/symphony.png' });        
+        let win = fin.desktop.Window.getCurrent();
+        win.updateOptions({ icon: 'http://localhost:8080/icon/symphony.png' });
         fin.desktop.Window.getCurrent().bringToFront();
     },
     //undoced
