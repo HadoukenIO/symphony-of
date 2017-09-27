@@ -1,5 +1,5 @@
-# symphony-of
-Symphony implemented in the OpenFin runtime
+# OpenFin Sym Integration
+The Symphony application shimmed with the SSF API and implemented in the OpenFin runtime.
 
 ## Notes
 - This uses the public POD (my.symphony.com) to point to a company POD, repoint the start URL in the app.json.
