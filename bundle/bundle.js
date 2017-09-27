@@ -27,7 +27,7 @@ class Notify {
             url: "http://localhost:8080/notification.html",
             message: msg,
             onClick: () => {
-                app.window.setAsForeground();
+                app.getWindow().restore(() => {app.getWindow().setAsForeground();});
             }
         });
         this._data = options.data || null;
@@ -42,7 +42,7 @@ class Notify {
     }
 
     close(cb) {
-        // This gets called immediately on a new notification...so commented out for now. 
+        // This gets called immediately on a new notification...so commented out for now.
         // this.notification.close(cb)
     }
 
@@ -81,7 +81,8 @@ class Notify {
     destroy(){
         // How is this different from close?
     }
-}/*
+}
+/*
 * Class representing a Symphony screen snippet
 */
 
