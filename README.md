@@ -3,9 +3,10 @@ The Symphony application shimmed with the SSF API and implemented in the OpenFin
 
 ## Notes
 - This uses the public POD (my.symphony.com) to point to a company POD, repoint the start URL in the app.json.
-- API implmentations are in progress.  APIs are working off of what is defined here: https://symphonyoss.atlassian.net/wiki/display/WGDWAPI/Proposed+Standard+API+Specifications
+- API implementations are in progress.  APIs are working off of what is defined here: https://symphonyoss.atlassian.net/wiki/display/WGDWAPI/Proposed+Standard+API+Specifications
 
 ## Setup
-- npm install
-- npm start
-- openfin -l app.json
+- `npm install`
+- concatenate files into bundle/bundle.js with `npm run build`
+- `npm start`
+- `openfin -l app.json`
