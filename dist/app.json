@@ -10,21 +10,21 @@
         "frame": true,
         "defaultHeight": 600,
         "defaultWidth": 800,
-        "preload": "http://localhost:8080/dist/bundle.js"
+        "preload": "MYWEBSERVER/dist/bundle.js"
     },
     "runtime": {
         "arguments": "--noerrdialogs",
-        "version": "community"
+        "version": "canary"
     },
     "shortcut": {
         "company": "OpenFin",
         "description": "Client for Symphony - running OpenFin",
         "name": "Symphony OpenFin",
-        "icon": "http://localhost:8080/dist/icon/symphony.png"
+        "icon": "MYWEBSERVER/dist/icon/symphony.png"
     },
     "appAssets": [
         {
-            "src": "http://localhost:8080/dist/OF-ScreenSnippet.zip",
+            "src": "MYWEBSERVER/dist/OF-ScreenSnippet.zip",
             "version": "1.0.0",
             "alias": "ScreenSnippet",
             "target": "OF-ScreenSnippet/ScreenSnippet.exe"

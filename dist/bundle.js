@@ -1,4 +1,5 @@
-const targetUrl = `http://localhost:8080/dist/`/* override window.open to fix name issue */
+const targetUrl = `http://localhost:8080/dist/`
+/* override window.open to fix name issue */
 var originalOpen = window.open;
 window.open = (...args) => {
    let w = originalOpen.apply(this, args);
