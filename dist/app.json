@@ -1,0 +1,33 @@
+{
+    "devtools_port": 9090,
+    "startup_app": {
+        "name": "OpenFin Symphony Client",
+        "description": "Experimental client for Symphony - running OpenFin",
+        "url": "https://my.symphony.com",
+        "uuid": "OpenFin-Symphony-udbrf2z9sehilik9",
+        "autoShow": true,
+        "defaultCentered": true,
+        "frame": true,
+        "defaultHeight": 600,
+        "defaultWidth": 800,
+        "preload": "MYWEBSERVER/dist/bundle.js"
+    },
+    "runtime": {
+        "arguments": "--noerrdialogs",
+        "version": "canary"
+    },
+    "shortcut": {
+        "company": "OpenFin",
+        "description": "Client for Symphony - running OpenFin",
+        "name": "Symphony OpenFin",
+        "icon": "MYWEBSERVER/dist/icon/symphony.png"
+    },
+    "appAssets": [
+        {
+            "src": "MYWEBSERVER/dist/OF-ScreenSnippet.zip",
+            "version": "1.0.0",
+            "alias": "ScreenSnippet",
+            "target": "OF-ScreenSnippet/ScreenSnippet.exe"
+        }
+    ]
+}
