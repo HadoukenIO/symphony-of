@@ -1,4 +1,4 @@
-/* override window.open to fix name issue */
+const targetUrl = `http://localhost:8080/`/* override window.open to fix name issue */
 var originalOpen = window.open;
 window.open = (...args) => {
    let w = originalOpen.apply(this, args);
@@ -24,7 +24,7 @@ class Notify {
         let app = fin.desktop.Application.getCurrent();
         this.eventListeners = [];
         this.notification = new window.fin.desktop.Notification({
-            url: "http://localhost:8080/notification.html",
+            url: `${targetUrl}/notification.html`,
             message: msg,
             onClick: () => {
                 app.getWindow().restore(() => {app.getWindow().setAsForeground();});
@@ -140,16 +140,16 @@ window.SYM_API = {
         let win = fin.desktop.Window.getCurrent();
         if (number > 0) {
             let n = number > 9 ? '9+' : number;
-            win.updateOptions({ icon: 'http://localhost:8080/icon/icon' + n + '.png' },() => {win.flash();},() => {console.log("update options failed");});
+            win.updateOptions({ icon: `${targetUrl}icon/icon${n}.png` },() => {win.flash();},() => {console.log("update options failed");});
 //            win.flash();
         } else {
-            win.updateOptions({ icon: 'http://localhost:8080/icon/symphony.png' });
+            win.updateOptions({ icon: `${targetUrl}icon/symphony.png` });
         };
     },
     activate:function() {
         console.log("SSF Activate!");
         let win = fin.desktop.Window.getCurrent();
-        win.updateOptions({ icon: 'http://localhost:8080/icon/symphony.png' });
+        win.updateOptions({ icon: `${targetUrl}icon/symphony.png` });
         fin.desktop.Window.getCurrent().bringToFront();
     },
     //undoced
