@@ -13,7 +13,6 @@ window.SYM_API = {
         if (number > 0) {
             let n = number > 9 ? '9+' : number;
             win.updateOptions({ icon: `${targetUrl}icon/icon${n}.png` },() => {win.flash();},() => {console.log("update options failed");});
-//            win.flash();
         } else {
             win.updateOptions({ icon: `${targetUrl}icon/symphony.png` });
         };
