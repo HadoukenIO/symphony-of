@@ -23,3 +23,4 @@ The Symphony application shimmed with the SSF API and implemented in the OpenFin
 ~~~~
 - generate an [OpenFin Installer](https://install.openfin.co/) or use another [deployment option](https://openfin.co/options/)
 - (optional) notifications can be customized in the notification.html file
+
