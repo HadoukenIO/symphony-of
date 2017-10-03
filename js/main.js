@@ -12,15 +12,16 @@ window.SYM_API = {
         let win = fin.desktop.Window.getCurrent();
         if (number > 0) {
             let n = number > 9 ? '9+' : number;
-            win.updateOptions({ icon: `${targetUrl}icon/icon${n}.png` },() => {win.flash();},() => {console.log("update options failed");});
+            win.updateOptions({ icon: 'http://localhost:8080/icon/icon' + n + '.png' },() => {win.flash();},() => {console.log("update options failed");});
+//            win.flash();
         } else {
-            win.updateOptions({ icon: `${targetUrl}icon/symphony.png` });
+            win.updateOptions({ icon: 'http://localhost:8080/icon/symphony.png' });
         };
     },
     activate:function() {
         console.log("SSF Activate!");
         let win = fin.desktop.Window.getCurrent();
-        win.updateOptions({ icon: `${targetUrl}icon/symphony.png` });
+        win.updateOptions({ icon: 'http://localhost:8080/icon/symphony.png' });
         fin.desktop.Window.getCurrent().bringToFront();
     },
     //undoced
@@ -53,3 +54,9 @@ window.SYM_API = {
 
 window.ssf = window.SYM_API;
 window.ssf.activate();
+
+//add handling for navigation outside of symphony
+let app = fin.desktop.Application.getCurrent();
+app.addEventListener("window-navigation-rejected",(obj) => {
+  fin.desktop.System.openUrlWithBrowser(obj.url);
+});

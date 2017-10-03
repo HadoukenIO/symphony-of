@@ -4,6 +4,11 @@
         "name": "OpenFin Symphony Client",
         "description": "Experimental client for Symphony - running OpenFin",
         "url": "https://my.symphony.com",
+        "contentNavigation": {
+            "whitelist": [
+                "https://my.symphony.com/*"
+            ]
+        },
         "uuid": "OpenFin-Symphony-udbrf2z9sehilik9",
         "autoShow": true,
         "defaultCentered": true,
@@ -14,7 +19,7 @@
     },
     "runtime": {
         "arguments": "--noerrdialogs",
-        "version": "canary"
+        "version": "beta"
     },
     "shortcut": {
         "company": "OpenFin",
@@ -24,7 +29,7 @@
     },
     "appAssets": [
         {
-            "src": "MYWEBSERVER/dist/OF-ScreenSnippet.zip",
+            "src": "http://localhost:8080/dist/OF-ScreenSnippet.zip",
             "version": "1.0.0",
             "alias": "ScreenSnippet",
             "target": "OF-ScreenSnippet/ScreenSnippet.exe"
