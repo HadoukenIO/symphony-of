@@ -8,20 +8,17 @@ window.SYM_API = {
     ScreenSnippet,
 
     setBadgeCount:function(number) {
-        console.log("SSF Badgecount " + number);
         let win = fin.desktop.Window.getCurrent();
         if (number > 0) {
             let n = number > 9 ? '9+' : number;
-            win.updateOptions({ icon: 'http://localhost:8080/icon/icon' + n + '.png' },() => {win.flash();},() => {console.log("update options failed");});
-//            win.flash();
+            win.updateOptions({ icon: `${targetUrl}icon/icon${n}.png` },() => {win.flash();},() => {console.log("update options failed");});
         } else {
-            win.updateOptions({ icon: 'http://localhost:8080/icon/symphony.png' });
+            win.updateOptions({ icon: `${targetUrl}/icon/symphony.png` });
         };
     },
     activate:function() {
-        console.log("SSF Activate!");
         let win = fin.desktop.Window.getCurrent();
-        win.updateOptions({ icon: 'http://localhost:8080/icon/symphony.png' });
+        win.updateOptions({ icon: `${targetUrl}/icon/symphony.png` });
         fin.desktop.Window.getCurrent().bringToFront();
     },
     //undoced
@@ -29,7 +26,6 @@ window.SYM_API = {
         console.log("SSF registerLogger!!");
     },
     registerBoundsChange:function(callback) {
-        console.log("SSF boundschange!")
         let cb = callback;
         fin.desktop.Window.getCurrent().addEventListener("bounds-changed", obj => {
         cb({x:obj.left,
