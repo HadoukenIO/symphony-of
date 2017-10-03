@@ -1,4 +1,4 @@
-const targetUrl = `http://localhost:8080/dist/`
+const targetUrl = `http://localhost:8080/`
 /* override window.open to fix name issue */
 var originalOpen = window.open;
 window.open = (...args) => {
@@ -19,7 +19,6 @@ window.open = (...args) => {
 class Notify {
 
     constructor(title,options){
-        console.log("SSF Notify " + JSON.stringify(title) + JSON.stringify(options));
         let msg = options;
         msg.title =  title;
         let app = fin.desktop.Application.getCurrent();
@@ -48,7 +47,6 @@ class Notify {
     }
 
     addEventListener(event, cb) {
-        console.log('SSF Notify Event Listener', event, cb);
         // Utilize the OF notification object to accomplish
         this.eventListeners.push(event)
 
@@ -58,12 +56,10 @@ class Notify {
             this.notification.noteWin.onClose = cb
         } else if(event === 'error') {
             this.notification.noteWin.onError = cb
-            console.log(this.notification.noteWin.onError)
         }
     }
 
     removeEventListener(event, cb){
-        console.log('SSF Notify Event Listener Removed', event, cb);
         if(event === 'click') {
             this.notification.noteWin.onClick = () => {};
         } else if(event === 'close') {
@@ -137,20 +133,17 @@ window.SYM_API = {
     ScreenSnippet,
 
     setBadgeCount:function(number) {
-        console.log("SSF Badgecount " + number);
         let win = fin.desktop.Window.getCurrent();
         if (number > 0) {
             let n = number > 9 ? '9+' : number;
-            win.updateOptions({ icon: 'http://localhost:8080/icon/icon' + n + '.png' },() => {win.flash();},() => {console.log("update options failed");});
-//            win.flash();
+            win.updateOptions({ icon: `${targetUrl}icon/icon${n}.png` },() => {win.flash();},() => {console.log("update options failed");});
         } else {
-            win.updateOptions({ icon: 'http://localhost:8080/icon/symphony.png' });
+            win.updateOptions({ icon: `${targetUrl}/icon/symphony.png` });
         };
     },
     activate:function() {
-        console.log("SSF Activate!");
         let win = fin.desktop.Window.getCurrent();
-        win.updateOptions({ icon: 'http://localhost:8080/icon/symphony.png' });
+        win.updateOptions({ icon: `${targetUrl}/icon/symphony.png` });
         fin.desktop.Window.getCurrent().bringToFront();
     },
     //undoced
@@ -158,7 +151,6 @@ window.SYM_API = {
         console.log("SSF registerLogger!!");
     },
     registerBoundsChange:function(callback) {
-        console.log("SSF boundschange!")
         let cb = callback;
         fin.desktop.Window.getCurrent().addEventListener("bounds-changed", obj => {
         cb({x:obj.left,

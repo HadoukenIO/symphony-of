@@ -6,7 +6,8 @@
         "url": "https://my.symphony.com",
         "contentNavigation": {
             "whitelist": [
-                "https://my.symphony.com/*"
+                "https://my.symphony.com/*",
+                "http://localhost:8080/*"
             ]
         },
         "uuid": "OpenFin-Symphony-udbrf2z9sehilik9",
@@ -15,7 +16,7 @@
         "frame": true,
         "defaultHeight": 600,
         "defaultWidth": 800,
-        "preload": "MYWEBSERVER/dist/bundle.js"
+        "preload": "http://localhost:8080/bundle.js"
     },
     "runtime": {
         "arguments": "--noerrdialogs",
@@ -25,11 +26,11 @@
         "company": "OpenFin",
         "description": "Client for Symphony - running OpenFin",
         "name": "Symphony OpenFin",
-        "icon": "MYWEBSERVER/dist/icon/symphony.png"
+        "icon": "http://localhost:8080/icon/symphony.png"
     },
     "appAssets": [
         {
-            "src": "http://localhost:8080/dist/OF-ScreenSnippet.zip",
+            "src": "http://localhost:8080/OF-ScreenSnippet.zip",
             "version": "1.0.0",
             "alias": "ScreenSnippet",
             "target": "OF-ScreenSnippet/ScreenSnippet.exe"

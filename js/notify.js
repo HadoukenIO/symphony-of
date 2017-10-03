@@ -5,7 +5,6 @@
 class Notify {
 
     constructor(title,options){
-        console.log("SSF Notify " + JSON.stringify(title) + JSON.stringify(options));
         let msg = options;
         msg.title =  title;
         let app = fin.desktop.Application.getCurrent();
@@ -34,7 +33,6 @@ class Notify {
     }
 
     addEventListener(event, cb) {
-        console.log('SSF Notify Event Listener', event, cb);
         // Utilize the OF notification object to accomplish
         this.eventListeners.push(event)
 
@@ -44,12 +42,10 @@ class Notify {
             this.notification.noteWin.onClose = cb
         } else if(event === 'error') {
             this.notification.noteWin.onError = cb
-            console.log(this.notification.noteWin.onError)
         }
     }
 
     removeEventListener(event, cb){
-        console.log('SSF Notify Event Listener Removed', event, cb);
         if(event === 'click') {
             this.notification.noteWin.onClick = () => {};
         } else if(event === 'close') {
