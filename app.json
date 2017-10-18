@@ -14,13 +14,15 @@
         "autoShow": true,
         "defaultCentered": true,
         "frame": true,
-        "defaultHeight": 600,
+        "minHeight": 625,
+        "defaultHeight": 625,
         "defaultWidth": 800,
+        "minWidth": 625,
         "preload": "http://localhost:8080/bundle.js"
     },
     "runtime": {
         "arguments": "--noerrdialogs",
-        "version": "beta"
+        "version": "8.56.25.11"
     },
     "shortcut": {
         "company": "OpenFin",
