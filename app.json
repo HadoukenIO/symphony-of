@@ -21,7 +21,7 @@
         "preload": "http://localhost:8080/bundle.js"
     },
     "runtime": {
-        "arguments": "--debug=5858 --enable-logging --v=1",
+        "arguments": "--noerrdialogs",
         "version": "8.56.25.29"
     },
     "shortcut": {
