@@ -22,13 +22,13 @@
     },
     "runtime": {
         "arguments": "--noerrdialogs",
-        "version": "8.56.25.11"
+        "version": "8.56.25.29"
     },
     "shortcut": {
         "company": "OpenFin",
         "description": "Client for Symphony - running OpenFin",
-        "name": "Symphony OpenFin",
-        "icon": "http://localhost:8080/icon/symphony.png"
+        "name": "Symphony OF",
+        "icon": "https://symphony.com/favicon.ico"
     },
     "appAssets": [
         {
