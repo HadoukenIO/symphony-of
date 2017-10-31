@@ -30,6 +30,7 @@
         "name": "Symphony OF",
         "icon": "https://symphony.com/favicon.ico"
     },
+    "splashScreenImage": "https://symphony.com/assets/brand/symphony_1000x200.png",
     "appAssets": [
         {
             "src": "http://localhost:8080/OF-ScreenSnippet.zip",
