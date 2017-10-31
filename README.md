@@ -4,11 +4,12 @@ The Symphony application shimmed with the SSF API and implemented in the OpenFin
 ## Notes
 - API implementations are in progress.  APIs are working off of what is defined here: https://symphonyoss.atlassian.net/wiki/display/WGDWAPI/Proposed+Standard+API+Specifications
 
-## Development Setup - use develop branch for local development
+## Development Setup
+- Install the [OpenFin CLI Tool](https://github.com/openfin/openfin-cli) globally `npm install -g openfin-cli`
 - `npm install`
 - `npm run build`
 - `npm start`
-- `openfin -l -c dist/app.json`
+- `openfin -l`
 
 ## Production Setup
 - Host the repo on your web server
