@@ -1,16 +1,19 @@
 const targetUrl = `http://localhost:8080/`
 /* override window.open to fix name issue */
 var originalOpen = window.open;
-window.open = (...args) => {
-   let w = originalOpen.apply(this, args);
-    //Try catch for cross domain safeguard
-    try {
-       w.name = args[1];
-     } catch (e) {
-        console.log(e)
-     }
+window.popouts = JSON.parse(localStorage.getItem('wins')) || {};
+window.curWin;
 
-     return w;
+window.open = (...args) => {
+  let w = originalOpen.apply(this, args);
+   //Try catch for cross domain safeguard
+   try {
+      w.name = args[1];
+    } catch (e) {
+       console.log(e)
+    }
+
+    return w;
 }
 /*
 * Class representing a Symphony notification
@@ -19,25 +22,37 @@ window.open = (...args) => {
 class Notify {
 
     constructor(title,options){
+        // console.log('NOTIFY OPTIONS:', options)
         let msg = options;
         msg.title =  title;
-        let app = fin.desktop.Application.getCurrent();
+        // let app = fin.desktop.Application.getCurrent();
         this.eventListeners = [];
         this.notification = new window.fin.desktop.Notification({
+            // url: `http://localhost:5555/creation.html`,
             url: `${targetUrl}notification.html`,
             message: msg,
             onClick: () => {
                 app.getWindow().restore(() => {app.getWindow().setAsForeground();});
-            }
+            },
+            onShow: () => {
+                console.log('SUCCESS', msg.body)
+            },
+            onError: (e) => {
+                console.log('Error', e, msg.body)
+            },
+            timeout: 5000,
+            opacity: 0.5
         });
         this._data = options.data || null;
     }
 
     static get permission(){
+        console.log('permission called')
         return "granted";
     }
 
     get data(){
+        console.log('called get data')
         return this.data;
     }
 
@@ -48,31 +63,31 @@ class Notify {
 
     addEventListener(event, cb) {
         // Utilize the OF notification object to accomplish
-        this.eventListeners.push(event)
+        // this.eventListeners.push(event)
 
-        if(event === 'click') {
-            // this.notification.noteWin.onClick = cb
-        } else if(event === 'close') {
-            this.notification.noteWin.onClose = cb
-        } else if(event === 'error') {
-            this.notification.noteWin.onError = cb
-        }
+        // if(event === 'click') {
+        //     // this.notification.noteWin.onClick = cb
+        // } else if(event === 'close') {
+        //     this.notification.noteWin.onClose = cb
+        // } else if(event === 'error') {
+        //     this.notification.noteWin.onError = cb
+        // }
     }
 
     removeEventListener(event, cb){
-        if(event === 'click') {
-            this.notification.noteWin.onClick = () => {};
-        } else if(event === 'close') {
-            this.notification.noteWin.onClose = () => {};
-        } else if(event === 'error') {
-            this.notification.noteWin.onError = () => {};
-        }
+        // if(event === 'click') {
+        //     // this.notification.noteWin.onClick = () => {};
+        // } else if(event === 'close') {
+        //     // this.notification.noteWin.onClose = () => {};
+        // } else if(event === 'error') {
+        //     // this.notification.noteWin.onError = () => {};
+        // }
     }
 
     removeAllEvents(){
-        while(this.eventListeners.length) {
-            removeEventListener(this.eventListeners.pop());
-        }
+        // while(this.eventListeners.length) {
+        //     removeEventListener(this.eventListeners.pop());
+        // }
     }
 
     destroy(){
@@ -129,7 +144,7 @@ class ScreenSnippet {
 */
 
 window.SYM_API = {
-    Notification:Notify,
+    Notification: Notify,
     ScreenSnippet,
 
     setBadgeCount:function(number) {
@@ -152,13 +167,24 @@ window.SYM_API = {
     },
     registerBoundsChange:function(callback) {
         let cb = callback;
-        fin.desktop.Window.getCurrent().addEventListener("bounds-changed", obj => {
-        cb({x:obj.left,
-            y:obj.top,
-            width:obj.width,
-            height:obj.height,
-            windowName:obj.name});
-        })
+        fin.desktop.Application.getCurrent().addEventListener("window-created", obj => {
+            if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter') {    
+                fin.desktop.Window.wrap(obj.uuid, obj.name).addEventListener("bounds-changed", win => {
+                    for (let pop of Object.keys(window.popouts)) {
+                        if(window.popouts[pop].name === obj.name) {
+                            window.popouts[pop] = win;
+                        }
+                    }
+                    localStorage.setItem('wins', JSON.stringify(window.popouts));                                 
+                    cb({x:win.left,
+                        y:win.top,
+                        width:win.width,
+                        height:win.height,
+                        windowName:win.name
+                    });
+                })
+            }
+        });
     },
     getVersionInfo: function() {
         return new Promise((resolve, reject) => {
@@ -175,9 +201,100 @@ window.SYM_API = {
 
 window.ssf = window.SYM_API;
 window.ssf.activate();
+let app = fin.desktop.Application.getCurrent();
 
 //add handling for navigation outside of symphony
-let app = fin.desktop.Application.getCurrent();
-app.addEventListener("window-navigation-rejected",(obj) => {
+app.addEventListener("window-navigation-rejected", obj => {
   fin.desktop.System.openUrlWithBrowser(obj.url);
+});
+
+// Add logic to keep track of window positioning
+app.addEventListener("window-created", obj => {
+    let childWin = fin.desktop.Window.wrap(obj.uuid, obj.name)
+    if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter') {
+        let winId = window.curWin;
+        console.log('in win create - name', obj.name)
+        if(window.popouts[winId] && window.popouts[winId].left) {
+            window.popouts[winId].name = obj.name;
+            window.popouts[winId].hide = false;
+            const { left, top, width, height } = window.popouts[winId];
+            
+            childWin.setBounds(left, top, width, height);
+        } else if(winId) {
+            window.popouts[winId] = { name: obj.name };
+            localStorage.setItem('wins', JSON.stringify(window.popouts));                 
+        }
+        childWin.addEventListener('close-requested',() => {
+            for (let pop of Object.keys(window.popouts)) {
+                if(window.popouts[pop] && window.popouts[pop].name === obj.name) {
+                    window.popouts[pop].hide = true;
+                    localStorage.setItem('wins', JSON.stringify(window.popouts));            
+                }
+            }
+            childWin.close(true);
+        })
+    }
+
+});
+
+app.addEventListener("window-closed", obj => {
+    setTimeout(()=> {
+        for (let pop of Object.keys(window.popouts)) {
+            if(window.popouts[pop] && window.popouts[pop].name === obj.name) {
+                window.popouts[pop].hide = true;
+                localStorage.setItem('wins', JSON.stringify(window.popouts));            
+            }
+        }
+    },1000)
+});
+
+//Overwrite closing of application to minimize instead
+let win = app.getWindow();
+win.addEventListener('close-requested',() => win.minimize());
+
+
+window.addEventListener('load', () => {
+    const waitForElement = (className, count, cb) => {
+        let elements = document.getElementsByClassName(className);  
+        if(elements.length) {            
+            cb(elements)
+        } else {
+            if(count<12) {
+                count++;
+                setTimeout(()=>waitForElement(className, count, cb),400)
+            }
+        }
+    };
+    const popoutsCheck = elements => {
+        popsToOpen = [];
+  
+        Array.from(elements).forEach(el => {
+            let userId = el.children[0] && el.children[0].attributes['1'] && el.children[0].attributes['1'].value;
+            
+            el.parentNode.parentNode.parentNode.addEventListener('click', () => {
+                window.curWin = userId;
+            })
+  
+            if(el.children[0] && window.popouts[userId] && !window.popouts[userId].hide) {
+                popsToOpen.push(el)
+            }
+        })
+        function timeout(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        async function openPopouts() {
+            for(let pop of popsToOpen) {
+                pop.click();
+                await timeout(400);
+                document.getElementsByClassName('enhanced-pop-out')[0].click();
+                await timeout(600);
+            }
+        }  
+        openPopouts();
+    }
+    // remove 'x' that does nothing on click
+    waitForElement('close-module',0,el=>el[0].style.display = 'none');
+
+    //Re-open popouts when app is restarted 
+    waitForElement('navigation-item-name',0,el=> popoutsCheck(el));
 });

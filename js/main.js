@@ -4,7 +4,7 @@
 */
 
 window.SYM_API = {
-    Notification:Notify,
+    Notification: Notify,
     ScreenSnippet,
 
     setBadgeCount:function(number) {
@@ -27,13 +27,24 @@ window.SYM_API = {
     },
     registerBoundsChange:function(callback) {
         let cb = callback;
-        fin.desktop.Window.getCurrent().addEventListener("bounds-changed", obj => {
-        cb({x:obj.left,
-            y:obj.top,
-            width:obj.width,
-            height:obj.height,
-            windowName:obj.name});
-        })
+        fin.desktop.Application.getCurrent().addEventListener("window-created", obj => {
+            if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter') {    
+                fin.desktop.Window.wrap(obj.uuid, obj.name).addEventListener("bounds-changed", win => {
+                    for (let pop of Object.keys(window.popouts)) {
+                        if(window.popouts[pop].name === obj.name) {
+                            window.popouts[pop] = win;
+                        }
+                    }
+                    localStorage.setItem('wins', JSON.stringify(window.popouts));                                 
+                    cb({x:win.left,
+                        y:win.top,
+                        width:win.width,
+                        height:win.height,
+                        windowName:win.name
+                    });
+                })
+            }
+        });
     },
     getVersionInfo: function() {
         return new Promise((resolve, reject) => {
@@ -50,9 +61,3 @@ window.SYM_API = {
 
 window.ssf = window.SYM_API;
 window.ssf.activate();
-
-//add handling for navigation outside of symphony
-let app = fin.desktop.Application.getCurrent();
-app.addEventListener("window-navigation-rejected",(obj) => {
-  fin.desktop.System.openUrlWithBrowser(obj.url);
-});
