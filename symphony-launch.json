@@ -14,7 +14,7 @@
     },
     "runtime": {
         "arguments": "--noerrdialogs",
-        "version": "alpha"
+        "version": "8.56.25.29"
     },
     "shortcut": {}
 }

@@ -6,11 +6,13 @@ window.curWin;
 window.open = (...args) => {
   let w = originalOpen.apply(this, args);
    //Try catch for cross domain safeguard
-   try {
-      w.name = args[1];
-    } catch (e) {
-       console.log(e)
-    }
-
+  if(!w.name.includes('Notifications') && w.name !== 'queueCounter') {
+      
+    try {
+        w.name = args[1];
+      } catch (e) {
+        console.log(e)
+      }
+  }
     return w;
 }

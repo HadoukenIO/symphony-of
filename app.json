@@ -7,7 +7,7 @@
         "contentNavigation": {
             "whitelist": [
                 "https://my.symphony.com/*",
-                "http://localhost:8080/*"
+                "http://localhost:8081/*"
             ]
         },
         "uuid": "OpenFin-Symphony-udbrf2z9sehilik9",
@@ -18,10 +18,10 @@
         "defaultHeight": 625,
         "defaultWidth": 800,
         "minWidth": 625,
-        "preload": "http://localhost:8080/bundle.js"
+        "preload": "http://localhost:8081/bundle.js"
     },
     "runtime": {
-        "arguments": "--noerrdialogs",
+        "arguments": "--debug=5858 --enable-logging --v=1 --enable-crash-reporting",
         "version": "8.56.25.29"
     },
     "shortcut": {
@@ -33,7 +33,7 @@
     "splashScreenImage": "https://symphony.com/assets/brand/symphony_1000x200.png",
     "appAssets": [
         {
-            "src": "http://localhost:8080/OF-ScreenSnippet.zip",
+            "src": "http://localhost:8081/OF-ScreenSnippet.zip",
             "version": "1.0.0",
             "alias": "ScreenSnippet",
             "target": "OF-ScreenSnippet/ScreenSnippet.exe"
