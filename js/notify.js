@@ -2,6 +2,8 @@
 * Class representing a Symphony notification
 */
 
+let holdNote = window.Notification;
+
 class Notify {
 
     constructor(title,options){
@@ -12,7 +14,8 @@ class Notify {
         this.eventListeners = [];
         this.notification = new window.fin.desktop.Notification({
             // url: `http://localhost:5555/creation.html`,
-            url: `${targetUrl}notification.html`,
+            // url: `${targetUrl}notification.html`,
+            url: `${targetUrl}blankNote.html`,
             message: msg,
             onClick: () => {
                 app.getWindow().restore(() => {app.getWindow().setAsForeground();});
@@ -77,3 +80,4 @@ class Notify {
         // How is this different from close?
     }
 }
+
