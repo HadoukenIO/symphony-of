@@ -1,4 +1,4 @@
-const targetUrl = `http://localhost:8081/`
+window.targetUrl = `http://localhost:8080/`;
 /* override window.open to fix name issue */
 var originalOpen = window.open;
 window.popouts = JSON.parse(localStorage.getItem('wins')) || {};
@@ -26,26 +26,29 @@ let holdNote = window.Notification;
 class Notify {
 
     constructor(title,options){
-        // console.log('NOTIFY OPTIONS:', options)
         let msg = options;
+        console.log('NOTIFY OPTIONS:', msg)        
         msg.title =  title;
-        // let app = fin.desktop.Application.getCurrent();
+        let timeout = 5000;
+        let onClick = () => app.getWindow().restore(() => {app.getWindow().setAsForeground();});
+        if (msg.sticky) {
+            timeout = 60000*60*24; // 24 hours
+            onClick = () => this.notification.close();
+        }
+        let app = fin.desktop.Application.getCurrent();
         this.eventListeners = [];
         this.notification = new window.fin.desktop.Notification({
-            // url: `http://localhost:5555/creation.html`,
-            // url: `${targetUrl}notification.html`,
-            url: `${targetUrl}blankNote.html`,
+            // url: `https://cdn.openfin.co/demos/symphony-of/notification.html`,
+            url: `${window.targetUrl}notification.html`,
             message: msg,
-            onClick: () => {
-                app.getWindow().restore(() => {app.getWindow().setAsForeground();});
-            },
+            onClick,
             onShow: () => {
                 console.log('SUCCESS', msg.body)
             },
             onError: (e) => {
                 console.log('Error', e, msg.body)
             },
-            timeout: 5000,
+            timeout,
             opacity: 0.5
         });
         this._data = options.data || null;
@@ -157,19 +160,19 @@ window.SYM_API = {
         let win = fin.desktop.Window.getCurrent();
         if (number > 0) {
             let n = number > 9 ? '9+' : number;
-            win.updateOptions({ icon: `${targetUrl}icon/icon${n}.png` },() => {win.flash();},() => {console.log("update options failed");});
+            win.updateOptions({ icon: `${window.targetUrl}icon/icon${n}.png` },() => {win.flash();},() => {console.log("update options failed");});
         } else {
-            win.updateOptions({ icon: `${targetUrl}/icon/symphony.png` });
+            win.updateOptions({ icon: `${window.targetUrl}icon/symphony.png` });
         };
     },
     activate:function() {
         let win = fin.desktop.Window.getCurrent();
-        win.updateOptions({ icon: `${targetUrl}/icon/symphony.png` });
+        win.updateOptions({ icon: `${window.targetUrl}icon/symphony.png` });
         fin.desktop.Window.getCurrent().bringToFront();
     },
     //undoced
     registerLogger:function() {
-        console.log("SSF registerLogger!!");
+
     },
     registerBoundsChange:function(callback) {
         let cb = callback;
@@ -208,10 +211,17 @@ window.SYM_API = {
 window.ssf = window.SYM_API;
 window.ssf.activate();
 let app = fin.desktop.Application.getCurrent();
+let win = app.getWindow();
+window.browserWindows = [];
+
+//Overwrite closing of application to minimize instead
+win.addEventListener('close-requested',() => win.minimize());
 
 //add handling for navigation outside of symphony
 app.addEventListener("window-navigation-rejected", obj => {
-  fin.desktop.System.openUrlWithBrowser(obj.url);
+    if (name==='main') {
+        fin.desktop.System.openUrlWithBrowser(obj.url);
+    }
 });
 
 // Add logic to keep track of window positioning
@@ -254,9 +264,6 @@ app.addEventListener("window-closed", obj => {
     }
 });
 
-//Overwrite closing of application to minimize instead
-let win = app.getWindow();
-win.addEventListener('close-requested',() => win.minimize());
 
 
 window.addEventListener('load', () => {

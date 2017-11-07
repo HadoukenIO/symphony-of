@@ -1,13 +1,15 @@
 let app = fin.desktop.Application.getCurrent();
 let win = app.getWindow();
+window.browserWindows = [];
 
 //Overwrite closing of application to minimize instead
 win.addEventListener('close-requested',() => win.minimize());
 
-
 //add handling for navigation outside of symphony
 app.addEventListener("window-navigation-rejected", obj => {
-  fin.desktop.System.openUrlWithBrowser(obj.url);
+    if (name==='main') {
+        fin.desktop.System.openUrlWithBrowser(obj.url);
+    }
 });
 
 // Add logic to keep track of window positioning
