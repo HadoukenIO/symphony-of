@@ -1,8 +1,15 @@
 let app = fin.desktop.Application.getCurrent();
+let win = app.getWindow();
+window.browserWindows = [];
+
+//Overwrite closing of application to minimize instead
+win.addEventListener('close-requested',() => win.minimize());
 
 //add handling for navigation outside of symphony
 app.addEventListener("window-navigation-rejected", obj => {
-  fin.desktop.System.openUrlWithBrowser(obj.url);
+    if (name==='main') {
+        fin.desktop.System.openUrlWithBrowser(obj.url);
+    }
 });
 
 // Add logic to keep track of window positioning
@@ -10,7 +17,6 @@ app.addEventListener("window-created", obj => {
     let childWin = fin.desktop.Window.wrap(obj.uuid, obj.name)
     if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter') {
         let winId = window.curWin;
-        console.log('in win create - name', obj.name)
         if(window.popouts[winId] && window.popouts[winId].left) {
             window.popouts[winId].name = obj.name;
             window.popouts[winId].hide = false;
@@ -31,23 +37,21 @@ app.addEventListener("window-created", obj => {
             childWin.close(true);
         })
     }
-
 });
 
 app.addEventListener("window-closed", obj => {
-    setTimeout(()=> {
-        for (let pop of Object.keys(window.popouts)) {
-            if(window.popouts[pop] && window.popouts[pop].name === obj.name) {
-                window.popouts[pop].hide = true;
-                localStorage.setItem('wins', JSON.stringify(window.popouts));            
+    if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter') {        
+        setTimeout(()=> {
+            for (let pop of Object.keys(window.popouts)) {
+                if(window.popouts[pop] && window.popouts[pop].name === obj.name) {
+                    window.popouts[pop].hide = true;
+                    localStorage.setItem('wins', JSON.stringify(window.popouts));            
+                }
             }
-        }
-    },1000)
+        },1000)
+    }
 });
 
-//Overwrite closing of application to minimize instead
-let win = app.getWindow();
-win.addEventListener('close-requested',() => win.minimize());
 
 
 window.addEventListener('load', () => {
@@ -62,6 +66,7 @@ window.addEventListener('load', () => {
             }
         }
     };
+    // TO DO - SET A FLAG SO THIS DOESNT HAPPEN AFTER INIT TIME (may need to be more than 1?)
     const popoutsCheck = elements => {
         popsToOpen = [];
   

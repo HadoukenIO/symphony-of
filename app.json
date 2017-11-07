@@ -6,7 +6,8 @@
         "url": "https://my.symphony.com",
         "contentNavigation": {
             "whitelist": [
-                "https://my.symphony.com/*",
+                "https://*.symphony.com/*",
+                "https://symphony.com/*",
                 "http://localhost:8080/*"
             ]
         },
@@ -22,7 +23,7 @@
     },
     "runtime": {
         "arguments": "--noerrdialogs",
-        "version": "8.56.25.29"
+        "version": "8.56.26.38"
     },
     "shortcut": {
         "company": "OpenFin",
@@ -30,11 +31,14 @@
         "name": "Symphony OF",
         "icon": "https://symphony.com/favicon.ico"
     },
-    "splashScreenImage": "https://symphony.com/assets/brand/symphony_1000x200.png",
+    "splashScreenImage": "http://localhost:8080/symphony-splash.png",
+    "dialogSettings": {
+        "logo": "http://localhost:8080/symphony-long.png"
+    },
     "appAssets": [
         {
             "src": "http://localhost:8080/OF-ScreenSnippet.zip",
-            "version": "1.0.0",
+            "version": "5.0.0",
             "alias": "ScreenSnippet",
             "target": "OF-ScreenSnippet/ScreenSnippet.exe"
         }
