@@ -11,19 +11,18 @@ window.SYM_API = {
         let win = fin.desktop.Window.getCurrent();
         if (number > 0) {
             let n = number > 9 ? '9+' : number;
-            win.updateOptions({ icon: `${targetUrl}icon/icon${n}.png` },() => {win.flash();},() => {console.log("update options failed");});
+            win.updateOptions({ icon: `${window.targetUrl}icon/icon${n}.png` },() => {win.flash();},() => {console.log("update options failed");});
         } else {
-            win.updateOptions({ icon: `${targetUrl}/icon/symphony.png` });
+            win.updateOptions({ icon: `${window.targetUrl}icon/symphony.png` });
         };
     },
     activate:function() {
         let win = fin.desktop.Window.getCurrent();
-        win.updateOptions({ icon: `${targetUrl}/icon/symphony.png` });
+        win.updateOptions({ icon: `${window.targetUrl}icon/symphony.png` });
         fin.desktop.Window.getCurrent().bringToFront();
     },
     //undoced
     registerLogger:function() {
-        console.log("SSF registerLogger!!");
     },
     registerBoundsChange:function(callback) {
         let cb = callback;

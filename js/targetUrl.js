@@ -1,1 +1,1 @@
-const targetUrl = `http://localhost:8081/`
+window.targetUrl = `http://localhost:8080/`;

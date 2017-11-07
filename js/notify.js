@@ -7,38 +7,32 @@ let holdNote = window.Notification;
 class Notify {
 
     constructor(title,options){
-        // console.log('NOTIFY OPTIONS:', options)
         let msg = options;
         msg.title =  title;
-        // let app = fin.desktop.Application.getCurrent();
+        let timeout = 5000;
+        let onClick = () => app.getWindow().restore(() => {app.getWindow().setAsForeground();});
+        if (msg.sticky) {
+            timeout = 60000*60*24; // 24 hours
+            onClick = () => this.notification.close();
+        }
+        let app = fin.desktop.Application.getCurrent();
         this.eventListeners = [];
         this.notification = new window.fin.desktop.Notification({
-            // url: `http://localhost:5555/creation.html`,
-            // url: `${targetUrl}notification.html`,
-            url: `${targetUrl}blankNote.html`,
+            // url: `https://cdn.openfin.co/demos/symphony-of/notification.html`,
+            url: `${window.targetUrl}notification.html`,
             message: msg,
-            onClick: () => {
-                app.getWindow().restore(() => {app.getWindow().setAsForeground();});
-            },
-            onShow: () => {
-                console.log('SUCCESS', msg.body)
-            },
-            onError: (e) => {
-                console.log('Error', e, msg.body)
-            },
-            timeout: 5000,
+            onClick,
+            timeout,
             opacity: 0.5
         });
         this._data = options.data || null;
     }
 
     static get permission(){
-        console.log('permission called')
         return "granted";
     }
 
     get data(){
-        console.log('called get data')
         return this.data;
     }
 

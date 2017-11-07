@@ -49,22 +49,32 @@
         		<span id="title"></span>
         	</div>
         	<p id="message"></p>
-        	<div id="close">
+        	<div id="close" onClick={fin.desktop.Notification.getCurrent().close()}>
         		<svg fill="#000000" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg">
         		    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
         		    <path d="M0 0h24v24H0z" fill="none"/>
         		</svg>
         	</div>
         </div>
-        <audio src="http://localhost:8081/notification.wav" autoplay></audio>
     </body>
 
     <script type="text/javascript">
       // messages received from the application creating the application
       function onNotificationMessage(message) {
-          document.querySelectorAll('#title')[0].innerText = message.title;
-          document.querySelectorAll('#message')[0].innerText = message.body;
-          document.querySelectorAll('#image')[0].src = message.icon;
+        document.querySelectorAll('#title')[0].innerText = message.title;
+        document.querySelectorAll('#message')[0].innerText = message.body;
+        document.querySelectorAll('#image')[0].src = message.icon;
+        document.body.style.backgroundColor = "#" + message.color;
+        if (message.flash) {
+          let origColor = document.body.style.backgroundColor;
+          setInterval(function() {
+            if (document.body.style.backgroundColor === 'red') {
+                document.body.style.backgroundColor = origColor;
+            } else {
+                document.body.style.backgroundColor = 'red';
+            }
+          }, 1000);
+        }
       }
     </script>
 </html>
