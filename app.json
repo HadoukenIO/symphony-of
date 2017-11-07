@@ -8,7 +8,7 @@
             "whitelist": [
                 "https://*.symphony.com/*",
                 "https://symphony.com/*",
-                "http://localhost:8080/*"
+                "https://cdn.openfin.co/demos/symphony-of/*"
             ]
         },
         "uuid": "OpenFin-Symphony-udbrf2z9sehilik9",
@@ -19,7 +19,7 @@
         "defaultHeight": 625,
         "defaultWidth": 800,
         "minWidth": 625,
-        "preload": "http://localhost:8080/bundle.js"
+        "preload": "https://cdn.openfin.co/demos/symphony-of/bundle.js"
     },
     "runtime": {
         "arguments": "--noerrdialogs",
@@ -31,13 +31,13 @@
         "name": "Symphony OF",
         "icon": "https://symphony.com/favicon.ico"
     },
-    "splashScreenImage": "http://localhost:8080/symphony-splash.png",
+    "splashScreenImage": "https://cdn.openfin.co/demos/symphony-of/symphony-splash.png",
     "dialogSettings": {
-        "logo": "http://localhost:8080/symphony-long.png"
+        "logo": "https://cdn.openfin.co/demos/symphony-of/symphony-long.png"
     },
     "appAssets": [
         {
-            "src": "http://localhost:8080/OF-ScreenSnippet.zip",
+            "src": "https://cdn.openfin.co/demos/symphony-of/OF-ScreenSnippet.zip",
             "version": "5.0.0",
             "alias": "ScreenSnippet",
             "target": "OF-ScreenSnippet/ScreenSnippet.exe"

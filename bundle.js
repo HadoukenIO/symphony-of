@@ -1,4 +1,4 @@
-window.targetUrl = `http://localhost:8080/`;
+window.targetUrl = `https://cdn.openfin.co/demos/symphony-of/`;
 /* override window.open to fix name issue */
 var originalOpen = window.open;
 window.popouts = JSON.parse(localStorage.getItem('wins')) || {};

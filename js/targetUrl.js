@@ -1,1 +1,1 @@
-window.targetUrl = `http://localhost:8080/`;
+window.targetUrl = `https://cdn.openfin.co/demos/symphony-of/`;
