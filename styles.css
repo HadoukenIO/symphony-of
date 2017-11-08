@@ -1,0 +1,311 @@
+body {
+    padding: 0;
+    margin: 0;
+    font-family: 'Roboto', 'arial', 'helvetica';
+}
+
+#wsWarning {
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    text-align: center;
+}
+
+#wsWarning.connected {
+    display: none;
+}
+
+wsWarningRetry {
+    display: none;
+}
+
+#connStatus {
+    margin: 0 0 0 125px;
+}
+
+#connStatus.disconnected .connStatConnected {
+    display: none;
+}
+
+#connStatus.connected .connStatDisconnected {
+    display: none;
+}
+
+#main {
+    padding: 0;
+    margin: 0;
+    height: calc(100vh);
+    min-width: 750px;
+}
+
+#mainNav {
+    background-color: #283641;
+    background-image: url('https://openfin.co/wp-content/uploads/2017/01/OpenFin.png');
+    background-repeat: no-repeat;
+    background-position-x: 10px;
+    background-position-y: 5px;
+    background-size: 110px auto;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    left: 0;
+    float: left;
+    display: none;
+}
+
+#mainNav .header,
+#mainContent .header {
+    color: #abccea;
+    padding: 9px 9px 0 9px;
+    height: 40px;
+}
+
+#mainContent {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    right: 0;
+    width: 100%;
+    float: right;
+}
+
+#mainContent .header {
+    background-color: #283641;
+    background-image: url('https://openfin.co/wp-content/uploads/2017/01/OpenFin.png');
+    background-repeat: no-repeat;
+    background-position-x: 12px;
+    background-position-y: 4px;
+    background-size: 115px auto;
+}
+
+#noteContentInline {
+    height: 52px;
+    width: calc(80vw - 60px);
+    display: inline-block;
+}
+
+#publishBtnInline {
+    height: 50px;
+    width: 50px;
+    float: right;
+    padding: 6px;
+    margin: 1px 0 0 0;
+}
+
+.notificationList {
+    height: calc(100vh - 100px);
+    overflow-y: scroll;
+    padding: 0;
+}
+
+#inlinePublisher {
+    display: none;
+    padding: 3px;
+    /*background-color: #283641;*/
+}
+
+#channels,
+#subsListChannels {
+    list-style: none;
+    margin: 0;
+    padding: 5px 0;
+}
+
+.inlinePublishing #mainContent {
+    width: 80%;
+}
+
+.inlinePublishing #mainContent .header {
+    background: none;
+}
+
+#mainContent .header .channelTitle {
+    color: #283641;
+    float: left;
+    width: 50%;
+    font-weight: bold;
+}
+
+.inlinePublishing #mainNav {
+    display: block;
+    width: 20%;
+}
+
+.inlinePublishing #inlinePublisher {
+    display: block;
+}
+
+.inlinePublishing #publisherBtn,
+.inlinePublishing #subsOpener {
+    display: none;
+}
+
+.inlinePublishing #channels {
+    display: block;
+    height: calc(100vh - 163px);
+}
+
+#authUserDetails {
+    display: none;
+}
+
+#authUserAvatar {
+    display: none;
+}
+
+#notifications {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#notifications li {
+    padding: 0 10px;
+}
+
+#notifications li:nth-child(odd) {
+    background: #f5f5f5;
+}
+
+#channelsLabel {
+    text-transform: uppercase;
+    font-size: .9em;
+    padding: 5px 10px 0;
+    color: #abccea;
+}
+
+#createChannel {
+    transform: rotate(45deg)
+}
+
+#channels li {
+    padding: 0 10px;
+    color: #aaa;
+    clear: both;
+    width: 90%;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+#channels li.selected {
+    background-color: #4c89bc;
+}
+
+#channels li.subscribed {
+    color: #fff;
+}
+
+#channels li .subscriberControl,
+#subsListChannels li .subscriberControl {
+    margin: 5px 3px 0 0;
+    display: inline-block;
+    height: 12px;
+    width: 12px;
+    border-radius: 6px;
+    border: 1px solid #abccea;
+}
+
+#channels li.subscribed .subscriberControl,
+#subsListChannels li.subscribed .subscriberControl {
+    background-color: #abccea;
+}
+
+#settingsMenu {
+    right: 10px;
+    top: 34px;
+}
+
+#publisherBtn,
+#settingsBtn,
+#subsOpener {
+    margin-left: 5px;
+    background-color: #4c89bc;
+    border-color: #4c89bc;
+}
+
+#editor,
+#settings,
+#channelEdit {
+    width: 80%;
+}
+
+#editor.standalone {
+    width: 100%;
+}
+
+.dropcurtain {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, .8);
+    justify-content: center;
+    align-items: center;
+}
+
+#loginContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    background-image: url('https://cdn.openfin.co/demos/symphony-of/symphony-long.png');
+    background-repeat: no-repeat;
+    background-position-x: 50%;
+    background-position-y: 20px;
+    background-size: 200px auto;
+    padding: 15% 20%;
+    overflow-y: scroll;
+}
+
+#notifications li .publisher {
+    font-size: .9em;
+    font-weight: bold;
+}
+
+#notifications li .message {
+    font-size: .9em;
+}
+
+#notifications li .channel {
+    font-size: 1.1em;
+}
+/* registration "wizard" */
+
+#regForm.reg-group-1 .reg-group-2,
+#regForm.reg-group-1 .reg-group-3,
+#regForm.reg-group-2 .reg-group-1,
+#regForm.reg-group-2 .reg-group-3,
+#regForm.reg-group-3 .reg-group-1,
+#regForm.reg-group-3 .reg-group-2 {
+    display: none;
+}
+
+#regForm.reg-group-3 #regNext {
+    display: none;
+}
+
+#regForm.reg-group-1 #regSubmit,
+#regForm.reg-group-2 #regSubmit {
+    display: none;
+}
+
+@media only screen and (max-width: 725px) {
+    /* For mobile phones: */
+    #main {
+        min-width: auto;
+        width: 100%;
+    }
+    #editor,
+    #settings,
+    #channelEdit {
+        width: 90%;
+    }
+    #loginContainer {
+        padding: 15% 5%;
+    }
+}

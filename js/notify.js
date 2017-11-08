@@ -18,7 +18,6 @@ class Notify {
         let app = fin.desktop.Application.getCurrent();
         this.eventListeners = [];
         this.notification = new window.fin.desktop.Notification({
-            // url: `https://cdn.openfin.co/demos/symphony-of/notification.html`,
             url: `${window.targetUrl}notification.html`,
             message: msg,
             onClick,
