@@ -23,7 +23,7 @@ class Notify {
             message: msg,
             onClick,
             timeout,
-            opacity: 0.5
+            opacity: 1
         });
         this._data = options.data || null;
     }
