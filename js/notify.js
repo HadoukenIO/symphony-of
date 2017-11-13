@@ -2,8 +2,6 @@
 * Class representing a Symphony notification
 */
 
-let holdNote = window.Notification;
-
 class Notify {
 
     constructor(title,options){
@@ -18,12 +16,10 @@ class Notify {
         let app = fin.desktop.Application.getCurrent();
         this.eventListeners = [];
         this.notification = new window.fin.desktop.Notification({
-            url: `http://localhost:8080/notification.html`,
-            // url: `${window.targetUrl}notification.html`,
+            url: `${window.targetUrl}notification.html`,
             message: msg,
             onClick,
             timeout,
-            opacity: 1
         });
         this._data = options.data || null;
     }

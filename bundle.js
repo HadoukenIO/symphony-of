@@ -35,12 +35,10 @@ class Notify {
         let app = fin.desktop.Application.getCurrent();
         this.eventListeners = [];
         this.notification = new window.fin.desktop.Notification({
-            url: `http://localhost:8080/notification.html`,
-            // url: `${window.targetUrl}notification.html`,
+            url: `${window.targetUrl}notification.html`,
             message: msg,
             onClick,
             timeout,
-            opacity: 0.5
         });
         this._data = options.data || null;
     }
