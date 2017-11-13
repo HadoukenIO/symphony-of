@@ -11,10 +11,9 @@
             let podUrl = document.getElementById('podUrl');
             let landingApp = fin.desktop.Application.getCurrent();
             fin.desktop.Application.createFromManifest(`https://symphony.openfin.co/app?startup_app.url=${podUrl.value}`, app => {
-                app.run();
-                landingApp.close();
+                app.run(()=>landingApp.close(), e => alert('Failed to create app from manifest: ' + e));
             }, error => {
-                console.error('Failed to create app from manifest: ', error);
+                alert('Failed to create app from manifest: ' + error);
             });
             return false
         }

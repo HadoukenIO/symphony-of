@@ -259,7 +259,6 @@ wsWarningRetry {
     background-position-y: 20px;
     background-size: 200px auto;
     padding: 15% 20%;
-    overflow-y: scroll;
 }
 
 #notifications li .publisher {

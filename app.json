@@ -8,7 +8,8 @@
             "whitelist": [
                 "https://*.symphony.com/*",
                 "https://symphony.com/*",
-                "https://cdn.openfin.co/demos/symphony-of/*"
+                "https://cdn.openfin.co/demos/symphony-of/*",
+                "http://localhost:8080/*"
             ]
         },
         "uuid": "OpenFin-Symphony-udbrf2z9sehilik9",
@@ -19,10 +20,10 @@
         "defaultHeight": 625,
         "defaultWidth": 800,
         "minWidth": 625,
-        "preload": "https://cdn.openfin.co/demos/symphony-of/bundle.js"
+        "preload": "http://localhost:8080/bundle.js"
     },
     "runtime": {
-        "arguments": "--noerrdialogs",
+        "arguments": "--noerrdialogs --v=1 --diagnostics",
         "version": "8.56.26.38"
     },
     "shortcut": {
