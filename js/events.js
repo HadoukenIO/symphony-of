@@ -52,8 +52,6 @@ app.addEventListener("window-closed", obj => {
     }
 });
 
-
-
 window.addEventListener('load', () => {
     const waitForElement = (className, count, cb) => {
         let elements = document.getElementsByClassName(className);  
@@ -66,7 +64,6 @@ window.addEventListener('load', () => {
             }
         }
     };
-    // TO DO - SET A FLAG SO THIS DOESNT HAPPEN AFTER INIT TIME (may need to be more than 1?)
     const popoutsCheck = elements => {
         popsToOpen = [];
   
