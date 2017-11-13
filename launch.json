@@ -1,21 +1,19 @@
 {
     "devtools_port": 9090,
-    "offlineAccess": true,
     "startup_app": {
         "name": "Symphony-OpenFin-Landing",
         "description": "OpenFin POC",
-        "url": "https://cdn.openfin.co/demos/symphony-of/symphony-launch.html",
+        "url": "https://install.openfin.co/symphony",
         "uuid": "Symphony-OpenFin-Landing-m15dqtx4kjl",
         "autoShow": true,
         "defaultCentered": true,
-        "taskbarIcon": "https://symphony.com/favicon.ico",
         "frame": true,
         "defaultHeight": 400,
         "defaultWidth": 600
     },
     "runtime": {
         "arguments": "--noerrdialogs",
-        "version": "8.56.26.38"
+        "version": "beta"
     },
     "shortcut": {}
 }

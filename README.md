@@ -1,9 +1,6 @@
 # OpenFin Sym Integration
 The Symphony application shimmed with the SSF API and implemented in the OpenFin runtime.
 
-## Overview
-OpenFin has created an open-source project that allows anyone to run the Symphony chat client on OpenFin. This moves the client into a secure, interoperable and deployable format that can be more conducive for enterprises that already leverage OpenFin for their own applications as well as 
-
 ## Notes
 - API implementations are in progress.  APIs are working off of what is defined here: https://symphonyoss.atlassian.net/wiki/display/WGDWAPI/Proposed+Standard+API+Specifications
 

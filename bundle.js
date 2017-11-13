@@ -27,7 +27,6 @@ class Notify {
 
     constructor(title,options){
         let msg = options;
-        console.log('NOTIFY OPTIONS:', msg)        
         msg.title =  title;
         let timeout = 5000;
         let onClick = () => app.getWindow().restore(() => {app.getWindow().setAsForeground();});
@@ -38,29 +37,20 @@ class Notify {
         let app = fin.desktop.Application.getCurrent();
         this.eventListeners = [];
         this.notification = new window.fin.desktop.Notification({
-            // url: `https://cdn.openfin.co/demos/symphony-of/notification.html`,
             url: `${window.targetUrl}notification.html`,
             message: msg,
             onClick,
-            onShow: () => {
-                console.log('SUCCESS', msg.body)
-            },
-            onError: (e) => {
-                console.log('Error', e, msg.body)
-            },
             timeout,
-            opacity: 0.5
+            opacity: 1
         });
         this._data = options.data || null;
     }
 
     static get permission(){
-        console.log('permission called')
         return "granted";
     }
 
     get data(){
-        console.log('called get data')
         return this.data;
     }
 
@@ -172,7 +162,6 @@ window.SYM_API = {
     },
     //undoced
     registerLogger:function() {
-
     },
     registerBoundsChange:function(callback) {
         let cb = callback;
@@ -264,8 +253,6 @@ app.addEventListener("window-closed", obj => {
     }
 });
 
-
-
 window.addEventListener('load', () => {
     const waitForElement = (className, count, cb) => {
         let elements = document.getElementsByClassName(className);  
@@ -278,7 +265,6 @@ window.addEventListener('load', () => {
             }
         }
     };
-    // TO DO - SET A FLAG SO THIS DOESNT HAPPEN AFTER INIT TIME (may need to be more than 1?)
     const popoutsCheck = elements => {
         popsToOpen = [];
   

@@ -1,5 +1,6 @@
 {
     "devtools_port": 9090,
+    "offlineAccess": true,
     "startup_app": {
         "name": "OpenFin Symphony Client",
         "description": "Experimental client for Symphony - running OpenFin",
@@ -22,7 +23,7 @@
         "preload": "http://localhost:8080/bundle.js"
     },
     "runtime": {
-        "arguments": "--noerrdialogs",
+        "arguments": "--noerrdialogs --v=1",
         "version": "8.56.26.38"
     },
     "shortcut": {
@@ -32,9 +33,6 @@
         "icon": "https://symphony.com/favicon.ico"
     },
     "splashScreenImage": "http://localhost:8080/symphony-splash.png",
-    "dialogSettings": {
-        "logo": "http://localhost:8080/symphony-long.png"
-    },
     "appAssets": [
         {
             "src": "http://localhost:8080/OF-ScreenSnippet.zip",
