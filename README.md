@@ -28,6 +28,6 @@ OpenFin has created an open-source project that allows anyone to run the Symphon
     2. The `targetUrl.js` file
 ~~~~
 - `npm run build`
-- generate an [OpenFin Installer](https://install.openfin.co/) or use another [deployment option](https://openfin.co/options/)
+- generate an [OpenFin Installer](https://install.openfin.co/) pointing at the app.json file or use another [deployment option](https://openfin.co/options/)
 - (optional) Notifications can be customized in the notification.html file
 

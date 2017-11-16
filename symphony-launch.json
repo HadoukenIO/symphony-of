@@ -15,7 +15,16 @@
     },
     "runtime": {
         "arguments": "--noerrdialogs",
-        "version": "8.56.26.38"
+        "version": "8.56.26.38",
+        "fallbackVersion": "8.56.26.38"
+    },
+    "dialogSettings": {
+        "logo": "https://cdn.openfin.co/demos/symphony-of/symphony-dialog.png",
+        "bgColor": 4294967295,
+        "textColor": 4278232241,
+        "progressBarBgColor": 4289901234,
+        "progressBarFillColor": 4278232241,
+        "progressBarBorderColor": 4285361517
     },
     "shortcut": {}
 }
