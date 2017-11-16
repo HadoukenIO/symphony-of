@@ -16,7 +16,6 @@ app.addEventListener("window-created", obj => {
     let childWin = fin.desktop.Window.wrap(obj.uuid, obj.name)
     if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter') {
         let winId = window.curWin;
-        console.log('win id, and curWin', winId)
         if(window.popouts[winId] && window.popouts[winId].left) {
             window.popouts[winId].name = obj.name;
             window.popouts[winId].hide = false;
@@ -145,7 +144,6 @@ window.addEventListener('load', () => {
                     userId = clicked.attributes && clicked.attributes['1'] && clicked.attributes['1'].value;
                     } catch(e) {console.log(e)}
                 };
-                console.log('user id, target',userId, target);
                 if (window.popouts[userId]) {
                     let popWin = fin.desktop.Window.wrap(window.popouts[userId].uuid, window.popouts[userId].name);
                     console.log(popWin);

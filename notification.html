@@ -67,10 +67,14 @@
     <script type="text/javascript">
       // messages received from the application creating the application
       function onNotificationMessage(message) {
-        document.querySelectorAll('#title')[0].innerText = message.title;
-        document.querySelectorAll('#message')[0].innerText = message.body;
-        document.querySelectorAll('#image')[0].src = message.icon;
-        document.body.style.backgroundColor = "#" + message.color;
+        document.querySelectorAll('#title')[0].innerText = message.title || '';
+        document.querySelectorAll('#message')[0].innerText = message.body || ' ';
+        if(!message.icon) {
+          document.querySelectorAll('#image')[0].style.display = 'none';
+        } else {
+          document.querySelectorAll('#image')[0].src = message.icon || '';
+        }
+        document.body.style.backgroundColor = "#" + message.color || '000';
         if (message.flash) {
           let origColor = document.body.style.backgroundColor;
           setInterval(function() {

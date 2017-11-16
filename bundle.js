@@ -24,23 +24,27 @@ window.open = (...args) => {
 class Notify {
 
     constructor(title,options){
-        let msg = options;
+        let msg = options || {};
         msg.title =  title;
         let timeout = 5000;
+        let app = fin.desktop.Application.getCurrent();        
         let onClick = () => app.getWindow().restore(() => {app.getWindow().setAsForeground();});
         if (msg.sticky) {
             timeout = 60000*60*24; // 24 hours
-            onClick = () => this.notification.close();
+            onClick = () => { 
+                app.getWindow().restore(() => {app.getWindow().setAsForeground();});
+                this.notification.close();
+            }
         }
-        let app = fin.desktop.Application.getCurrent();
         this.eventListeners = [];
         this.notification = new window.fin.desktop.Notification({
             url: `${window.targetUrl}notification.html`,
             message: msg,
             onClick,
             timeout,
+            opacity: 0.92
         });
-        this._data = options.data || null;
+        this._data = msg.data || null;
     }
 
     static get permission(){
@@ -61,12 +65,12 @@ class Notify {
         // this.eventListeners.push(event)
 
         // if(event === 'click') {
-        //     // this.notification.noteWin.onClick = cb
+        //     this.notification.noteWin.onClick = cb
         // } else if(event === 'close') {
         //     this.notification.noteWin.onClose = cb
         // } else if(event === 'error') {
         //     this.notification.noteWin.onError = cb
-        // }
+        }
     }
 
     removeEventListener(event, cb){
@@ -214,7 +218,6 @@ app.addEventListener("window-created", obj => {
     let childWin = fin.desktop.Window.wrap(obj.uuid, obj.name)
     if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter') {
         let winId = window.curWin;
-        console.log('win id, and curWin', winId)
         if(window.popouts[winId] && window.popouts[winId].left) {
             window.popouts[winId].name = obj.name;
             window.popouts[winId].hide = false;
@@ -343,7 +346,6 @@ window.addEventListener('load', () => {
                     userId = clicked.attributes && clicked.attributes['1'] && clicked.attributes['1'].value;
                     } catch(e) {console.log(e)}
                 };
-                console.log('user id, target',userId, target);
                 if (window.popouts[userId]) {
                     let popWin = fin.desktop.Window.wrap(window.popouts[userId].uuid, window.popouts[userId].name);
                     console.log(popWin);
