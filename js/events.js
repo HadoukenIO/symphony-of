@@ -1,6 +1,5 @@
 let app = fin.desktop.Application.getCurrent();
 let win = app.getWindow();
-window.browserWindows = [];
 
 //Overwrite closing of application to minimize instead
 win.addEventListener('close-requested',() => win.minimize());
@@ -72,6 +71,10 @@ window.addEventListener('load', () => {
             
             el.parentNode.parentNode.parentNode.addEventListener('click', () => {
                 window.curWin = userId;
+                if (window.popouts[userId] && !window.popouts[userId].hide) {
+                    let popWin = fin.desktop.Window.wrap(window.popouts[userId].uuid, window.popouts[userId].name);
+                    popWin.restore(() => {popWin.setAsForeground();});
+                }
             })
   
             if(el.children[0] && window.popouts[userId] && !window.popouts[userId].hide) {

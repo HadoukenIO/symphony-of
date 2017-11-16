@@ -2,8 +2,6 @@
 * Class representing a Symphony notification
 */
 
-let holdNote = window.Notification;
-
 class Notify {
 
     constructor(title,options){
@@ -22,7 +20,6 @@ class Notify {
             message: msg,
             onClick,
             timeout,
-            opacity: 1
         });
         this._data = options.data || null;
     }
