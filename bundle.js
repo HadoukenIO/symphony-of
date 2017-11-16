@@ -21,46 +21,37 @@ window.open = (...args) => {
 * Class representing a Symphony notification
 */
 
-let holdNote = window.Notification;
-
 class Notify {
 
     constructor(title,options){
-        let msg = options;
-        console.log('NOTIFY OPTIONS:', msg)        
+        let msg = options || {};
         msg.title =  title;
         let timeout = 5000;
+        let app = fin.desktop.Application.getCurrent();        
         let onClick = () => app.getWindow().restore(() => {app.getWindow().setAsForeground();});
         if (msg.sticky) {
             timeout = 60000*60*24; // 24 hours
-            onClick = () => this.notification.close();
+            onClick = () => { 
+                app.getWindow().restore(() => {app.getWindow().setAsForeground();});
+                this.notification.close();
+            }
         }
-        let app = fin.desktop.Application.getCurrent();
         this.eventListeners = [];
         this.notification = new window.fin.desktop.Notification({
-            // url: `https://cdn.openfin.co/demos/symphony-of/notification.html`,
             url: `${window.targetUrl}notification.html`,
             message: msg,
             onClick,
-            onShow: () => {
-                console.log('SUCCESS', msg.body)
-            },
-            onError: (e) => {
-                console.log('Error', e, msg.body)
-            },
             timeout,
-            opacity: 0.5
+            opacity: 0.92
         });
-        this._data = options.data || null;
+        this._data = msg.data || null;
     }
 
     static get permission(){
-        console.log('permission called')
         return "granted";
     }
 
     get data(){
-        console.log('called get data')
         return this.data;
     }
 
@@ -74,12 +65,12 @@ class Notify {
         // this.eventListeners.push(event)
 
         // if(event === 'click') {
-        //     // this.notification.noteWin.onClick = cb
+        //     this.notification.noteWin.onClick = cb
         // } else if(event === 'close') {
         //     this.notification.noteWin.onClose = cb
         // } else if(event === 'error') {
         //     this.notification.noteWin.onError = cb
-        // }
+        }
     }
 
     removeEventListener(event, cb){
@@ -172,7 +163,6 @@ window.SYM_API = {
     },
     //undoced
     registerLogger:function() {
-
     },
     registerBoundsChange:function(callback) {
         let cb = callback;
@@ -264,8 +254,6 @@ app.addEventListener("window-closed", obj => {
     }
 });
 
-
-
 window.addEventListener('load', () => {
     const waitForElement = (className, count, cb) => {
         let elements = document.getElementsByClassName(className);  
@@ -278,7 +266,6 @@ window.addEventListener('load', () => {
             }
         }
     };
-    // TO DO - SET A FLAG SO THIS DOESNT HAPPEN AFTER INIT TIME (may need to be more than 1?)
     const popoutsCheck = elements => {
         popsToOpen = [];
   
