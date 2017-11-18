@@ -1,6 +1,6 @@
 const { exec } = require('child_process');
 
-const fileString = "./js/targetUrl.js ./js/window.js ./js/notify.js ./js/screensnippet.js ./js/main.js  ./js/events.js > ./bundle.js";
+const fileString = "./js/targetUrl.js ./js/window.js ./js/notify.js ./js/screensnippet.js ./js/main.js  ./js/events.js > ./public/bundle.js";
 
 exec('type ' + fileString, (error, stdout, stderr) => {
     if (error) {

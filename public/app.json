@@ -9,7 +9,8 @@
             "whitelist": [
                 "https://*.symphony.com/*",
                 "https://symphony.com/*",
-                "https://cdn.openfin.co/demos/symphony-of/*"
+                "https://cdn.openfin.co/demos/symphony-of/*",
+                "https://cdn.openfin.co/demos/symphony-of-staging/*"
             ]
         },
         "uuid": "OpenFin-Symphony-udbrf2z9sehilik9",
