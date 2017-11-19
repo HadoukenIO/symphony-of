@@ -31,7 +31,6 @@ fs.writeFileSync('./buildtarget.js', `window.targetUrl='${targetUrl}';`);
 
 const fileString = "./buildtarget.js ./js/targetUrl.js ./js/window.js ./js/notify.js ./js/screensnippet.js ./js/main.js  ./js/events.js > ./public/bundle.js";
 
-// if (false)
 exec('type ' + fileString, (error, stdout, stderr) => {
     if (error) {
         exec('cat ' + fileString, (error, stdout, stderr) => {
