@@ -1,0 +1,46 @@
+{
+    "devtools_port": 9090,
+    "offlineAccess": true,
+    "startup_app": {
+        "name": "OpenFin Symphony Client",
+        "description": "Experimental client for Symphony - running OpenFin",
+        "url": "https://markit.symphony.com/",
+        "contentNavigation": {
+            "whitelist": [
+                "https://markit.symphony.com/",
+                "https://*.markit.symphony.com/",
+                "https://*.symphony.com/*",
+                "https://symphony.com/*",
+                "https://cdn.openfin.co/demos/symphony-of-staging/*"
+            ]
+        },
+        "uuid": "OpenFin-Symphony-udbrf2z9sehilik9",
+        "autoShow": true,
+        "defaultCentered": true,
+        "frame": true,
+        "minHeight": 625,
+        "defaultHeight": 625,
+        "defaultWidth": 800,
+        "minWidth": 625,
+        "preload": "https://cdn.openfin.co/demos/symphony-of-staging/bundle.js"
+    },
+    "runtime": {
+        "arguments": "--noerrdialogs --v=1",
+        "version": "8.56.26.38"
+    },
+    "shortcut": {
+        "company": "OpenFin",
+        "description": "Client for Symphony - running OpenFin",
+        "name": "Symphony OF",
+        "icon": "https://symphony.com/favicon.ico"
+    },
+    "splashScreenImage": "https://cdn.openfin.co/demos/symphony-of-staging/symphony-splash.png",
+    "appAssets": [
+        {
+            "src": "https://cdn.openfin.co/demos/symphony-of-staging/OF-ScreenSnippet.zip",
+            "version": "5.0.0",
+            "alias": "ScreenSnippet",
+            "target": "OF-ScreenSnippet/ScreenSnippet.exe"
+        }
+    ]
+}

@@ -4,8 +4,8 @@
     "startup_app": {
         "name": "Symphony-OpenFin-Landing",
         "description": "OpenFin POC",
-        "url": "https://cdn.openfin.co/demos/symphony-of/symphony-launch.html",
-        "uuid": "Symphony-OpenFin-Landing-m15dqtx4kjl",
+        "url": "https://cdn.openfin.co/demos/symphony-of-staging/symphony-launch.html",
+        "uuid": "Symphony-OpenFin-Landing-Staging",
         "autoShow": true,
         "defaultCentered": true,
         "taskbarIcon": "https://symphony.com/favicon.ico",
@@ -19,7 +19,7 @@
         "fallbackVersion": "8.56.26.38"
     },
     "dialogSettings": {
-        "logo": "https://cdn.openfin.co/demos/symphony-of/symphony-dialog.png",
+        "logo": "https://cdn.openfin.co/demos/symphony-of-staging/symphony-dialog.png",
         "bgColor": 4294967295,
         "textColor": 4278232241,
         "progressBarBgColor": 4289901234,
