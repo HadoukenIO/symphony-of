@@ -51,7 +51,7 @@ class Notify {
         //     this.notification.noteWin.onClose = cb
         // } else if(event === 'error') {
         //     this.notification.noteWin.onError = cb
-        }
+        // }
     }
 
     removeEventListener(event, cb){
