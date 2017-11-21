@@ -13,7 +13,7 @@
   },
   "homepage": "https://github.com/openfin/symphony-of",
   "scripts": {
-    "start": "http-server -c-1",
+    "start": "http-server public -c-1",
     "build": "node build.js"
   },
   "devDependencies": {
