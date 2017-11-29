@@ -24,7 +24,7 @@ app.addEventListener("window-created", obj => {
             childWin.setBounds(left, top, width, height);
             localStorage.setItem('wins', JSON.stringify(window.popouts));                        
         } else if(winId) {
-            window.popouts[winId] = { name: obj.name };
+            window.popouts[winId] = { uuid:obj.uuid, name: obj.name };
             localStorage.setItem('wins', JSON.stringify(window.popouts));                 
         }
         childWin.addEventListener('close-requested',() => {
@@ -148,7 +148,7 @@ window.addEventListener('load', () => {
                 // If both inbox and target are in main window do nothing
                 if (window.popouts[userId] && !window.popouts[userId].hide) {
                     // Target conversation is in a popout, restore if minimized and set as foreground
-                    let popWin = fin.desktop.Window.wrap(win.uuid, window.popouts[userId].name);
+                    let popWin = fin.desktop.Window.wrap(window.popouts[userId].uuid, window.popouts[userId].name);
                     popWin.getState(state => {
                         if (state === 'minimized') {
                             popWin.restore(() => {popWin.setAsForeground();},e=>console.log(e));                            
