@@ -22,6 +22,7 @@ app.addEventListener("window-created", obj => {
             const { left, top, width, height } = window.popouts[winId];
             
             childWin.setBounds(left, top, width, height);
+            localStorage.setItem('wins', JSON.stringify(window.popouts));                        
         } else if(winId) {
             window.popouts[winId] = { name: obj.name };
             localStorage.setItem('wins', JSON.stringify(window.popouts));                 
