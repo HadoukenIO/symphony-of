@@ -28,6 +28,12 @@
           top:6px;
           left:62px;
           font-weight: bold;
+          display: -webkit-box;
+          width: 210px;
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
         #message {
           position: absolute;
@@ -71,6 +77,10 @@
     <script type="text/javascript">
       // messages received from the application creating the application
       function onNotificationMessage(message) {
+        if(message.title.includes('sent you a')) {
+          let removeIdx = message.title.indexOf('sent you a');
+          message.title = message.title.slice(0,removeIdx);
+        }
         document.querySelectorAll('#title')[0].innerText = message.title || '';
         document.querySelectorAll('#message')[0].innerText = message.body || ' ';
         if(!message.icon) {
