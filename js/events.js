@@ -22,8 +22,9 @@ app.addEventListener("window-created", obj => {
             const { left, top, width, height } = window.popouts[winId];
             
             childWin.setBounds(left, top, width, height);
+            localStorage.setItem('wins', JSON.stringify(window.popouts));                        
         } else if(winId) {
-            window.popouts[winId] = { name: obj.name };
+            window.popouts[winId] = { uuid:obj.uuid, name: obj.name };
             localStorage.setItem('wins', JSON.stringify(window.popouts));                 
         }
         childWin.addEventListener('close-requested',() => {
@@ -144,13 +145,27 @@ window.addEventListener('load', () => {
                     userId = clicked.attributes && clicked.attributes['1'] && clicked.attributes['1'].value;
                     } catch(e) {console.log(e)}
                 };
-                if (window.popouts[userId]) {
+                // If both inbox and target are in main window do nothing
+                if (window.popouts[userId] && !window.popouts[userId].hide) {
+                    // Target conversation is in a popout, restore if minimized and set as foreground
                     let popWin = fin.desktop.Window.wrap(window.popouts[userId].uuid, window.popouts[userId].name);
-                    console.log(popWin);
-                    popWin.restore(() => {popWin.setAsForeground();},e=>console.log(e));
-                } else {
-                    win.restore(() => {win.setAsForeground();});
-                }
+                    popWin.getState(state => {
+                        if (state === 'minimized') {
+                            popWin.restore(() => {popWin.setAsForeground();},e=>console.log(e));                            
+                        } else {
+                            popWin.setAsForeground();    
+                        }
+                    })
+                } else if (fin.desktop.Window.getCurrent().name !== win.name) {
+                    // Inbox is in popout and target conversation is not - restore main window if minimized and bring to front
+                    win.getState(state => {
+                        if (state === 'minimized') {
+                            win.restore(() => {win.setAsForeground();},e=>console.log(e));                            
+                        } else {
+                            win.setAsForeground();    
+                        }
+                    })
+                } 
             })
         })
     
