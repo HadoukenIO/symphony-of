@@ -149,22 +149,11 @@ window.addEventListener('load', () => {
                 if (window.popouts[userId] && !window.popouts[userId].hide) {
                     // Target conversation is in a popout, restore if minimized and set as foreground
                     let popWin = fin.desktop.Window.wrap(window.popouts[userId].uuid, window.popouts[userId].name);
-                    popWin.getState(state => {
-                        if (state === 'minimized') {
-                            popWin.restore(() => {popWin.setAsForeground();},e=>console.log(e));                            
-                        } else {
-                            popWin.setAsForeground();    
-                        }
-                    })
+                    winFocus(popWin);
                 } else if (fin.desktop.Window.getCurrent().name !== win.name) {
                     // Inbox is in popout and target conversation is not - restore main window if minimized and bring to front
-                    win.getState(state => {
-                        if (state === 'minimized') {
-                            win.restore(() => {win.setAsForeground();},e=>console.log(e));                            
-                        } else {
-                            win.setAsForeground();    
-                        }
-                    })
+                    winFocus(win);
+                    
                 } 
             })
         })

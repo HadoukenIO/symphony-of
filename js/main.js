@@ -16,31 +16,41 @@ window.SYM_API = {
             win.updateOptions({ icon: `${window.targetUrl}icon/symphony.png` });
         };
     },
-    activate:function() {
-        let win = fin.desktop.Window.getCurrent();
-        win.updateOptions({ icon: `${window.targetUrl}icon/symphony.png` });
-        fin.desktop.Window.getCurrent().bringToFront();
+    activate:function(windowName) {
+        // let mainApp = fin.desktop.Application.getCurrent();
+        // if(windowName === 'main') {
+        //     let mainWin = mainApp.getWindow();
+        //     winFocus(mainWin);
+        // }
+        // for (let pop of Object.keys(window.popouts)) {
+        //     if(window.popouts[pop].symName === windowName) {
+        //         let popWin = fin.desktop.Window.wrap(mainApp.uuid, window.popouts[pop].name);
+        //         winFocus(popWin);
+        //     }
+        // }
     },
     //undoced
     registerLogger:function() {
     },
-    registerBoundsChange:function(callback) {
-        let cb = callback;
+    registerBoundsChange:function(cb) {
         fin.desktop.Application.getCurrent().addEventListener("window-created", obj => {
             if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter') {    
                 fin.desktop.Window.wrap(obj.uuid, obj.name).addEventListener("bounds-changed", win => {
                     for (let pop of Object.keys(window.popouts)) {
                         if(window.popouts[pop].name === obj.name) {
-                            window.popouts[pop] = win;
+                            window.popouts[pop] = {...window.popouts[pop], ...win};
+                            if(cb) {
+                                // Does this callback do anything? In the symphony API spec... (need to be )
+                                cb({x:win.left,
+                                    y:win.top,
+                                    width:win.width,
+                                    height:win.height,
+                                    windowName:window.popouts[pop].symName
+                                });
+                            }
                         }
                     }
-                    localStorage.setItem('wins', JSON.stringify(window.popouts));                                 
-                    cb({x:win.left,
-                        y:win.top,
-                        width:win.width,
-                        height:win.height,
-                        windowName:win.name
-                    });
+                    localStorage.setItem('wins', JSON.stringify(window.popouts));       
                 })
             }
         });
@@ -59,4 +69,3 @@ window.SYM_API = {
 }
 
 window.ssf = window.SYM_API;
-window.ssf.activate();
