@@ -10,24 +10,19 @@ OpenFin has created an open-source project that allows anyone to run the Symphon
 ## Development Setup
 - Install the [OpenFin CLI Tool](https://github.com/openfin/openfin-cli) globally `npm install -g openfin-cli`
 - `npm install`
-- `npm run build`
+- `npm run build local`
 - `npm start`
-- `openfin -l`
-- To target local files for development, replace the applicable mentions of `https://cdn.openfin.co/demos/symphony-of/` with `http://localhost:8080/`: 
-~~~~
-    1. 4 mentions in the `app.json`
-    2. The `targetUrl.js` file
-~~~~
+- `openfin -l -c public/local.json`
 
 ## Production Setup
-- Host the repo on your web server
-- Change the url `app.json` to point to your company POD url (i.e. `https://MyCorporation.symphony.com`)
+- `npm run build`
+- Change the startup app url in `public/app.json` to point to your company POD url (i.e. `https://MyCorporation.symphony.com`)
 - Replace the mentions of `https://cdn.openfin.co/demos/symphony-of/` with the address to your web server: 
 ~~~~
-    1. 4 mentions in the `app.json`
-    2. The `targetUrl.js` file
+    1. 5 mentions in the `public/app.json`
+    2. The first line of the `public/bundle.js` file
 ~~~~
-- `npm run build`
-- generate an [OpenFin Installer](https://install.openfin.co/) or use another [deployment option](https://openfin.co/options/)
+- Host the public folder on your web server
+- generate an [OpenFin Installer](https://install.openfin.co/) pointing at the `public/app.json` file or use another [deployment option](https://openfin.co/options/)
 - (optional) Notifications can be customized in the notification.html file
 

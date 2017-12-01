@@ -20,24 +20,33 @@
         #image {
           height:50px;
           position:absolute;
-          top:5px;
-          left:5px;
+          top:6px;
+          left:6px;
         }
         #title {
           position:absolute;
-          top:10px;
-          left:60px;
+          top:6px;
+          left:62px;
+          font-weight: bold;
         }
         #message {
           position: absolute;
-          top: 20px;
-          left: 60px;
+          display: -webkit-box;
+          top: 12px;
+          left: 62px;
           word-wrap: break-word;
+          width: 225px;
+          font-size: 11pt;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          height: 50px;
         }
         #close {
           position: absolute;
-          right:0px;
-          top:3px;
+          right:4px;
+          top:4px;
           fill:#fff;
         }
         </style>
@@ -62,10 +71,14 @@
     <script type="text/javascript">
       // messages received from the application creating the application
       function onNotificationMessage(message) {
-        document.querySelectorAll('#title')[0].innerText = message.title;
-        document.querySelectorAll('#message')[0].innerText = message.body;
-        document.querySelectorAll('#image')[0].src = message.icon;
-        document.body.style.backgroundColor = "#" + message.color;
+        document.querySelectorAll('#title')[0].innerText = message.title || '';
+        document.querySelectorAll('#message')[0].innerText = message.body || ' ';
+        if(!message.icon) {
+          document.querySelectorAll('#image')[0].style.display = 'none';
+        } else {
+          document.querySelectorAll('#image')[0].src = message.icon || '';
+        }
+        document.body.style.backgroundColor = "#" + message.color || '000';
         if (message.flash) {
           let origColor = document.body.style.backgroundColor;
           setInterval(function() {

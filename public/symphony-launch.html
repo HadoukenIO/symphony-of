@@ -4,20 +4,9 @@
     <title>Symphony OpenFin Launcher</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="https://cdn.openfin.co/demos/symphony-of/styles.css" />
+    <link rel="stylesheet" type="text/css" href="styles.css" />
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-    <script type='text/javascript'>
-        const launchSymphonyOpenFin = () => {
-            let podUrl = document.getElementById('podUrl');
-            let landingApp = fin.desktop.Application.getCurrent();
-            fin.desktop.Application.createFromManifest(`https://symphony.openfin.co/app?startup_app.url=${podUrl.value}`, app => {
-                app.run(()=>landingApp.close(), e => alert('Failed to create app from manifest: ' + e));
-            }, error => {
-                alert('Failed to create app from manifest: ' + error);
-            });
-            return false
-        }
-    </script>
+    <script src="symphony-launch.js"></script>
 </head>
 <body>
     <div id="loginContainer">

@@ -9,12 +9,12 @@
             "whitelist": [
                 "https://*.symphony.com/*",
                 "https://symphony.com/*",
-                "https://cdn.openfin.co/demos/symphony-of/*"
+                "https://cdn.openfin.co/demos/symphony-of/*",
+                "https://cdn.openfin.co/demos/symphony-of-staging/*"
             ]
         },
         "uuid": "OpenFin-Symphony-udbrf2z9sehilik9",
         "autoShow": true,
-        "defaultCentered": true,
         "frame": true,
         "minHeight": 625,
         "defaultHeight": 625,
@@ -24,7 +24,8 @@
     },
     "runtime": {
         "arguments": "--noerrdialogs --v=1",
-        "version": "8.56.26.38"
+        "version": "8.56.26.38",
+        "fallbackVersion": "8.56.26.38"
     },
     "shortcut": {
         "company": "OpenFin",
@@ -33,6 +34,14 @@
         "icon": "https://symphony.com/favicon.ico"
     },
     "splashScreenImage": "https://cdn.openfin.co/demos/symphony-of/symphony-splash.png",
+    "dialogSettings": {
+        "logo": "https://cdn.openfin.co/demos/symphony-of/symphony-dialog.png",
+        "bgColor": 4294967295,
+        "textColor": 4278232241,
+        "progressBarBgColor": 4289901234,
+        "progressBarFillColor": 4278232241,
+        "progressBarBorderColor": 4285361517
+    },
     "appAssets": [
         {
             "src": "https://cdn.openfin.co/demos/symphony-of/OF-ScreenSnippet.zip",
