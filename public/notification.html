@@ -72,7 +72,7 @@
       // messages received from the application creating the application
       function onNotificationMessage(message) {
         document.querySelectorAll('#title')[0].innerText = message.title || '';
-        document.querySelectorAll('#message')[0].innerText = message.body || ' ';
+        document.querySelectorAll('#message')[0].innerHTML = message.body || ' ';
         if(!message.icon) {
           document.querySelectorAll('#image')[0].style.display = 'none';
         } else {
