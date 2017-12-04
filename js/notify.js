@@ -6,14 +6,30 @@ class Notify {
 
     constructor(title,options){
         let msg = options || {};
+        console.log('Notification Options:', options);        
         msg.title =  title;
         let timeout = 5000;
-        let app = fin.desktop.Application.getCurrent();        
-        let onClick = () => app.getWindow().restore(() => {app.getWindow().setAsForeground();});
+        let app = fin.desktop.Application.getCurrent();       
+        // If in a popout, bring to front; otherwise, bring main window to front 
+        let onClick = () => {
+            let targetWin = window.popouts[msg.data.streamId];
+            let ofTargetWin = fin.desktop.Window.wrap(targetWin.uuid, targetWin.name);
+            if(targetWin && !targetWin.hide) {
+                window.winFocus(ofTargetWin)
+            } else {
+                window.winFocus(app.getWindow());                
+            }
+        };
         if (msg.sticky) {
             timeout = 60000*60*24; // 24 hours
             onClick = () => { 
-                app.getWindow().restore(() => {app.getWindow().setAsForeground();});
+                let targetWin = window.popouts[msg.data.streamId];
+                let ofTargetWin = fin.desktop.Window.wrap(targetWin.uuid, targetWin.name);
+                if(targetWin && !targetWin.hide) {
+                    window.winFocus(ofTargetWin)
+                } else {
+                    window.winFocus(app.getWindow());                
+                }
                 this.notification.close();
             }
         }
@@ -44,9 +60,14 @@ class Notify {
     addEventListener(event, cb) {
         // Utilize the OF notification object to accomplish
         // this.eventListeners.push(event)
-
         // if(event === 'click') {
-        //     this.notification.noteWin.onClick = cb
+        //     console.log('click event', cb)
+        //     this.notification.noteWin.onClick = () => {
+                
+        //     } 
+        // }
+        // if(event === 'click') {
+        //     this.notification.noteWin.onClick = cb.bind(this,this._data);
         // } else if(event === 'close') {
         //     this.notification.noteWin.onClose = cb
         // } else if(event === 'error') {

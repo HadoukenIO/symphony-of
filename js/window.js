@@ -5,15 +5,17 @@ window.curWin;
 window.streamId;
 
 window.open = (...args) => {
-  console.log('args', args)
+  window.popouts = JSON.parse(localStorage.getItem('wins')) || {};  
   let w = originalOpen.apply(this, args);
-  console.log('win', w)
-   //Try catch for cross domain safeguard
-  if(!w.name.includes('Notifications') && w.name !== 'queueCounter' && w.name !== 'main') {
-    // let stream = args[0].split('&')[1];
-    // let startIdx = stream.indexOf('=') + 1;
-    // let streamId = stream.slice(startIdx);
-    // window.popouts[streamId] = { name: w.name };
+   // Try catch for cross domain safeguard
+  if(!w.name.includes('Notifications') && w.name !== 'queueCounter' && args[1] !== 'main') {
+    let stream = args[0].split('&')[1];
+    let startIdx = stream.indexOf('=') + 1;
+    let streamId = (startIdx > 5) ? stream.slice(startIdx) : 'inbox';
+    let uuid = fin.desktop.Application.getCurrent().uuid;
+    let namesObj = { name: w.name, symName: args[1], hide: false, uuid: uuid }
+    window.popouts[streamId] = window.popouts[streamId] ? Object.assign(window.popouts[streamId], namesObj) : namesObj;
+    localStorage.setItem('wins', JSON.stringify(window.popouts));       
 
     try {
         w.name = args[1];
@@ -25,7 +27,7 @@ window.open = (...args) => {
   return w;
 }
 
-function winFocus(ofWin) {
+window.winFocus = (ofWin) => {
   ofWin.getState(state => {
     if (state === 'minimized') {
         ofWin.restore(() => {ofWin.setAsForeground();},e=>console.log(e));                            

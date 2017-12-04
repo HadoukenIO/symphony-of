@@ -13,43 +13,42 @@ app.addEventListener("window-navigation-rejected", obj => {
 
 // Add logic to keep track of window positioning
 app.addEventListener("window-created", obj => {
+    window.popouts = JSON.parse(localStorage.getItem('wins')) || {};    
     let childWin = fin.desktop.Window.wrap(obj.uuid, obj.name)
     if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter') {
-        let winId = window.curWin;
-        if(window.popouts[winId] && window.popouts[winId].left) {
-            window.popouts[winId].name = obj.name;
-            window.popouts[winId].hide = false;
-            const { left, top, width, height } = window.popouts[winId];
-            
-            childWin.setBounds(left, top, width, height);
-            localStorage.setItem('wins', JSON.stringify(window.popouts));                        
-        } else if(winId) {
-            window.popouts[winId] = { uuid:obj.uuid, name: obj.name };
-            localStorage.setItem('wins', JSON.stringify(window.popouts));                 
+        for (var pop of Object.keys(window.popouts)) {
+            if(window.popouts[pop].name === obj.name) {
+                if(window.popouts[pop].left) {
+                    const { left, top, width, height } = window.popouts[pop]; 
+                    childWin.setBounds(left, top, width, height);         
+                };
+            }
         }
-        childWin.addEventListener('close-requested',() => {
-            for (let pop of Object.keys(window.popouts)) {
-                if(window.popouts[pop] && window.popouts[pop].name === obj.name) {
-                    window.popouts[pop].hide = true;
-                    localStorage.setItem('wins', JSON.stringify(window.popouts));            
+        childWin.addEventListener("bounds-changed", win => {
+            window.popouts = JSON.parse(localStorage.getItem('wins')) || {};
+            for (var pop of Object.keys(window.popouts)) {
+                if(window.popouts[pop].name === win.name) {
+                    window.popouts[pop] = Object.assign(window.popouts[pop], win)
                 }
             }
-            childWin.close(true);
+            localStorage.setItem('wins', JSON.stringify(window.popouts));       
         })
     }
 });
 
 app.addEventListener("window-closed", obj => {
+    window.popouts = JSON.parse(localStorage.getItem('wins')) || {};
     if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter') {        
-        setTimeout(()=> {
-            for (let pop of Object.keys(window.popouts)) {
-                if(window.popouts[pop] && window.popouts[pop].name === obj.name) {
-                    window.popouts[pop].hide = true;
-                    localStorage.setItem('wins', JSON.stringify(window.popouts));            
-                }
+        for (var pop of Object.keys(window.popouts)) {
+            if(window.popouts[pop] && window.popouts[pop].name === obj.name) {
+                let targetPop = pop;
+                setTimeout(()=> {
+                    window.popouts[targetPop].hide = true;
+                    localStorage.setItem('wins', JSON.stringify(window.popouts));     
+                },1000)
             }
-        },1000)
-    }
+        }
+    };
 });
 
 window.addEventListener('load', () => {
@@ -61,7 +60,7 @@ window.addEventListener('load', () => {
         if(elements.length) {            
             cb(elements);
         } else {
-            if(count<12) {
+            if(count<15) {
                 count++;
                 setTimeout(()=>waitForElement(query, count, cb),400)
             }
@@ -72,24 +71,30 @@ window.addEventListener('load', () => {
   
         Array.from(elements).forEach(el => {
             let userId = el.children[0] && el.children[0].attributes['1'] && el.children[0].attributes['1'].value;
-            
+            if (!userId) { 
+                userId = el.children[0] && el.children[0].innerText;
+            };
             el.parentNode.parentNode.parentNode.addEventListener('click', () => {
-                window.curWin = userId;
-                if (window.popouts[userId] && !window.popouts[userId].hide) {
-                    let popWin = fin.desktop.Window.wrap(window.popouts[userId].uuid, window.popouts[userId].name);
-                    popWin.restore(() => {popWin.setAsForeground();});
+                for (var pop of Object.keys(window.popouts)) {
+                    if(window.popouts[pop].userId === userId && !window.popouts[pop].hide) {
+                        let popWin = fin.desktop.Window.wrap(window.popouts[pop].uuid, window.popouts[pop].name);
+                        window.winFocus(popWin);
+                    }
                 }
             })
   
-            if(window.popouts[userId] && !window.popouts[userId].hide) {
-                popsToOpen.push(el)
-            };
+            for (var pop of Object.keys(window.popouts)) {
+                if(window.popouts[pop].userId && window.popouts[pop].userId === userId && !window.popouts[pop].hide) {
+                    popsToOpen.push(el)
+                }
+            }
         });
+
         async function openPopouts() {
             if(window.popouts['inbox'] && !window.popouts['inbox'].hide) {
                 await timeout(1000);
             };
-            for(let pop of popsToOpen) {
+            for(var pop of popsToOpen) {
                 pop.click();
                 await timeout(400);
                 document.getElementsByClassName('enhanced-pop-out')[0].click();
@@ -104,7 +109,7 @@ window.addEventListener('load', () => {
             el.addEventListener('click', () => {
                 if (window.popouts[userId] && !window.popouts[userId].hide) {
                     let popWin = fin.desktop.Window.wrap(window.popouts[userId].uuid, window.popouts[userId].name);
-                    popWin.restore(() => {popWin.setAsForeground();});
+                    window.winFocus(popWin);
                 }
             })
 
@@ -137,23 +142,31 @@ window.addEventListener('load', () => {
                 let attr = target && target.attributes;
                 let child = target && target.children && target.children[0];
 
-                let userId = target.attributes && attr['1'] && attr['1'].value || 
-                             target.children && child && child.attributes && child.attributes['1'] && child.attributes['1'].value;
+                let userId = attr && attr['1'] && attr['1'].value || 
+                             child && child.attributes && child.attributes['1'] && child.attributes['1'].value;
                 if (!userId) {
                     try {
                     let clicked =  e.target.parentNode.parentNode.parentNode.parentNode;
                     userId = clicked.attributes && clicked.attributes['1'] && clicked.attributes['1'].value;
                     } catch(e) {console.log(e)}
                 };
+
+                // find the window by userId
+                let inboxTarget;
+                for (var pop of Object.keys(window.popouts)) {
+                    if(window.popouts[pop].userId === userId) {
+                        inboxTarget = window.popouts[pop]; 
+                    }
+                }
+
                 // If both inbox and target are in main window do nothing
-                if (window.popouts[userId] && !window.popouts[userId].hide) {
+                if (inboxTarget && !inboxTarget.hide) {
                     // Target conversation is in a popout, restore if minimized and set as foreground
-                    let popWin = fin.desktop.Window.wrap(window.popouts[userId].uuid, window.popouts[userId].name);
-                    winFocus(popWin);
+                    let popWin = fin.desktop.Window.wrap(inboxTarget.uuid, inboxTarget.name);
+                    window.winFocus(popWin);
                 } else if (fin.desktop.Window.getCurrent().name !== win.name) {
                     // Inbox is in popout and target conversation is not - restore main window if minimized and bring to front
-                    winFocus(win);
-                    
+                    window.winFocus(win);
                 } 
             })
         })
@@ -162,6 +175,35 @@ window.addEventListener('load', () => {
     // remove 'x' that does nothing on click
     waitForElement('.close-module',0,el=>el[0].style.display = 'none');
 
+    waitForElement('.floater',0,element=>{
+        waitForElement('.simple_grid_main_container',0,el=> {
+            window.popouts = JSON.parse(localStorage.getItem('wins')) || {};        
+            let streamId = el[0] && el[0].attributes['2'].value;
+            // Set userId for startup
+            if(streamId.includes('chatroom')) {
+                streamId = streamId.slice(8);
+                waitForElement('#chatroom-header-name',0,ele=> {
+                    let userId = ele[0].children[0].children[0].children[0].children[0].innerText;
+                    window.popouts[streamId].userId = userId;
+                    localStorage.setItem('wins', JSON.stringify(window.popouts));                              
+                })
+            } else {
+                streamId = streamId.slice(2);
+                waitForElement('.aliasable.colorable.has-profile.truncate-text',0,elem => {
+                    let userId =elem[0] && elem[0].attributes['1'].value;
+                    window.popouts[streamId].userId = userId;            
+                    localStorage.setItem('wins', JSON.stringify(window.popouts));
+                })
+            }
+    
+            // bounds changed to save window state
+            fin.desktop.Window.getCurrent().addEventListener("bounds-changed", win => {
+                window.popouts[streamId] = Object.assign(window.popouts[streamId], win);
+                localStorage.setItem('wins', JSON.stringify(window.popouts));                          
+            })
+            localStorage.setItem('wins', JSON.stringify(window.popouts));          
+        })
+    });
     //Re-open popouts & inbox when app is restarted 
     waitForElement('button.toolbar-btn-inbox',0,el=> inboxCheck(el));    
     waitForElement('.navigation-item-name',0,el=> popoutsCheck(el));
