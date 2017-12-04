@@ -4,7 +4,7 @@
     "startup_app": {
         "name": "OpenFin Symphony Client",
         "description": "Experimental client for Symphony - running OpenFin",
-        "url": "https://my.symphony.com",
+        "url": "https://openfin.symphony.com",
         "contentNavigation": {
             "whitelist": [
                 "https://*.symphony.com/*",
