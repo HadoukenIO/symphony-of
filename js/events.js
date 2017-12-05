@@ -90,26 +90,6 @@ app.addEventListener("window-closed", obj => {
     };
 });
 
-//navigate to converation from main window on notification click
-let currentWindow = fin.desktop.Window.getCurrent();
-window.once = false;
-if(currentWindow.uuid===currentWindow.name && !once) {
-    fin.desktop.InterApplicationBus.subscribe("*", "note-clicked", streamId => {
-        let elements = document.querySelectorAll('.navigation-item-name');
-        Array.from(elements).forEach(el => {
-            let userId = el.children[0] && el.children[0].attributes['1'] && el.children[0].attributes['1'].value;
-            if (!userId) { 
-                userId = el.children[0] && el.children[0].innerText;
-            };
-            if (userId === window.popouts[streamId].userId) {
-                el.parentNode.parentNode.parentNode.click();
-                window.winFocus(currentWindow);
-            }
-        });
-    });
-    window.once = true;
-}
-
 window.addEventListener('load', () => {
     function timeout(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -221,12 +201,11 @@ window.addEventListener('load', () => {
                     window.winFocus(win);
                 } 
             })
-        })
-    
+        });
     };
 
     let curWindow = fin.desktop.Window.getCurrent();
-    if (currentWindow.uuid!==currentWindow.name && window.name === window.parent.name) {
+    if (curWindow.uuid!==curWindow.name && window.name === window.parent.name) {
         // remove 'x' that does nothing on click
         waitForElement('.close-module',0,el=>el[0].style.display = 'none');
 
