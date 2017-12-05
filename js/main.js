@@ -17,7 +17,7 @@ window.SYM_API = {
         };
     },
     activate:function(windowName) {
-        window.popouts = JSON.parse(localStorage.getItem('wins')) || {};        
+        window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};        
         let mainApp = fin.desktop.Application.getCurrent();
         if(windowName === 'main') {
             let mainWin = mainApp.getWindow();
@@ -51,7 +51,7 @@ window.SYM_API = {
         //                     }
         //                 }
         //             }
-        //             localStorage.setItem('wins', JSON.stringify(window.popouts));       
+        //             window.localStorage.setItem('wins', JSON.stringify(window.popouts));       
         //         })
         //     }
         // });
