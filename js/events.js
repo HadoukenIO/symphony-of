@@ -1,6 +1,7 @@
 let app = fin.desktop.Application.getCurrent();
 let win = app.getWindow();
-
+window.rateLimiter = false;
+window.popoutChanges = [];
 //Overwrite closing of application to minimize instead
 win.addEventListener('close-requested',() => win.minimize());
 
@@ -11,50 +12,11 @@ app.addEventListener("window-navigation-rejected", obj => {
     }
 });
 
-// Add logic to keep track of window positioning
-app.addEventListener("window-created", obj => {
-    window.popouts = JSON.parse(localStorage.getItem('wins')) || {};    
-    let childWin = fin.desktop.Window.wrap(obj.uuid, obj.name)
-    if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter') {
-        for (var pop of Object.keys(window.popouts)) {
-            if(window.popouts[pop].name === obj.name) {
-                if(window.popouts[pop].left) {
-                    const { left, top, width, height } = window.popouts[pop]; 
-                    childWin.setBounds(left, top, width, height);         
-                };
-            }
-        }
-        childWin.addEventListener("bounds-changed", win => {
-            window.popouts = JSON.parse(localStorage.getItem('wins')) || {};
-            for (var pop of Object.keys(window.popouts)) {
-                if(window.popouts[pop].name === win.name) {
-                    window.popouts[pop] = Object.assign(window.popouts[pop], win)
-                }
-            }
-            localStorage.setItem('wins', JSON.stringify(window.popouts));       
-        })
-    }
-});
-
-app.addEventListener("window-closed", obj => {
-    window.popouts = JSON.parse(localStorage.getItem('wins')) || {};
-    if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter') {        
-        for (var pop of Object.keys(window.popouts)) {
-            if(window.popouts[pop] && window.popouts[pop].name === obj.name) {
-                let targetPop = pop;
-                setTimeout(()=> {
-                    window.popouts[targetPop].hide = true;
-                    localStorage.setItem('wins', JSON.stringify(window.popouts));     
-                },1000)
-            }
-        }
-    };
-});
-
 //navigate to converation from main window on notification click
 let currentWindow = fin.desktop.Window.getCurrent();
 window.once = false;
 if(currentWindow.uuid===currentWindow.name && !once) {
+    window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};    
     fin.desktop.InterApplicationBus.subscribe("*", "note-clicked", streamId => {
         let elements = document.querySelectorAll('.navigation-item-name');
         Array.from(elements).forEach(el => {
@@ -71,6 +33,63 @@ if(currentWindow.uuid===currentWindow.name && !once) {
     window.once = true;
 }
 
+// Add logic to keep track of window positioning
+app.addEventListener("window-created", obj => {
+    window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};    
+    let childWin = fin.desktop.Window.wrap(obj.uuid, obj.name)
+    if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter') {
+        for (var pop of Object.keys(window.popouts)) {
+            if(window.popouts[pop].name === obj.name) {
+                if(window.popouts[pop].left) {
+                    const { left, top, width, height } = window.popouts[pop]; 
+                    childWin.setBounds(left, top, width, height);         
+                };
+            }
+        }
+        childWin.addEventListener("bounds-changed", win => {
+            if(!window.rateLimiter) {
+                window.rateLimiter = true;
+                setTimeout(()=> {
+                    window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+                    for (var pop of Object.keys(window.popouts)) {
+                        if(window.popouts[pop].name === win.name) {
+                            window.popouts[pop] = Object.assign(window.popouts[pop], win)
+                        }
+                    }
+                    window.popoutChanges.forEach(fn=>fn());
+                    window.popoutChanges = [];
+                    window.localStorage.setItem('wins', JSON.stringify(window.popouts));                    
+                    window.rateLimiter = false;
+                },1000);
+            } else {
+                window.popoutChanges.push(()=>{
+                    for (var pop of Object.keys(window.popouts)) {
+                        if(window.popouts[pop].name === win.name) {
+                            window.popouts[pop] = Object.assign(window.popouts[pop], win)
+                        }
+                    }
+                })
+            }
+        })
+    }
+});
+
+app.addEventListener("window-closed", obj => {
+    window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+    if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter') {        
+        for (var pop of Object.keys(window.popouts)) {
+            if(window.popouts[pop] && window.popouts[pop].name === obj.name) {
+                let targetPop = pop;
+                setTimeout(()=> {
+                    window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};                    
+                    window.popouts[targetPop].hide = true;
+                    window.localStorage.setItem('wins', JSON.stringify(window.popouts));     
+                },1000)
+            }
+        }
+    };
+});
+
 window.addEventListener('load', () => {
     function timeout(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -82,7 +101,7 @@ window.addEventListener('load', () => {
         } else {
             if(count<15) {
                 count++;
-                setTimeout(()=>waitForElement(query, count, cb),400)
+                setTimeout(()=>waitForElement(query, count, cb),450)
             }
         }
     };
@@ -112,13 +131,13 @@ window.addEventListener('load', () => {
 
         async function openPopouts() {
             if(window.popouts['inbox'] && !window.popouts['inbox'].hide) {
-                await timeout(1000);
+                await timeout(1100);
             };
             for(var pop of popsToOpen) {
                 pop.click();
-                await timeout(400);
+                await timeout(450);
                 document.getElementsByClassName('enhanced-pop-out')[0].click();
-                await timeout(600);
+                await timeout(650);
             };
         };
         openPopouts();
@@ -150,14 +169,7 @@ window.addEventListener('load', () => {
         Array.from(element).forEach(el => {
             
             el.addEventListener('click', (e) => {
-                if(e.target.className.includes('popout')){
-                    let holdWin = window.curWin;
-                    window.curWin = 'inbox';
-                    setTimeout(() => {
-                        window.curWin = holdWin
-                    }, 300)
-                };
-                window.popouts = JSON.parse(localStorage.getItem('wins')) || {};                
+                window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};                
                 let target = e.target;
                 let attr = target && target.attributes;
                 let child = target && target.children && target.children[0];
@@ -189,45 +201,43 @@ window.addEventListener('load', () => {
                     window.winFocus(win);
                 } 
             })
-        })
-    
+        });
     };
-    // remove 'x' that does nothing on click
-    waitForElement('.close-module',0,el=>el[0].style.display = 'none');
 
-    waitForElement('.floater',0,element=>{
-        waitForElement('.simple_grid_main_container',0,el=> {
-            window.popouts = JSON.parse(localStorage.getItem('wins')) || {};        
-            let streamId = el[0] && el[0].attributes['2'].value;
-            // Set userId for startup
-            if(streamId.includes('chatroom')) {
-                streamId = streamId.slice(8);
-                waitForElement('#chatroom-header-name',0,ele=> {
-                    let userId = ele[0].children[0].children[0].children[0].children[0].innerText;
-                    window.popouts[streamId].userId = userId;
-                    localStorage.setItem('wins', JSON.stringify(window.popouts));                              
-                })
-            } else {
-                streamId = streamId.slice(2);
-                waitForElement('.aliasable.colorable.has-profile.truncate-text',0,elem => {
-                    let userId =elem[0] && elem[0].attributes['1'].value;
-                    window.popouts[streamId].userId = userId;            
-                    localStorage.setItem('wins', JSON.stringify(window.popouts));
-                })
-            }
-    
-            // bounds changed to save window state
-            fin.desktop.Window.getCurrent().addEventListener("bounds-changed", win => {
-                window.popouts[streamId] = Object.assign(window.popouts[streamId], win);
-                localStorage.setItem('wins', JSON.stringify(window.popouts));                          
+    let curWindow = fin.desktop.Window.getCurrent();
+    if (curWindow.uuid!==curWindow.name && window.name === window.parent.name) {
+        // remove 'x' that does nothing on click
+        waitForElement('.close-module',0,el=>el[0].style.display = 'none');
+
+        waitForElement('.floater',0,element=>{
+            waitForElement('.simple_grid_main_container',0,el=> {
+                window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};        
+                let streamId = el[0] && el[0].attributes['2'].value;
+                // Set userId for startup
+                if(streamId.includes('chatroom')) {
+                    streamId = streamId.slice(8);
+                    waitForElement('#chatroom-header-name',0,ele=> {
+                        let userId = ele[0].children[0].children[0].children[0].children[0].innerText;
+                        window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};                                
+                        window.popouts[streamId].userId = userId;
+                        window.localStorage.setItem('wins', JSON.stringify(window.popouts));                              
+                    })
+                } else {
+                    streamId = streamId.slice(2);
+                    waitForElement('.aliasable.colorable.has-profile.truncate-text',0,elem => {
+                        let userId =elem[0] && elem[0].attributes['1'].value;
+                        window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};                        
+                        window.popouts[streamId].userId = userId;            
+                        window.localStorage.setItem('wins', JSON.stringify(window.popouts));
+                    })
+                }        
             })
-            localStorage.setItem('wins', JSON.stringify(window.popouts));          
-        })
-    });
-    //Re-open popouts & inbox when app is restarted 
-    waitForElement('button.toolbar-btn-inbox',0,el=> inboxCheck(el));    
-    waitForElement('.navigation-item-name',0,el=> popoutsCheck(el));
-
+        });
+    } else {
+        //Re-open popouts & inbox when app is restarted 
+        waitForElement('button.toolbar-btn-inbox',0,el=> inboxCheck(el));    
+        waitForElement('.navigation-item-name',0,el=> popoutsCheck(el));
+    }
     // Navigation from Inbox
     waitForElement('#dock',0,el=> inboxNavigation(el));
 });
