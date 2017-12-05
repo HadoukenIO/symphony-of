@@ -10,26 +10,20 @@ class Notify {
         msg.title =  title;
         let timeout = 5000;
         let app = fin.desktop.Application.getCurrent();       
-        // If in a popout, bring to front; otherwise, bring main window to front 
-        let onClick = () => {
+        let clickHandle = () => {
             let targetWin = window.popouts[msg.data.streamId];
             let ofTargetWin = fin.desktop.Window.wrap(targetWin.uuid, targetWin.name);
             if(targetWin && !targetWin.hide) {
                 window.winFocus(ofTargetWin)
             } else {
-                window.winFocus(app.getWindow());                
+                fin.desktop.InterApplicationBus.publish("note-clicked", msg.data.streamId);
             }
-        };
+        }
+        let onClick = clickHandle;
         if (msg.sticky) {
             timeout = 60000*60*24; // 24 hours
             onClick = () => { 
-                let targetWin = window.popouts[msg.data.streamId];
-                let ofTargetWin = fin.desktop.Window.wrap(targetWin.uuid, targetWin.name);
-                if(targetWin && !targetWin.hide) {
-                    window.winFocus(ofTargetWin)
-                } else {
-                    window.winFocus(app.getWindow());                
-                }
+                clickHandle();
                 this.notification.close();
             }
         }
