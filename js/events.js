@@ -30,6 +30,28 @@ if(currentWindow.uuid===currentWindow.name && !once) {
             }
         });
     });
+    if (window.popouts.main) {
+        const { left, top:tiptop, width, height } = window.popouts.main; 
+        currentWindow.setBounds(left, tiptop, width, height);
+    }
+    currentWindow.addEventListener("bounds-changed", win => {
+        if(!window.rateLimiter) {
+            window.rateLimiter = true;
+            setTimeout(()=> {
+                window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+                window.popouts.main = window.popouts.main ? Object.assign(window.popouts.main, win) : win;
+                window.popoutChanges.forEach(fn=>fn());
+                window.popoutChanges = [];
+                window.localStorage.setItem('wins', JSON.stringify(window.popouts));                    
+                window.rateLimiter = false;
+            },1000);
+        } else {
+            window.popoutChanges.push(()=>{
+                window.popouts.main = window.popouts.main ? Object.assign(window.popouts.main, win) : win;                
+            })
+        }
+    })
+
     window.once = true;
 }
 
