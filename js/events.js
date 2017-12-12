@@ -16,6 +16,7 @@ app.addEventListener("window-navigation-rejected", obj => {
 let currentWindow = fin.desktop.Window.getCurrent();
 window.once = false;
 if(currentWindow.uuid===currentWindow.name && !once) {
+    // note click main window
     window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};    
     fin.desktop.InterApplicationBus.subscribe("*", "note-clicked", streamId => {
         let elements = document.querySelectorAll('.navigation-item-name');
@@ -260,6 +261,38 @@ window.addEventListener('load', () => {
         waitForElement('button.toolbar-btn-inbox',0,el=> inboxCheck(el));    
         waitForElement('.navigation-item-name',0,el=> popoutsCheck(el));
     }
+
     // Navigation from Inbox
     waitForElement('#dock',0,el=> inboxNavigation(el));
+
+    // set tray icon
+    var sysTray = new fin.desktop.Window({
+        name: "system-tray",
+        url: `${window.targetUrl}tray.html`,
+        defaultWidth: 190,
+        defaultHeight: 35,
+        frame: false,
+        autoshow: true,
+        resizable: false,
+        state: "normal"
+    }, function () {
+        console.log('yuuuupppp');
+    }, function (error) {
+        console.log("Error creating window:", error);
+    });
+
+    const clickListener = clickInfo => {
+        var sysTray = fin.desktop.Window.wrap(fin.desktop.Application.getCurrent().uuid, 'system-tray');
+        let width = 180;
+        let height = 35;
+        sysTray.isShowing(showing => {
+            if(!showing) {
+                sysTray.setBounds(clickInfo.x-width, clickInfo.y-height-5, width, height, sysTray.show(()=> console.log('success'),(e)=> console.log('e',e)))            
+            } else {
+                sysTray.hide();
+            }
+        });
+    }
+    fin.desktop.Application.getCurrent().setTrayIcon(`${window.targetUrl}icon/symphony.png`, clickListener);
+
 });
