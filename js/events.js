@@ -275,12 +275,7 @@ window.addEventListener('load', () => {
         autoshow: true,
         resizable: false,
         state: "normal"
-    }, function () {
-        console.log('yuuuupppp');
-    }, function (error) {
-        console.log("Error creating window:", error);
     });
-
     const clickListener = clickInfo => {
         var sysTray = fin.desktop.Window.wrap(fin.desktop.Application.getCurrent().uuid, 'system-tray');
         let width = 180;
