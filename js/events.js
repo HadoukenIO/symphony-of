@@ -18,19 +18,19 @@ window.once = false;
 if(currentWindow.uuid===currentWindow.name && !once) {
     // note click main window
     window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};    
-    fin.desktop.InterApplicationBus.subscribe("*", "note-clicked", streamId => {
-        let elements = document.querySelectorAll('.navigation-item-name');
-        Array.from(elements).forEach(el => {
-            let userId = el.children[0] && el.children[0].attributes['1'] && el.children[0].attributes['1'].value;
-            if (!userId) { 
-                userId = el.children[0] && el.children[0].innerText;
-            };
-            if (userId === window.popouts[streamId].userId) {
-                el.parentNode.parentNode.parentNode.click();
-                window.winFocus(currentWindow);
-            }
-        });
-    });
+    // fin.desktop.InterApplicationBus.subscribe("*", "note-clicked", streamId => {
+    //     let elements = document.querySelectorAll('.navigation-item-name');
+    //     Array.from(elements).forEach(el => {
+    //         let userId = el.children[0] && el.children[0].attributes['1'] && el.children[0].attributes['1'].value;
+    //         if (!userId) { 
+    //             userId = el.children[0] && el.children[0].innerText;
+    //         };
+    //         if (userId === window.popouts[streamId].userId) {
+    //             el.parentNode.parentNode.parentNode.click();
+    //             window.winFocus(currentWindow);
+    //         }
+    //     });
+    // });
     if (window.popouts.main) {
         const { left, top:tiptop, width, height } = window.popouts.main; 
         currentWindow.setBounds(left, tiptop, width, height);
@@ -243,6 +243,7 @@ window.addEventListener('load', () => {
                         let userId = ele[0].children[0].children[0].children[0].children[0].innerText;
                         window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};                                
                         window.popouts[streamId].userId = userId;
+                        window.popouts[streamId].type = 'chatroom';
                         window.localStorage.setItem('wins', JSON.stringify(window.popouts));                              
                     })
                 } else {
@@ -251,6 +252,7 @@ window.addEventListener('load', () => {
                         let userId =elem[0] && elem[0].attributes['1'].value;
                         window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};                        
                         window.popouts[streamId].userId = userId;            
+                        window.popouts[streamId].type = 'im'; 
                         window.localStorage.setItem('wins', JSON.stringify(window.popouts));
                     })
                 }        
@@ -276,6 +278,7 @@ window.addEventListener('load', () => {
         resizable: false,
         state: "normal"
     });
+
     const clickListener = clickInfo => {
         var sysTray = fin.desktop.Window.wrap(fin.desktop.Application.getCurrent().uuid, 'system-tray');
         let width = 180;
@@ -289,5 +292,4 @@ window.addEventListener('load', () => {
         });
     }
     fin.desktop.Application.getCurrent().setTrayIcon(`${window.targetUrl}icon/symphony.png`, clickListener);
-
 });

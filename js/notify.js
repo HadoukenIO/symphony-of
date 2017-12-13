@@ -7,6 +7,7 @@ class Notify {
     constructor(title,options){
         let msg = options || {};
         console.log('Notification Options:', options);        
+        console.log('Notification ppa:', window.processProtocolAction);        
         msg.title =  title;
         let timeout = 5000;
         let app = fin.desktop.Application.getCurrent();       
@@ -19,11 +20,11 @@ class Notify {
                 fin.desktop.InterApplicationBus.publish("note-clicked", msg.data.streamId);
             }
         }
-        let onClick = clickHandle;
+        let onClick = () => { clickHandle(options.data)};
         if (msg.sticky) {
             timeout = 60000*60*24; // 24 hours
             onClick = () => { 
-                clickHandle();
+                () => { clickHandle(options.data)}
                 this.notification.close();
             }
         }
@@ -36,6 +37,7 @@ class Notify {
             opacity: 0.92
         });
         this._data = msg.data || null;
+        this.callbackJSON = options.data;
     }
 
     static get permission(){
@@ -43,7 +45,7 @@ class Notify {
     }
 
     get data(){
-        return this.data;
+        return this._data;
     }
 
     close(cb) {
@@ -54,12 +56,9 @@ class Notify {
     addEventListener(event, cb) {
         // Utilize the OF notification object to accomplish
         // this.eventListeners.push(event)
-        // if(event === 'click') {
-        //     console.log('click event', cb)
-        //     this.notification.noteWin.onClick = () => {
-                
-        //     } 
-        // }
+        if(event === 'click') {
+            this.notification.noteWin.onClick = () => cb({target:{callbackJSON:this._data}});
+        }
         // if(event === 'click') {
         //     this.notification.noteWin.onClick = cb.bind(this,this._data);
         // } else if(event === 'close') {
@@ -89,4 +88,3 @@ class Notify {
         // How is this different from close?
     }
 }
-

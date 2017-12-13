@@ -66,6 +66,16 @@ window.SYM_API = {
             }
             resolve(version)
         })
+    },
+    registerProtocolHandler: function(protocolHandler) {
+        if (typeof protocolHandler === 'function') {
+
+            window.processProtocolAction = protocolHandler;
+            fin.desktop.InterApplicationBus.subscribe("*", "proto", function(message, uuid, name) {
+                console.log("The application " + uuid + '/' + name + " sent this message: " + message);
+                protocolHandler(message);
+            });
+        }
     }
 }
 
