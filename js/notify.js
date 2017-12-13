@@ -43,7 +43,7 @@ class Notify {
     }
 
     get data(){
-        return this.data;
+        return this._data;
     }
 
     close(cb) {
