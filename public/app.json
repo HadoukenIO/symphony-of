@@ -21,6 +21,7 @@
         "defaultHeight": 625,
         "defaultWidth": 800,
         "minWidth": 625,
+        "saveWindowState":false,
         "preload": "https://cdn.openfin.co/demos/symphony-of/bundle.js"
     },
     "runtime": {
