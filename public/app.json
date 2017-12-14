@@ -1,9 +1,10 @@
 {
+    "licenseKey": "64605fac-add3-48a0-8710-64b38e96a2dd",
     "devtools_port": 9090,
     "offlineAccess": true,
     "startup_app": {
         "name": "OpenFin Symphony Client",
-        "description": "Experimental client for Symphony - running OpenFin",
+        "description": "Beta client for Symphony - running OpenFin",
         "url": "https://my.symphony.com",
         "contentNavigation": {
             "whitelist": [
@@ -20,12 +21,13 @@
         "defaultHeight": 625,
         "defaultWidth": 800,
         "minWidth": 625,
+        "frameConnect": "all",
         "saveWindowState":false,
         "preload": "https://cdn.openfin.co/demos/symphony-of/bundle.js"
     },
     "runtime": {
         "arguments": "--noerrdialogs --v=1",
-        "version": "8.56.26.38",
+        "version": "8.56.26.50",
         "fallbackVersion": "8.56.26.38"
     },
     "shortcut": {

@@ -3,7 +3,8 @@ var originalOpen = window.open;
 window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
 if (!window.processProtocolAction) {
     window.processProtocolAction = () => {};
-} 
+}
+
 
 window.open = (...args) => {
     console.log('win open', ...args)
@@ -49,4 +50,56 @@ window.winFocus = (ofWin) => {
             ofWin.setAsForeground();    
         }
     })
+}
+
+window.httpGet = url => {
+    return new Promise(resolve => {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function() { 
+            if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                resolve(JSON.parse(xmlHttp.responseText));
+            }
+        }
+        xmlHttp.open('GET', url, true);
+        xmlHttp.setRequestHeader('Content-type', 'application/json'); 
+        xmlHttp.send(null);
+    })
+}
+
+window.httpPost = (url, body) => {
+    return new Promise(resolve => {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function() { 
+            if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                resolve(JSON.parse(xmlHttp.responseText));
+            }
+        }
+        xmlHttp.open('POST', url, true);
+        xmlHttp.setRequestHeader('Content-type', 'application/json');    
+        xmlHttp.send(JSON.stringify(body));
+    });
+}
+
+window.startChat = userIdArray => {
+    window.httpPost('/pod/v1/im/create', userIdArray)
+    .then(data => {
+        let streamId = data.id.replace(/_/g,'/').replace(/-/g,'+') + '==';
+        window.processProtocolAction(window.createProtocolUri(streamId, 'im'));
+    });
+}
+
+window.getAllStreams = () => {
+    return window.httpPost('/pod/v1/streams/list', {});
+}
+
+window.getAllUsers = () => {
+    return window.httpGet('/pod/v1/connection/list?status=all', {});
+}
+
+window.findUserByEmail = email => {
+    return window.httpGet(`/pod/v1/user/?email=${email}`);
+}
+
+window.findUserByQuery = query => {
+    return window.httpPost(`/pod/v1/user/search`, { query });
 }
