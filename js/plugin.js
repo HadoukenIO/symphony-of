@@ -44,6 +44,10 @@ class symphonyPlugin {
 
     }
 
+    changeSymphonyContext(obj) {
+        fin.desktop.InterApplicationBus.send('*', "symphony", obj);        
+    }
+
 }
 
 
