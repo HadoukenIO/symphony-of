@@ -136,6 +136,7 @@ window.addEventListener('load', () => {
             if (!userId) { 
                 userId = el.children[0] && el.children[0].innerText;
             };
+            let userInfo = window.findUserById(userId);
             el.parentNode.parentNode.parentNode.addEventListener('click', () => {
                 for (var pop of Object.keys(window.popouts)) {
                     if(window.popouts[pop].userId === userId && !window.popouts[pop].hide) {
@@ -143,6 +144,7 @@ window.addEventListener('load', () => {
                         window.winFocus(popWin);
                     }
                 }
+                fin.desktop.InterApplicationBus.publish("symphony-out", { user: userInfo });            
             })
   
             for (var pop of Object.keys(window.popouts)) {

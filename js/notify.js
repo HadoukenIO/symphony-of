@@ -6,9 +6,20 @@ class Notify {
 
     constructor(title,options){
         let msg = options || {};
-        console.log('Notification Options:', options);        
-        console.log('Notification ppa:', window.processProtocolAction);        
-        msg.title =  title;
+        msg.title =  title;        
+        console.log('Notification Options:', options);
+
+        // connections that have requested notifications
+        window.connections = JSON.parse(window.localStorage.getItem('connects')) || {notifications: []};
+        window.connections.notifications.forEach(uuid => {
+            fin.desktop.InterApplicationBus.send(uuid, msg);
+        });
+
+        if(window.connections.surpressNotifications) {
+            console.log('Notification surpressed!');
+            return
+        }
+
         let timeout = 5000;
         let app = fin.desktop.Application.getCurrent();       
         let clickHandle = () => {

@@ -75,7 +75,7 @@ window.SYM_API = {
                 //takes an array of user emails
                 if(message&& message.emails && Array.isArray(message.emails)) {
                     Promise.all(message.emails.map(email=> {
-                        return window.findUser(email);
+                        return window.findUserByEmail(email);
                     }))
                     .then(userArray => {
                         console.log(userArray)
@@ -91,7 +91,7 @@ window.SYM_API = {
                         } else if (result.users.length > 1) {
                             // TRY POD ONLY SEARCH FIRST? DEFINITELY IF RESULTS.LENGTH = 50;
                             let queryIds = result.users.map(user => user.id);
-                            // PROMISE.ALL THESE>>>>>>>>>>>>>>>>> ALSO DO ALL IN POD?
+                            // PROMISE.ALL THESE>>>>>>>>>>>>>>>>>???
                             // create flag so can pop up modal if no one is found!!!!!!!!!!!
                             window.getAllUsers()
                             .then(userArray=> {

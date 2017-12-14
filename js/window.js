@@ -1,6 +1,9 @@
 /* override window.open to fix name issue */
 var originalOpen = window.open;
 window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+window.connections = {notifications:[]};
+window.localStorage.setItem('connects', JSON.stringify(window.connections));
+
 if (!window.processProtocolAction) {
     window.processProtocolAction = () => {};
 }
@@ -97,9 +100,13 @@ window.getAllUsers = () => {
 }
 
 window.findUserByEmail = email => {
-    return window.httpGet(`/pod/v1/user/?email=${email}`);
+    return window.httpGet(`/pod/v2/user/?email=${email}`);
+}
+
+window.findUserById = uid => {
+    return window.httpGet(`/pod/v2/user/?uid=${uid}`);
 }
 
 window.findUserByQuery = query => {
-    return window.httpPost(`/pod/v1/user/search`, { query });
+    return window.httpPost(`/pod/v1/user/search?limit=100`, { query });
 }
