@@ -11,8 +11,12 @@ class Notify {
 
         // connections that have requested notifications
         window.connections = JSON.parse(window.localStorage.getItem('connects')) || {notifications: []};
+        console.log('connections in note', window.connections)
+        
         window.connections.notifications.forEach(uuid => {
-            fin.desktop.InterApplicationBus.send(uuid, msg);
+            console.log('sending ntoe out')
+            console.log('sending ntoe out')
+            fin.desktop.InterApplicationBus.send(uuid, 'symphony-notes', msg);
         });
 
         if(window.connections.surpressNotifications) {
@@ -67,7 +71,7 @@ class Notify {
     addEventListener(event, cb) {
         // Utilize the OF notification object to accomplish
         // this.eventListeners.push(event)
-        if(event === 'click') {
+        if(event === 'click' && this.notification) {
             this.notification.noteWin.onClick = () => cb({target:{callbackJSON:this._data}});
         }
         // if(event === 'click') {

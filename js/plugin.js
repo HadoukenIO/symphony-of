@@ -1,7 +1,7 @@
 
 class symphonyPlugin {
     constructor(identity, symphonyUuid) {
-        this.indentity = identity;
+        this.identity = identity;
         this.symphonyUuid = symphonyUuid;
     }
 
@@ -10,15 +10,16 @@ class symphonyPlugin {
             return this;
         }
         return new Promise(resolve => {
+            let identity = fin.desktop.Window.getCurrent();            
             let listener = (msg, uuid, name)=> {
                 // NEED ANYTHING HERE EXCEPT UUID?
-                let identity = fin.desktop.Window.getCurrent();
+                console.log('connect out sub listener fired');
                 fin.desktop.InterApplicationBus.unsubscribe("*", "symphony-connect-out", listener);
                 resolve(new symphonyPlugin(identity, uuid));
             }
 
             fin.desktop.InterApplicationBus.subscribe("*", "symphony-connect-out", listener,
-                fin.desktop.InterApplicationBus.publish("symphony-connect", {uuid:identity.uuid, name:identity.name}),
+                () => fin.desktop.InterApplicationBus.publish("symphony-connect", {uuid:identity.uuid, name:identity.name}),
                 e=> console.log('connect error:', e)
             );
         })
@@ -27,24 +28,28 @@ class symphonyPlugin {
     onNotification(cb) {
         // rework as promise???????????
         fin.desktop.InterApplicationBus.subscribe(this.symphonyUuid, "symphony-notes", (msg, uuid, name)=>{
+            console.log('sym notes listener')
             cb(msg);
-        }, fin.desktop.InterApplicationBus.send(this.symphonyUuid, "initiate-symphony-notes"));
+        }, () => fin.desktop.InterApplicationBus.send(this.symphonyUuid, "initiate-symphony-notes"));
     }
 
     surpressNotificationWindows() {
-        fin.desktop.InterApplicationBus.send(this.symphonyUuid, "surpress-symphony-notes");
+        fin.desktop.InterApplicationBus.send(this.symphonyUuid, "surpress-symphony-notes", console.log('Notes Surpressed!'));
     }
 
+    getUserContextUpdates() {
+        // turn this on? 
+        // fin.desktop.InterApplicationBus.send(this.symphonyUuid, "symphony-get-user", console.log('Symphony will send user context!'));
+        fin.desktop.InterApplicationBus.subscribe(this.symphonyUuid, "symphony-user-focus", e => console.log('got user', e));
 
+    }
 
 }
 
-fin.Plugins.SymphonyOF = symphonyPlugin;
 
-fin.Plugins.SymphonyOF.connect()
+symphonyPlugin.connect()
 .then(SymOFApi => {
-   SymOFApi.OnNotification(notification => {
-       // response object will have title, body, icon, and onClick properties
-   });
-   SymOFApi.surpressNotificationWindows();
+console.log(SymOFApi)
+   SymOFApi.onNotification(e=>console.log(e));
+//    SymOFApi.surpressNotificationWindows();
 })

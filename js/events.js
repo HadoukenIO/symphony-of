@@ -135,8 +135,9 @@ window.addEventListener('load', () => {
             let userId = el.children[0] && el.children[0].attributes['1'] && el.children[0].attributes['1'].value;
             if (!userId) { 
                 userId = el.children[0] && el.children[0].innerText;
-            };
-            let userInfo = window.findUserById(userId);
+            } else {
+                var userInfo = window.findUserById(userId);
+            }
             el.parentNode.parentNode.parentNode.addEventListener('click', () => {
                 for (var pop of Object.keys(window.popouts)) {
                     if(window.popouts[pop].userId === userId && !window.popouts[pop].hide) {
@@ -144,7 +145,9 @@ window.addEventListener('load', () => {
                         window.winFocus(popWin);
                     }
                 }
-                fin.desktop.InterApplicationBus.publish("symphony-out", { user: userInfo });            
+                if(userInfo) {
+                    fin.desktop.InterApplicationBus.publish("symphony-user-focus", { user: userInfo });
+                }
             })
   
             for (var pop of Object.keys(window.popouts)) {
