@@ -2,38 +2,36 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>System Tray</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">    
+    <script type="text/javascript">
+        const exit = () => fin.desktop.Application.getCurrent().close(true);
+    </script>
+    <style>
+        body {
+          font-family: Roboto;
+          font-weight: 300;
+          background-color: #b6bdd2;
+          color:#000;
+          overflow: hidden;
+          height: 35px;
+        }
+        div {
+            text-align: center;
+            vertical-align: middle;
+            height: 30px;
+        }
+        img {
+            max-height: 70%;
+            position: absolute;
+            left: 8px;
+            top: 5px;
+        }
+        span {
+            padding-left: 27px;
+        }
+    </style>
 </head>
-<style>
-    body {
-      font-family: Roboto;
-      font-weight: 300;
-      background-color: #b6bdd2;
-      color:#000;
-      overflow: hidden;
-      height: 35px;
-    }
-    div {
-        text-align: center;
-        vertical-align: middle;
-        height: 30px;
-    }
-    img {
-        max-height: 70%;
-        position: absolute;
-        left: 8px;
-        top: 5px;
-    }
-    span {
-        padding-left: 27px;
-    }
-</style>
-<script>
-    const exit = () => fin.desktop.Application.getCurrent().close(true);
-</script>
 <body>
     <div onclick="exit()"><img src="https://cdn.openfin.co/demos/symphony-of/icon/symphony.png"></img> <span> Exit Symphony-OF</span></div>
 </body>
