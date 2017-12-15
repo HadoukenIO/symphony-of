@@ -5,7 +5,7 @@
         "name": "Symphony-OpenFin-Landing",
         "description": "OpenFin POC",
         "url": "https://cdn.openfin.co/demos/symphony-of-staging/symphony-launch.html",
-        "uuid": "Symphony-OpenFin-Landing-Local",
+        "uuid": "Symphony-OpenFin-Landing-Staging",
         "autoShow": true,
         "defaultCentered": true,
         "taskbarIcon": "https://symphony.com/favicon.ico",
