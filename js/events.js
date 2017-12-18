@@ -166,6 +166,10 @@ window.addEventListener('load', () => {
             if (!userId) { 
                 userId = el.children[0] && el.children[0].innerText;
             };
+            if (!userId) {
+                userId = el.innerText.slice(0,20);
+            }
+            console.log(userId)
             el.parentNode.parentNode.parentNode.addEventListener('click', () => {
                 for (var pop of Object.keys(window.popouts)) {
                     if(window.popouts[pop].userId === userId && !window.popouts[pop].hide) {
@@ -280,6 +284,12 @@ window.addEventListener('load', () => {
                     streamId = streamId.slice(2);
                     waitForElement('.aliasable.colorable.has-profile.truncate-text',0,elem => {
                         let userId =elem[0] && elem[0].attributes['1'].value;
+                        window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};                        
+                        window.popouts[streamId].userId = userId;            
+                        window.localStorage.setItem('wins', JSON.stringify(window.popouts));
+                    })
+                    waitForElement('.identity.group-chat',0,e => {
+                        let userId =e[0] && e[0].innerText.slice(0,20);
                         window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};                        
                         window.popouts[streamId].userId = userId;            
                         window.localStorage.setItem('wins', JSON.stringify(window.popouts));
