@@ -66,7 +66,6 @@ window.addEventListener('load', () => {
 
         // subscribe to send options when tray is ready
         fin.desktop.InterApplicationBus.subscribe(currentWindow.uuid,'system-tray','ready',(msg)=>{
-            console.log('got msg', msg);
             window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
             let trayOptions = {
                 'always-on-top': window.popouts.alwaysOnTop,

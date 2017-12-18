@@ -75,7 +75,6 @@
 <script type="text/javascript">
     // Initialization
     fin.desktop.InterApplicationBus.subscribe(fin.desktop.Window.getCurrent().uuid,'options', options => {
-        console.log('got it!', options)
         window.trayOptions = JSON.parse(window.localStorage.getItem('tray')) || {};
         window.trayOptions = Object.assign(window.trayOptions, options);
         for (const opt of Object.keys(options)) {
