@@ -112,7 +112,7 @@
         resizable: false,
         autoShow: true,
         alwaysOnTop: true,
-    }, () => about.bringToFront());
+    }, () => about.setAsForeground());
     };
     const autoLaunch = () => fin.desktop.Application.getCurrent().getShortcuts(shortcuts=> {
         let option = !shortcuts.systemStartup;

@@ -108,14 +108,20 @@ window.addEventListener('load', () => {
         fin.desktop.InterApplicationBus.subscribe(currentWindow.uuid,'system-tray','always-on-top',(msg)=>{
             window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
             window.popouts.alwaysOnTop = !window.popouts.alwaysOnTop;
-            currentWindow.updateOptions({ alwaysOnTop: window.popouts.alwaysOnTop });            
+            currentWindow.updateOptions({ alwaysOnTop: window.popouts.alwaysOnTop });
+            // set option to all child windows            
+            fin.desktop.Application.getCurrent().getChildWindows(children => {
+                children.forEach(child => {
+                    fin.desktop.Window.wrap(child.uuid, child.name).updateOptions({ alwaysOnTop: window.popouts.alwaysOnTop });;
+                });
+            });         
             window.localStorage.setItem('wins', JSON.stringify(window.popouts));
         });
 
         // startup logic for always on top
         window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
         let alwaysOnTop = window.popouts;
-        currentWindow.updateOptions({ alwaysOnTop });
+        currentWindow.updateOptions({ alwaysOnTop: window.popouts.alwaysOnTop });
 
         // listen for close on exit
         fin.desktop.InterApplicationBus.subscribe(currentWindow.uuid,'system-tray','close-on-exit',(msg)=>{
@@ -132,6 +138,12 @@ window.addEventListener('load', () => {
 app.addEventListener("window-created", obj => {
     window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};    
     let childWin = fin.desktop.Window.wrap(obj.uuid, obj.name)
+    //update always on top option for Child Windows
+    if (window.popouts.alwaysOnTop) {
+        childWin.updateOptions({ alwaysOnTop:true })
+    }
+
+    // find window and set bounds
     if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter') {
         for (var pop of Object.keys(window.popouts)) {
             if(window.popouts[pop].name === obj.name) {
@@ -141,6 +153,7 @@ app.addEventListener("window-created", obj => {
                 };
             }
         }
+        // listen for bounds changed to update position
         childWin.addEventListener("bounds-changed", win => {
             if(!window.rateLimiter) {
                 window.rateLimiter = true;
