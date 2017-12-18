@@ -3,7 +3,7 @@
     "devtools_port": 9090,
     "offlineAccess": true,
     "startup_app": {
-        "name": "OpenFin Symphony Client",
+        "name": "Symphony-OpenFin",
         "description": "Beta client for Symphony - running OpenFin",
         "url": "https://my.symphony.com",
         "contentNavigation": {
@@ -32,7 +32,7 @@
     "shortcut": {
         "company": "OpenFin",
         "description": "Client for Symphony - running OpenFin",
-        "name": "Symphony OF",
+        "name": "Symphony-OpenFin",
         "icon": "https://symphony.com/favicon.ico"
     },
     "splashScreenImage": "https://cdn.openfin.co/demos/symphony-of/symphony-splash.png",
