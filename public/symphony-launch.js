@@ -2,7 +2,7 @@ const launchSymphonyOpenFin = () => {
     let podUrl = document.getElementById('podUrl');
     let landingApp = fin.desktop.Application.getCurrent();
     let serviceOrigin = 'https://symphony.openfin.co';
-    let queryString = `startup_app.url=${podUrl.value}`;
+    let queryString = `nwl=true&startup_app.url=${podUrl.value}`;
 
     const stagingPath = `/demos/symphony-of-staging/symphony-launch.html`;
     const pathname = location.pathname;
