@@ -3,7 +3,15 @@ let win = app.getWindow();
 window.rateLimiter = false;
 window.popoutChanges = [];
 //Overwrite closing of application to minimize instead
-win.addEventListener('close-requested',() => win.minimize());
+
+win.addEventListener('close-requested',() => {
+    window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+    if(window.popouts.closeOnExit) {
+        fin.desktop.Application.getCurrent().close(true);
+    } else {
+        fin.desktop.Application.getCurrent().getWindow().minimize();        
+    }
+});
 
 //add handling for navigation outside of symphony
 app.addEventListener("window-navigation-rejected", obj => {
@@ -14,7 +22,6 @@ app.addEventListener("window-navigation-rejected", obj => {
 
 // Things to do ONLY once and ONLY in the main window:
 window.addEventListener('load', () => {
-        
     let currentWindow = fin.desktop.Window.getCurrent();
     window.once = false;
     if(currentWindow.uuid===currentWindow.name && !window.once) {
@@ -57,30 +64,66 @@ window.addEventListener('load', () => {
             }
         })
 
-        // set tray icon
+        // subscribe to send options when tray is ready
+        fin.desktop.InterApplicationBus.subscribe(currentWindow.uuid,'system-tray','ready',(msg)=>{
+            console.log('got msg', msg);
+            window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+            let trayOptions = {
+                'always-on-top': window.popouts.alwaysOnTop,
+                'close-on-exit': window.popouts.closeOnExit,
+            }
+            fin.desktop.InterApplicationBus.send(currentWindow.uuid,'system-tray','options', trayOptions);
+        })
+        // create tray icon window
         var sysTray = new fin.desktop.Window({
             name: "system-tray",
             url: `${window.targetUrl}tray.html`,
             defaultWidth: 180,
-            defaultHeight: 38,
-            minHeight: 38,
-            maxHeight: 38,
+            defaultHeight: 163,
+            maxHeight: 164,
+            maxWidth: 180,
             frame: false,
             autoShow: false,
+            shadow: true,
+            alwaysOnTop: true,
         });
+        // Click on tray
         const clickListener = clickInfo => {
-            var sysTray = fin.desktop.Window.wrap(fin.desktop.Application.getCurrent().uuid, 'system-tray');
-            var width = 180;
-            var height = 38;
-            sysTray.isShowing(showing => {
-                if(!showing) {
-                    sysTray.showAt(clickInfo.x-width, clickInfo.y-height-5, true, ()=>sysTray.resizeBy(1,1,"bottom-right",sysTray.resizeBy(-1,-1,"bottom-right")));
-                } else {
-                    sysTray.hide();
-                }
-            });
+            if(clickInfo.button === 2) {
+                var sysTray = fin.desktop.Window.wrap(fin.desktop.Application.getCurrent().uuid, 'system-tray');
+                var width = 180;
+                var height = 163;
+                sysTray.isShowing(showing => {
+                    if(!showing) {
+                        sysTray.showAt(clickInfo.x-width, clickInfo.y-height-5, true, ()=>sysTray.resizeBy(1,1,"bottom-right",sysTray.resizeBy(-1,-1,"bottom-right", sysTray.focus())));
+                    } else {
+                        sysTray.hide();
+                    }
+                });    
+            }
         }
+        // set tray
         fin.desktop.Application.getCurrent().setTrayIcon(`${window.targetUrl}icon/symphony.png`, clickListener);
+
+        // listen for always on top
+        fin.desktop.InterApplicationBus.subscribe(currentWindow.uuid,'system-tray','always-on-top',(msg)=>{
+            window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+            window.popouts.alwaysOnTop = !window.popouts.alwaysOnTop;
+            currentWindow.updateOptions({ alwaysOnTop: window.popouts.alwaysOnTop });            
+            window.localStorage.setItem('wins', JSON.stringify(window.popouts));
+        });
+
+        // startup logic for always on top
+        window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+        let alwaysOnTop = window.popouts;
+        currentWindow.updateOptions({ alwaysOnTop });
+
+        // listen for close on exit
+        fin.desktop.InterApplicationBus.subscribe(currentWindow.uuid,'system-tray','close-on-exit',(msg)=>{
+            window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+            window.popouts.closeOnExit = !window.popouts.closeOnExit;
+            window.localStorage.setItem('wins', JSON.stringify(window.popouts));
+        });
 
         window.once = true;
     }
