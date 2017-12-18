@@ -262,6 +262,7 @@ window.addEventListener('load', () => {
         // remove 'x' that does nothing on click
         waitForElement('.close-module',0,el=>el[0].style.display = 'none');
 
+        //set userId on window.popouts so that we can use later when necessary (on startup)
         waitForElement('.floater',0,element=>{
             waitForElement('.simple_grid_main_container',0,el=> {
                 window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};        
