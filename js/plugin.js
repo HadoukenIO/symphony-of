@@ -44,8 +44,10 @@ class symphonyPlugin {
 
     }
 
+    // takes an obj that either has 'emails' property of an array or 'name' as a string
+    // this is due to the need to resolve the name, can only search 1 at a time; emails can do mulitples
     changeSymphonyContext(obj) {
-        fin.desktop.InterApplicationBus.send('*', "symphony", obj);        
+        fin.desktop.InterApplicationBus.send('*', "symphony-context", obj);        
     }
 
 }

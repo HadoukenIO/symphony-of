@@ -280,6 +280,7 @@ window.addEventListener('load', () => {
         defaultHeight: 35,
         frame: false,
         autoshow: true,
+        saveWindowState: false,
         resizable: false,
         state: "normal"
     });

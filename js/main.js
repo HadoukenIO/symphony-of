@@ -70,7 +70,7 @@ window.SYM_API = {
     registerProtocolHandler: function(protocolHandler) {
         if (typeof protocolHandler === 'function') {
             window.processProtocolAction = protocolHandler;
-            fin.desktop.InterApplicationBus.subscribe("*", "symphony", (message, uuid, name) => {
+            fin.desktop.InterApplicationBus.subscribe("*", "symphony-context", (message, uuid, name) => {
                 console.log("The application " + uuid + '/' + name + " sent this message: " + message);
                 //takes an array of user emails
                 if(message&& message.emails && Array.isArray(message.emails)) {
