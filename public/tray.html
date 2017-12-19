@@ -2,39 +2,130 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>System Tray</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">    
+    <style>
+
+        /* The container <div> - needed to position the dropdown content */
+        body {
+            position: relative;
+            display: block;
+            margin: 0px;
+            overflow: hidden;
+            font-family: "Segoe UI"
+        }
+
+        /* Dropdown Content (Hidden by Default) */
+        .dropdown-content {
+            display: block;
+            position: absolute;
+            background-color: white;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+        }
+
+        /* Links inside the dropdown */
+        .dropdown-content li {
+            position: relative;
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            cursor: pointer;
+            font-size: 9pt;
+            padding: 0.7em 1.5em;
+            padding-left: 40px;
+        }
+
+        li.checked:before {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            left: 12px;
+            content:'\2713';
+            display:inline-block;
+            padding:0 6px 0 0;
+        }
+
+        .dropdown-content li {
+            transition: 0.3s;
+        }
+
+        /* Change color of dropdown links on hover */
+        .dropdown-content li:hover {
+            background-color: #ebebeb
+        }
+    </style>
 </head>
-<style>
-    body {
-      font-family: Roboto;
-      font-weight: 300;
-      background-color: #b6bdd2;
-      color:#000;
-      overflow: hidden;
-      height: 35px;
-    }
-    div {
-        text-align: center;
-        vertical-align: middle;
-        height: 30px;
-    }
-    img {
-        max-height: 70%;
-        position: absolute;
-        left: 8px;
-        top: 5px;
-    }
-    span {
-        padding-left: 27px;
-    }
-</style>
-<script>
-    const exit = () => fin.desktop.Application.getCurrent().close(true);
-</script>
 <body>
-    <div onclick="exit()"><img src="https://cdn.openfin.co/demos/symphony-of/icon/symphony.png"></img> <span> Exit Symphony-OF</span></div>
+    <div>
+        <ul id="myDropdown" class="dropdown-content">
+            <li onclick="about()">About Symphony-OF</li>
+            <li id="systemStartup" onclick="autoLaunch()">Launch on Startup</li>    
+            <li id="always-on-top" onclick="alwaysOnTop()">Always On Top</li>    
+            <li id="close-on-exit" onclick="closeOnExit()">Close On Exit</li>    
+            <li onclick="exit()">Quit Symphony-OF</li>
+        </ul>
+    </div>
 </body>
+<script type="text/javascript">
+    // Initialization
+    fin.desktop.InterApplicationBus.subscribe(fin.desktop.Window.getCurrent().uuid,'options', options => {
+        window.trayOptions = JSON.parse(window.localStorage.getItem('tray')) || {};
+        window.trayOptions = Object.assign(window.trayOptions, options);
+        for (const opt of Object.keys(options)) {
+            if(window.trayOptions[opt]) {
+                document.getElementById(opt).className += 'checked';
+            }
+        }
+
+        window.localStorage.setItem('tray', JSON.stringify(window.trayOptions));                    
+    },() => {
+        fin.desktop.InterApplicationBus.send(fin.desktop.Window.getCurrent().uuid, 'ready', 'ready')
+    });
+
+    const updateOption = option => {
+        window.trayOptions = JSON.parse(window.localStorage.getItem('tray')) || {};
+        window.trayOptions.option = !window.trayOptions.option;
+        fin.desktop.InterApplicationBus.send(fin.desktop.Window.getCurrent().uuid, option, window.trayOptions.option);
+        document.getElementById(option).classList.toggle('checked');
+        window.localStorage.setItem('tray', JSON.stringify(window.trayOptions));                    
+    }
+    fin.desktop.Application.getCurrent().getShortcuts(shortcuts=> {
+        window.trayOptions = JSON.parse(window.localStorage.getItem('tray')) || {};
+        window.trayOptions.systemStartup = !!shortcuts.systemStartup;
+        window.localStorage.setItem('tray', JSON.stringify(window.trayOptions));                    
+    });
+
+    const about = () => {
+        var about = new fin.desktop.Window({
+        name: "about",
+        url: `${window.targetUrl}about.html`,
+        defaultWidth: 400,
+        defaultHeight: 300,
+        maxHeight:300,
+        defaultCenter:true,
+        resizable: false,
+        autoShow: true,
+        alwaysOnTop: true,
+    }, () => about.setAsForeground());
+    };
+    const autoLaunch = () => fin.desktop.Application.getCurrent().getShortcuts(shortcuts=> {
+        let option = !shortcuts.systemStartup;
+        fin.desktop.Application.getCurrent().setShortcuts({ systemStartup: option });
+        document.getElementById('systemStartup').classList.toggle('checked');
+    })
+    const alwaysOnTop = () => updateOption('always-on-top');
+    const closeOnExit = () => updateOption('close-on-exit');
+    const exit = () => {
+        fin.desktop.Application.getCurrent().close(true);
+    }
+
+    // close system tray if not in focus
+    fin.desktop.Window.getCurrent().addEventListener('blurred', () => fin.desktop.Window.getCurrent().hide());
+    </script>
 </html>

@@ -3,7 +3,15 @@ let win = app.getWindow();
 window.rateLimiter = false;
 window.popoutChanges = [];
 //Overwrite closing of application to minimize instead
-win.addEventListener('close-requested',() => win.minimize());
+
+win.addEventListener('close-requested',() => {
+    window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+    if(window.popouts.closeOnExit) {
+        fin.desktop.Application.getCurrent().close(true);
+    } else {
+        fin.desktop.Application.getCurrent().getWindow().minimize();        
+    }
+});
 
 //add handling for navigation outside of symphony
 app.addEventListener("window-navigation-rejected", obj => {
@@ -12,54 +20,129 @@ app.addEventListener("window-navigation-rejected", obj => {
     }
 });
 
-//navigate to converation from main window on notification click
-let currentWindow = fin.desktop.Window.getCurrent();
-window.once = false;
-if(currentWindow.uuid===currentWindow.name && !once) {
-    // note click main window
-    window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};    
-    // fin.desktop.InterApplicationBus.subscribe("*", "note-clicked", streamId => {
-    //     let elements = document.querySelectorAll('.navigation-item-name');
-    //     Array.from(elements).forEach(el => {
-    //         let userId = el.children[0] && el.children[0].attributes['1'] && el.children[0].attributes['1'].value;
-    //         if (!userId) { 
-    //             userId = el.children[0] && el.children[0].innerText;
-    //         };
-    //         if (userId === window.popouts[streamId].userId) {
-    //             el.parentNode.parentNode.parentNode.click();
-    //             window.winFocus(currentWindow);
-    //         }
-    //     });
-    // });
-    if (window.popouts.main) {
-        const { left, top:tiptop, width, height } = window.popouts.main; 
-        currentWindow.setBounds(left, tiptop, width, height);
-    }
-    currentWindow.addEventListener("bounds-changed", win => {
-        if(!window.rateLimiter) {
-            window.rateLimiter = true;
-            setTimeout(()=> {
-                window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
-                window.popouts.main = window.popouts.main ? Object.assign(window.popouts.main, win) : win;
-                window.popoutChanges.forEach(fn=>fn());
-                window.popoutChanges = [];
-                window.localStorage.setItem('wins', JSON.stringify(window.popouts));                    
-                window.rateLimiter = false;
-            },1000);
-        } else {
-            window.popoutChanges.push(()=>{
-                window.popouts.main = window.popouts.main ? Object.assign(window.popouts.main, win) : win;                
-            })
+// Things to do ONLY once and ONLY in the main window:
+window.addEventListener('load', () => {
+    let currentWindow = fin.desktop.Window.getCurrent();
+    window.once = false;
+    if(currentWindow.uuid===currentWindow.name && !window.once) {
+        //navigate to converation from main window on notification click
+        window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};    
+        fin.desktop.InterApplicationBus.subscribe("*", "note-clicked", streamId => {
+            let elements = document.querySelectorAll('.navigation-item-name');
+            Array.from(elements).forEach(el => {
+                let userId = el.children[0] && el.children[0].attributes['1'] && el.children[0].attributes['1'].value;
+                if (!userId) { 
+                    userId = el.children[0] && el.children[0].innerText;
+                };
+                if (userId === window.popouts[streamId].userId) {
+                    el.parentNode.parentNode.parentNode.click();
+                    window.winFocus(currentWindow);
+                }
+            });
+        });
+        // set main window state
+        if (window.popouts.main) {
+            const { left, top:tiptop, width, height } = window.popouts.main; 
+            currentWindow.setBounds(left, tiptop, width, height);
         }
-    })
+        // save main window state
+        currentWindow.addEventListener("bounds-changed", win => {
+            if(!window.rateLimiter) {
+                window.rateLimiter = true;
+                setTimeout(()=> {
+                    window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+                    window.popouts.main = window.popouts.main ? Object.assign(window.popouts.main, win) : win;
+                    window.popoutChanges.forEach(fn=>fn());
+                    window.popoutChanges = [];
+                    window.localStorage.setItem('wins', JSON.stringify(window.popouts));                    
+                    window.rateLimiter = false;
+                },1000);
+            } else {
+                window.popoutChanges.push(()=>{
+                    window.popouts.main = window.popouts.main ? Object.assign(window.popouts.main, win) : win;                
+                })
+            }
+        })
 
-    window.once = true;
-}
+        // subscribe to send options when tray is ready
+        fin.desktop.InterApplicationBus.subscribe(currentWindow.uuid,'system-tray','ready',(msg)=>{
+            window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+            let trayOptions = {
+                'always-on-top': window.popouts.alwaysOnTop,
+                'close-on-exit': window.popouts.closeOnExit,
+            }
+            fin.desktop.InterApplicationBus.send(currentWindow.uuid,'system-tray','options', trayOptions);
+        })
+        // create tray icon window
+        var sysTray = new fin.desktop.Window({
+            name: "system-tray",
+            url: `${window.targetUrl}tray.html`,
+            defaultWidth: 180,
+            defaultHeight: 163,
+            frame: false,
+            autoShow: false,
+            shadow: true,
+            saveWindowState: false,
+            alwaysOnTop: true,
+        });
+        // Click on tray
+        const clickListener = clickInfo => {
+            if(clickInfo.button === 2) {
+                var sysTray = fin.desktop.Window.wrap(fin.desktop.Application.getCurrent().uuid, 'system-tray');
+                var width = 180;
+                var height = 163;
+                sysTray.isShowing(showing => {
+                    if(!showing) {
+                        sysTray.showAt(clickInfo.x-width, clickInfo.y-height-5, true, ()=>sysTray.resizeBy(1,1,"bottom-right",sysTray.resizeBy(-1,-1,"bottom-right", sysTray.focus())));
+                    } else {
+                        sysTray.hide();
+                    }
+                });    
+            }
+        }
+        // set tray
+        fin.desktop.Application.getCurrent().setTrayIcon(`${window.targetUrl}icon/symphony.png`, clickListener);
+
+        // listen for always on top
+        fin.desktop.InterApplicationBus.subscribe(currentWindow.uuid,'system-tray','always-on-top',(msg)=>{
+            window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+            window.popouts.alwaysOnTop = !window.popouts.alwaysOnTop;
+            currentWindow.updateOptions({ alwaysOnTop: window.popouts.alwaysOnTop });
+            // set option to all child windows            
+            fin.desktop.Application.getCurrent().getChildWindows(children => {
+                children.forEach(child => {
+                    fin.desktop.Window.wrap(child.uuid, child.name).updateOptions({ alwaysOnTop: window.popouts.alwaysOnTop });;
+                });
+            });         
+            window.localStorage.setItem('wins', JSON.stringify(window.popouts));
+        });
+
+        // startup logic for always on top
+        window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+        let alwaysOnTop = window.popouts;
+        currentWindow.updateOptions({ alwaysOnTop: window.popouts.alwaysOnTop });
+
+        // listen for close on exit
+        fin.desktop.InterApplicationBus.subscribe(currentWindow.uuid,'system-tray','close-on-exit',(msg)=>{
+            window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+            window.popouts.closeOnExit = !window.popouts.closeOnExit;
+            window.localStorage.setItem('wins', JSON.stringify(window.popouts));
+        });
+
+        window.once = true;
+    }
+});
 
 // Add logic to keep track of window positioning
 app.addEventListener("window-created", obj => {
     window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};    
     let childWin = fin.desktop.Window.wrap(obj.uuid, obj.name)
+    //update always on top option for Child Windows
+    if (window.popouts.alwaysOnTop) {
+        childWin.updateOptions({ alwaysOnTop:true })
+    }
+
+    // find window and set bounds
     if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter') {
         for (var pop of Object.keys(window.popouts)) {
             if(window.popouts[pop].name === obj.name) {
@@ -69,6 +152,7 @@ app.addEventListener("window-created", obj => {
                 };
             }
         }
+        // listen for bounds changed to update position
         childWin.addEventListener("bounds-changed", win => {
             if(!window.rateLimiter) {
                 window.rateLimiter = true;
@@ -135,19 +219,20 @@ window.addEventListener('load', () => {
             let userId = el.children[0] && el.children[0].attributes['1'] && el.children[0].attributes['1'].value;
             if (!userId) { 
                 userId = el.children[0] && el.children[0].innerText;
-            } else {
-                var userInfo = window.findUserById(userId);
-            }
+            } 
             el.parentNode.parentNode.parentNode.addEventListener('click', () => {
+                console.log('in click')
                 for (var pop of Object.keys(window.popouts)) {
                     if(window.popouts[pop].userId === userId && !window.popouts[pop].hide) {
                         let popWin = fin.desktop.Window.wrap(window.popouts[pop].uuid, window.popouts[pop].name);
                         window.winFocus(popWin);
                     }
                 }
-                if(userInfo) {
+                console.log('userIs>>>>>>>>>>>>>>>>>>>>>', userId)
+                window.findUserById(userId).then(userInfo => {
+                    console.log('USERINFO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', userInfo);
                     fin.desktop.InterApplicationBus.publish("symphony-user-focus", { user: userInfo });
-                }
+                });
             })
   
             for (var pop of Object.keys(window.popouts)) {
@@ -272,30 +357,4 @@ window.addEventListener('load', () => {
     // Navigation from Inbox
     waitForElement('#dock',0,el=> inboxNavigation(el));
 
-    // set tray icon
-    var sysTray = new fin.desktop.Window({
-        name: "system-tray",
-        url: `${window.targetUrl}tray.html`,
-        defaultWidth: 190,
-        defaultHeight: 35,
-        frame: false,
-        autoshow: true,
-        saveWindowState: false,
-        resizable: false,
-        state: "normal"
-    });
-
-    const clickListener = clickInfo => {
-        var sysTray = fin.desktop.Window.wrap(fin.desktop.Application.getCurrent().uuid, 'system-tray');
-        let width = 180;
-        let height = 35;
-        sysTray.isShowing(showing => {
-            if(!showing) {
-                sysTray.setBounds(clickInfo.x-width, clickInfo.y-height-5, width, height, sysTray.show(()=> console.log('success'),(e)=> console.log('e',e)))            
-            } else {
-                sysTray.hide();
-            }
-        });
-    }
-    fin.desktop.Application.getCurrent().setTrayIcon(`${window.targetUrl}icon/symphony.png`, clickListener);
 });

@@ -1,13 +1,12 @@
 /* override window.open to fix name issue */
 var originalOpen = window.open;
 window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
-window.connections = {notifications:[]};
+window.connections = JSON.parse(window.localStorage.getItem('connects')) || {notifications:[]};
 window.localStorage.setItem('connects', JSON.stringify(window.connections));
 
 if (!window.processProtocolAction) {
     window.processProtocolAction = () => {};
 }
-
 
 window.open = (...args) => {
     console.log('win open', ...args)
@@ -78,10 +77,25 @@ window.httpPost = (url, body) => {
             }
         }
         xmlHttp.open('POST', url, true);
-        xmlHttp.setRequestHeader('Content-type', 'application/json');    
+        xmlHttp.setRequestHeader('Content-type', 'application/json');
         xmlHttp.send(JSON.stringify(body));
     });
 }
+
+// window.httpPostMsg = (url, body) => {
+//     return new Promise(resolve => {
+//         var xmlHttp = new XMLHttpRequest();
+//         xmlHttp.onreadystatechange = function() { 
+//             if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+//                 resolve(JSON.parse(xmlHttp.responseText));
+//             }
+//         }
+//         xmlHttp.open('POST', url, true);
+//         xmlHttp.setRequestHeader('Content-Type', 'multipart/form-data');   
+//         console.log(xmlHttp.request); 
+//         xmlHttp.send(body);
+//     });
+// }
 
 window.startChat = userIdArray => {
     window.httpPost('/pod/v1/im/create', userIdArray)
@@ -110,3 +124,9 @@ window.findUserById = uid => {
 window.findUserByQuery = query => {
     return window.httpPost(`/pod/v1/user/search?limit=100`, { query });
 }
+
+// window.sendMessage = (streamId, msg) => {
+//     let id = streamId.split('/').join('_').split('+').join('-').slice(0,-2);
+//     return window.httpPostMsg(`https://openfin.symphony.com/agent/v4/stream/${id}/message/create`, { message: msg });        
+// }
+

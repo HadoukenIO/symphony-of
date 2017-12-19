@@ -14,8 +14,8 @@
         "defaultWidth": 600
     },
     "runtime": {
-        "arguments": "--noerrdialogs",
-        "version": "8.56.26.38",
+        "arguments": "--noerrdialogs --v=1",
+        "version": "8.56.26.50",
         "fallbackVersion": "8.56.26.38"
     },
     "dialogSettings": {

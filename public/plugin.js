@@ -37,25 +37,35 @@ class symphonyPlugin {
         fin.desktop.InterApplicationBus.send(this.symphonyUuid, "surpress-symphony-notes", console.log('Notes Surpressed!'));
     }
 
-    getUserContextUpdates() {
+    getUserContextUpdates(cb) {
         // turn this on? 
         // fin.desktop.InterApplicationBus.send(this.symphonyUuid, "symphony-get-user", console.log('Symphony will send user context!'));
-        fin.desktop.InterApplicationBus.subscribe(this.symphonyUuid, "symphony-user-focus", e => console.log('got user', e));
-
+        fin.desktop.InterApplicationBus.subscribe(this.symphonyUuid, "symphony-user-focus", cb);
     }
 
     // takes an obj that either has 'emails' property of an array or 'name' as a string
     // this is due to the need to resolve the name, can only search 1 at a time; emails can do mulitples
-    changeSymphonyContext(obj) {
+    changeContext(obj) {
         fin.desktop.InterApplicationBus.send('*', "symphony-context", obj);        
+    }
+
+    //  NOT WORKING!!!!!!!!  takes an obj that either has 'emails' property of an array and a message property as a string
+    // do we want to risk msg send with name...?
+    changeContextAndSendMessage(obj) {
+        fin.desktop.InterApplicationBus.send('*', "symphony-message", obj);        
     }
 
 }
 
+fin.symphonyPlugin = symphonyPlugin;
 
-symphonyPlugin.connect()
-.then(SymOFApi => {
-console.log(SymOFApi)
-   SymOFApi.onNotification(e=>console.log(e));
+// fin.symphonyPlugin.connect()
+// .then(SymOFApi => {
+//    console.log(SymOFApi)
+//    SymOFApi.onNotification(e=>console.log(e));
 //    SymOFApi.surpressNotificationWindows();
-})
+//    SymOFApi.getUserContextUpdates(e => console.log('got user', e));
+//    setTimeout(()=>SymOFApi.changeContext({name:'xavier'}),8000);
+//    setTimeout(()=>SymOFApi.changeContext({emails:['xavier@openfin.co', 'mark@openfin.co']}),8000);
+// })
+
