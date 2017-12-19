@@ -79,11 +79,10 @@ window.addEventListener('load', () => {
             url: `${window.targetUrl}tray.html`,
             defaultWidth: 180,
             defaultHeight: 163,
-            maxHeight: 164,
-            maxWidth: 180,
             frame: false,
             autoShow: false,
             shadow: true,
+            saveWindowState: false,
             alwaysOnTop: true,
         });
         // Click on tray
