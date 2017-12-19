@@ -6,6 +6,7 @@
         "name": "Symphony-OpenFin",
         "description": "Beta client for Symphony - running OpenFin",
         "url": "https://my.symphony.com",
+        "icon": "https://cdn.openfin.co/demos/symphony-of/icon/symphony.png",
         "contentNavigation": {
             "whitelist": [
                 "https://*.symphony.com/*",

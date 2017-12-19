@@ -112,6 +112,7 @@
         resizable: false,
         autoShow: true,
         alwaysOnTop: true,
+        icon: `${window.targetUrl}icon/symphony.png`,
     }, () => about.setAsForeground());
     };
     const autoLaunch = () => fin.desktop.Application.getCurrent().getShortcuts(shortcuts=> {
