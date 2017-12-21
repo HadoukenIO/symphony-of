@@ -27,19 +27,22 @@ window.addEventListener('load', () => {
     if(currentWindow.uuid===currentWindow.name && !window.once) {
         //navigate to converation from main window on notification click
         window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};    
-        fin.desktop.InterApplicationBus.subscribe("*", "note-clicked", streamId => {
-            let elements = document.querySelectorAll('.navigation-item-name');
-            Array.from(elements).forEach(el => {
-                let userId = el.children[0] && el.children[0].attributes['1'] && el.children[0].attributes['1'].value;
-                if (!userId) { 
-                    userId = el.children[0] && el.children[0].innerText;
-                };
-                if (userId === window.popouts[streamId].userId) {
-                    el.parentNode.parentNode.parentNode.click();
-                    window.winFocus(currentWindow);
-                }
-            });
-        });
+        // KEEPING  THE BELOW JUST IN CASE - IF SYM CLICK API WORKS DELETE THIS
+
+        // fin.desktop.InterApplicationBus.subscribe("*", "note-clicked", streamId => {
+        //     let elements = document.querySelectorAll('.navigation-item-name');
+        //     Array.from(elements).forEach(el => {
+        //         let userId = el.children[0] && el.children[0].attributes['1'] && el.children[0].attributes['1'].value;
+        //         if (!userId) { 
+        //             userId = el.children[0] && el.children[0].innerText;
+        //         };
+        //         if (userId === window.popouts[streamId].userId) {
+        //             el.parentNode.parentNode.parentNode.click();
+        //             window.winFocus(currentWindow);
+        //         }
+        //     });
+        // });
+        
         // set main window state
         if (window.popouts.main) {
             const { left, top:tiptop, width, height } = window.popouts.main; 
