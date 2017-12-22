@@ -2,6 +2,10 @@
 let thiswindow = fin.desktop.Window.getCurrent();
 window.oneSub = false;
 if (thiswindow.uuid===thiswindow.name && window.name === window.parent.name && !window.oneSub) {
+    //Over-write once to clear out connections
+    window.connections = {notifications:[]};
+    window.localStorage.setItem('connects', JSON.stringify(window.connections));    
+
     //HELPERS---------------------------------------------------------->
 
     // takes an array of emails and starts chat with those users

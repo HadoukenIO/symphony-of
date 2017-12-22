@@ -124,6 +124,11 @@ window.findUserByQuery = query => {
     return window.httpPost(`/pod/v1/user/search?limit=100`, { query });
 }
 
+window.getStreamInfo = streamId => {
+    let id = streamId.split('/').join('_').split('+').join('-').slice(0,-2);
+    return window.httpGet(`/pod/v1/streams/${id}/info`);
+}
+
 // window.sendMessage = (streamId, msg) => {
 //     let id = streamId.split('/').join('_').split('+').join('-').slice(0,-2);
 //     return window.httpPostMsg(`https://openfin.symphony.com/agent/v4/stream/${id}/message/create`, { message: msg });        

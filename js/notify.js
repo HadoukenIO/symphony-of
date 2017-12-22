@@ -74,10 +74,25 @@ class Notify {
     addEventListener(event, cb) {
         if(event === 'click' && this.notification) {
             this.notification.noteWin.onClick = () => {
+                // find the correct userId to look up user and send context
+                window.getStreamInfo(this._data.streamId)
+                .then(info => {
+                    window.httpGet(`/pod/v2/sessioninfo`)
+                    .then(me => {
+                        // RIGHT NOW ONLY FOR ONE USER CONTEXT - SOLVE FOR ROOMS/MULTI-CHAT
+                        let targetId = info.streamAttributes.members.find(memberId => memberId !== me.id);
+                        window.findUserById(targetId).then(userInfo => {
+                            fin.desktop.InterApplicationBus.publish("symphony-user-focus", { user: userInfo });
+                        });
+                    })
+                })
+
+                // execute the symphony callback
+                cb({target:{callbackJSON:this._data}}); 
+
                 if (this.sticky) {
                     this.notification.close();                    
                 }
-                cb({target:{callbackJSON:this._data}}); 
             }
         }
         // }
