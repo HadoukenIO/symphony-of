@@ -70,55 +70,6 @@ window.SYM_API = {
     registerProtocolHandler: function(protocolHandler) {
         if (typeof protocolHandler === 'function') {
             window.processProtocolAction = protocolHandler;
-            fin.desktop.InterApplicationBus.subscribe("*", "symphony-context", (message, uuid, name) => {
-                console.log("The application " + uuid + '/' + name + " sent this message: " + message);
-                //takes an array of user emails
-                if(message&& message.emails && Array.isArray(message.emails)) {
-                    Promise.all(message.emails.map(email=> {
-                        return window.findUserByEmail(email);
-                    }))
-                    .then(userArray => {
-                        console.log(userArray)
-                        let userIds = userArray.map(obj => obj.id);
-                        window.startChat(userIds);
-                    })
-                    // cannot search multiple people by name... too many results... 
-                } else if(message && message.name) {
-                    window.findUserByQuery(message.name)
-                    .then(result=> {
-                        if (result.users.length === 1) {
-                            window.startChat([result.users[0].id]);
-                        } else if (result.users.length > 1) {
-                            // TRY POD ONLY SEARCH FIRST? DEFINITELY IF RESULTS.LENGTH = 50;
-                            let queryIds = result.users.map(user => user.id);
-                            // PROMISE.ALL THESE>>>>>>>>>>>>>>>>>???
-                            // create flag so can pop up modal if no one is found!!!!!!!!!!!
-                            window.getAllUsers()
-                            .then(userArray=> {
-                                userArray.find(user => {
-                                    if(queryIds.includes(user.userId)){
-                                        window.startChat([user.userId]);
-                                        return true;                              
-                                    }
-                                });
-                                window.getAllStreams()
-                                .then(streams => {
-                                    let streamUserIds = streams.reduce((acc, stream)=> {
-                                        let members = stream.streamAttributes &&  stream.streamAttributes.members
-                                        return members ? [...acc, ...members] : acc;
-                                    },[])
-                                    streamUserIds.find(userId => {
-                                        if(queryIds.includes(userId)){
-                                            window.startChat([userId]);
-                                            return true;    
-                                        }
-                                    });
-                                }) 
-                            })
-                        }
-                    })                        
-                }
-            });
         }
     }
 }

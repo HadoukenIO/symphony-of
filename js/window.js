@@ -109,7 +109,7 @@ window.getAllStreams = () => {
     return window.httpPost('/pod/v1/streams/list', {});
 }
 
-window.getAllUsers = () => {
+window.getAllConnections = () => {
     return window.httpGet('/pod/v1/connection/list?status=all', {});
 }
 

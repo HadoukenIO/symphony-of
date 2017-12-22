@@ -228,9 +228,7 @@ window.addEventListener('load', () => {
                         window.winFocus(popWin);
                     }
                 }
-                console.log('userIs>>>>>>>>>>>>>>>>>>>>>', userId)
                 window.findUserById(userId).then(userInfo => {
-                    console.log('USERINFO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', userInfo);
                     fin.desktop.InterApplicationBus.publish("symphony-user-focus", { user: userInfo });
                 });
             })
