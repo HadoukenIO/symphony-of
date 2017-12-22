@@ -90,7 +90,7 @@ if (thiswindow.uuid===thiswindow.name && window.name === window.parent.name && !
         //takes an array of user emails - if emails array exists, search it
         if(message&& message.emails && Array.isArray(message.emails)) {
             window.startChatByEmail(message.emails);
-            // cannot search multiple people by name... too many results... 
+            // cannot search multiple people by name... could get too many results to resolve... 
         } else if(message && message.name) {
             window.startChatByName(message.name);
         }

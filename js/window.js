@@ -9,20 +9,19 @@ if (!window.processProtocolAction) {
 }
 
 window.open = (...args) => {
-    console.log('win open', ...args)
-    window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};  
-    let w = originalOpen.apply(this, args);
-    // Try catch for cross domain safeguard
-    if(!w.name.includes('Notifications') && w.name !== 'queueCounter' && args[1] !== 'main') {
-        let stream = args[0].split('&')[1];
-        if(stream) {
-            let startIdx = stream.indexOf('=') + 1;
-            let streamId = (startIdx > 5) ? stream.slice(startIdx) : 'inbox';
-            let uuid = fin.desktop.Application.getCurrent().uuid;
-            let namesObj = { name: w.name, symName: args[1], hide: false, uuid: uuid }
-            window.popouts[streamId] = window.popouts[streamId] ? Object.assign(window.popouts[streamId], namesObj) : namesObj;
-            window.localStorage.setItem('wins', JSON.stringify(window.popouts));
-        }
+  window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};  
+  let w = originalOpen.apply(this, args);
+   // Try catch for cross domain safeguard
+  if(w && !w.name.includes('Notifications') && w.name !== 'queueCounter' && args[1] !== 'main') {
+    let stream = args[0].split('&')[1];
+    if(stream) {
+      let startIdx = stream.indexOf('=') + 1;
+      let streamId = (startIdx > 5) ? stream.slice(startIdx) : 'inbox';
+      let uuid = fin.desktop.Application.getCurrent().uuid;
+      let namesObj = { name: w.name, symName: args[1], hide: false, uuid: uuid }
+      window.popouts[streamId] = window.popouts[streamId] ? Object.assign(window.popouts[streamId], namesObj) : namesObj;
+      window.localStorage.setItem('wins', JSON.stringify(window.popouts));
+    }
 
         try {
             w.name = args[1];

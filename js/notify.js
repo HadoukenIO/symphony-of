@@ -26,25 +26,27 @@ class Notify {
         }
 
         let timeout = 5000;
-        let app = fin.desktop.Application.getCurrent();       
         let clickHandle = () => {
-            let targetWin = window.popouts[msg.data.streamId];
-            let ofTargetWin = fin.desktop.Window.wrap(targetWin.uuid, targetWin.name);
-            if(targetWin && !targetWin.hide) {
-                window.winFocus(ofTargetWin)
-            } else {
-                fin.desktop.InterApplicationBus.publish("note-clicked", msg.data.streamId);
-            }
+            // KEEPING  THE BELOW JUST IN CASE - IF SYM CLICK API WORKS DELETE THIS
+            // let targetWin = window.popouts[msg.data.streamId];
+            // let ofTargetWin = fin.desktop.Window.wrap(targetWin.uuid, targetWin.name);
+            // if(targetWin && !targetWin.hide) {
+            //     window.winFocus(ofTargetWin)
+            // } else {
+            //     fin.desktop.InterApplicationBus.publish("note-clicked", msg.data.streamId);
+            // }
         }
         let onClick = () => { clickHandle(options.data)};
         if (msg.sticky) {
             timeout = 60000*60*24; // 24 hours
-            onClick = () => { 
-                () => { clickHandle(options.data)}
-                this.notification.close();
-            }
+            this.sticky = msg.sticky;
+            // KEEPING  THE BELOW JUST IN CASE - IF SYM CLICK API WORKS DELETE THIS
+
+            // onClick = () => { 
+            //     clickHandle();
+            //     this.notification.close();
+            // }
         }
-        this.eventListeners = [];
         this.notification = new window.fin.desktop.Notification({
             url: `${window.targetUrl}notification.html`,
             message: msg,
@@ -70,10 +72,14 @@ class Notify {
     }
 
     addEventListener(event, cb) {
-        // Utilize the OF notification object to accomplish
-        // this.eventListeners.push(event)
-        // if(event === 'click' && this.notification) {
-        //     this.notification.noteWin.onClick = () => cb({target:{callbackJSON:this._data}});
+        if(event === 'click' && this.notification) {
+            this.notification.noteWin.onClick = () => {
+                if (this.sticky) {
+                    this.notification.close();                    
+                }
+                cb({target:{callbackJSON:this._data}}); 
+            }
+        }
         // }
         // if(event === 'click') {
         //     this.notification.noteWin.onClick = cb.bind(this,this._data);
