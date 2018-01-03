@@ -1,6 +1,7 @@
 let app = fin.desktop.Application.getCurrent();
 let win = app.getWindow();
 window.rateLimiter = false;
+window.once = false;
 window.popoutChanges = [];
 //Overwrite closing of application to minimize instead
 
@@ -20,10 +21,14 @@ app.addEventListener("window-navigation-rejected", obj => {
     }
 });
 
+// BAND-AID FOR CLOSING RUNTIME IF APP HANGS ON EXIT - WHEN FIXED, REMOVE THIS !!!!!!!!!!!!!!!!!!
+app.addEventListener("not-responding", () => {
+    fin.desktop.System.exit(() => console.log("successful exit"), err => console.log("exit failure: " + err));
+});
+
 // Things to do ONLY once and ONLY in the main window:
 window.addEventListener('load', () => {
     let currentWindow = fin.desktop.Window.getCurrent();
-    window.once = false;
     if(currentWindow.uuid===currentWindow.name && !window.once) {
         //navigate to converation from main window on notification click
         window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};    
@@ -147,7 +152,7 @@ app.addEventListener("window-created", obj => {
     }
 
     // find window and set bounds
-    if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter') {
+    if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter' && obj.name !== 'system-tray') {
         for (var pop of Object.keys(window.popouts)) {
             if(window.popouts[pop].name === obj.name) {
                 if(window.popouts[pop].left) {
@@ -187,7 +192,7 @@ app.addEventListener("window-created", obj => {
 
 app.addEventListener("window-closed", obj => {
     window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
-    if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter') {        
+    if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter' && obj.name !== 'system-tray') {        
         for (var pop of Object.keys(window.popouts)) {
             if(window.popouts[pop] && window.popouts[pop].name === obj.name) {
                 let targetPop = pop;
@@ -316,7 +321,7 @@ window.addEventListener('load', () => {
     };
 
     let curWindow = fin.desktop.Window.getCurrent();
-    if (curWindow.uuid!==curWindow.name && window.name === window.parent.name) {
+    if (curWindow.uuid!==curWindow.name && window.name === window.parent.name && curWindow.name !== 'system-tray') {
         // remove 'x' that does nothing on click
         waitForElement('.close-module',0,el=>el[0].style.display = 'none');
 
@@ -344,13 +349,14 @@ window.addEventListener('load', () => {
                 }        
             })
         });
-    } else {
+    } else if (curWindow.name !== 'system-tray'){
         //Re-open popouts & inbox when app is restarted 
         waitForElement('button.toolbar-btn-inbox',0,el=> inboxCheck(el));    
         waitForElement('.navigation-item-name',0,el=> popoutsCheck(el));
     }
 
-    // Navigation from Inbox
-    waitForElement('#dock',0,el=> inboxNavigation(el));
-
+    if (curWindow.name !== 'system-tray'){
+        // Navigation from Inbox
+        waitForElement('#dock',0,el=> inboxNavigation(el));
+    }
 });
