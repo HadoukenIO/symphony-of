@@ -84,6 +84,7 @@ window.addEventListener('load', () => {
             shadow: true,
             saveWindowState: false,
             alwaysOnTop: true,
+            icon: `${window.targetUrl}icon/symphony.png`,
         });
         // Click on tray
         const clickListener = clickInfo => {
