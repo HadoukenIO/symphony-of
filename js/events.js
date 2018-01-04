@@ -354,10 +354,7 @@ window.addEventListener('load', () => {
                     })
                     waitForElement('.group-chat__name.text-selectable.truncate-text',0,e => {
                         try {
-                            console.log('group chat stuff', e);
                             var userId =[e[0].children[0].attributes[1].value, e[0].children[1].attributes[1].value]
-                            console.log('group chat stuff, userId', userId);
-
                         } catch(e) {
                             console.log(e)
                         }
