@@ -180,9 +180,14 @@ window.addEventListener('load', () => {
             }
             console.log(userId);
             el.parentNode.parentNode.parentNode.addEventListener('click', () => {
-                // HAVE NOT HANDLED MULTI CHAT HERE YET - CHECK FOR ARRAY
                 for (var pop of Object.keys(window.popouts)) {
-                    if(window.popouts[pop].userId === userId && !window.popouts[pop].hide) {
+                    if(Array.isArray(userId) && Array.isArray(window.popouts[pop].userId) && !window.popouts[pop].hide) {
+                        if(userId.includes(window.popouts[pop].userId[0]) && userId.includes(window.popouts[pop].userId[1])) {
+                            let popWin = fin.desktop.Window.wrap(window.popouts[pop].uuid, window.popouts[pop].name);
+                            window.winFocus(popWin);
+                        }
+                    }
+                    else if(window.popouts[pop].userId === userId && !window.popouts[pop].hide) {
                         let popWin = fin.desktop.Window.wrap(window.popouts[pop].uuid, window.popouts[pop].name);
                         window.winFocus(popWin);
                     }
