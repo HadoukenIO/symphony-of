@@ -26,7 +26,7 @@
         "preload": "https://cdn.openfin.co/demos/symphony-of/bundle.js"
     },
     "runtime": {
-        "arguments": "--noerrdialogs --v=1",
+        "arguments": "--noerrdialogs --v=1 --frameStrategy=frames",
         "version": "8.56.26.50",
         "fallbackVersion": "8.56.26.38"
     },
