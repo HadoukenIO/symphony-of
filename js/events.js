@@ -210,11 +210,6 @@ window.addEventListener('load', () => {
         popsToOpen = [];
   
         Array.from(elements).forEach(el => {
-            console.log('childrens', el.children);
-            if (el.children[1]) {
-                console.log('children1111', el.children[0].attributes)
-                console.log('children1111', el.children[0].attributes[1].value)
-            }
             var userId = el.children[0] && el.children[0].attributes['1'] && el.children[0].attributes['1'].value;
             if (!userId && !el.children[1]) { 
                 userId = el.children[0] && el.children[0].innerText;
@@ -357,7 +352,6 @@ window.addEventListener('load', () => {
                         window.popouts[streamId].userId = userId;            
                         window.localStorage.setItem('wins', JSON.stringify(window.popouts));
                     })
-                    // FIX THIS BELOW HERE FOR MULTI USER
                     waitForElement('.group-chat__name.text-selectable.truncate-text',0,e => {
                         try {
                             console.log('group chat stuff', e);

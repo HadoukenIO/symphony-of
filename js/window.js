@@ -3,7 +3,6 @@ var originalOpen = window.open;
 window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
 
 window.open = (...args) => {
-    console.log('OPEN', ...args)
   window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};  
   let w = originalOpen.apply(this, args);
    // Try catch for cross domain safeguard
