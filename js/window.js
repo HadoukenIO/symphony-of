@@ -7,7 +7,7 @@ window.open = (...args) => {
   window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};  
   let w = originalOpen.apply(this, args);
    // Try catch for cross domain safeguard
-  if(!w.name.includes('Notifications') && w.name !== 'queueCounter' && args[1] !== 'main') {
+  if(w && !w.name.includes('Notifications') && w.name !== 'queueCounter' && args[1] !== 'main') {
     let stream = args[0].split('&')[1];
     if(stream) {
       let startIdx = stream.indexOf('=') + 1;

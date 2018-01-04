@@ -10,6 +10,8 @@ const isProdBuild = !(isLocalBuild || isStagingBuild);
 let targetUrl;
 let launchAppUuid;
 
+// NEED TO UPDATE VERSION FUNCTION IN MAIN.JS SOMEWHERE IN BUILD PROCESS
+
 switch (env) {
     case 'staging': {
         targetUrl = 'https://cdn.openfin.co/demos/symphony-of-staging/';
@@ -29,7 +31,7 @@ switch (env) {
 
 fs.writeFileSync('./buildtarget.js', `window.targetUrl='${targetUrl}';`);
 
-const fileString = "./buildtarget.js ./js/targetUrl.js ./js/window.js ./js/notify.js ./js/screensnippet.js ./js/main.js  ./js/events.js > ./public/bundle.js";
+const fileString = "./buildtarget.js ./js/targetUrl.js ./js/window.js ./js/notify.js ./js/screensnippet.js ./js/main.js ./js/events.js > ./public/bundle.js";
 
 exec('type ' + fileString, (error, stdout, stderr) => {
     if (error) {

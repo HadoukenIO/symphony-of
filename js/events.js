@@ -1,9 +1,18 @@
 let app = fin.desktop.Application.getCurrent();
 let win = app.getWindow();
 window.rateLimiter = false;
+window.once = false;
 window.popoutChanges = [];
 //Overwrite closing of application to minimize instead
-win.addEventListener('close-requested',() => win.minimize());
+
+win.addEventListener('close-requested',() => {
+    window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+    if(window.popouts.closeOnExit) {
+        fin.desktop.Application.getCurrent().close(true);
+    } else {
+        fin.desktop.Application.getCurrent().getWindow().minimize();        
+    }
+});
 
 //add handling for navigation outside of symphony
 app.addEventListener("window-navigation-rejected", obj => {
@@ -12,27 +21,18 @@ app.addEventListener("window-navigation-rejected", obj => {
     }
 });
 
+// In case runtime hangs on exit
+app.addEventListener("not-responding", () => {
+    fin.desktop.System.exit(() => console.log("successful exit"), err => console.log("exit failure: " + err));
+});
+
 // Things to do ONLY once and ONLY in the main window:
 window.addEventListener('load', () => {
-        
     let currentWindow = fin.desktop.Window.getCurrent();
-    window.once = false;
     if(currentWindow.uuid===currentWindow.name && !window.once) {
         //navigate to converation from main window on notification click
-        window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};    
-        // fin.desktop.InterApplicationBus.subscribe("*", "note-clicked", streamId => {
-        //     let elements = document.querySelectorAll('.navigation-item-name');
-        //     Array.from(elements).forEach(el => {
-        //         let userId = el.children[0] && el.children[0].attributes['1'] && el.children[0].attributes['1'].value;
-        //         if (!userId) { 
-        //             userId = el.children[0] && el.children[0].innerText;
-        //         };
-        //         if (userId === window.popouts[streamId].userId) {
-        //             el.parentNode.parentNode.parentNode.click();
-        //             window.winFocus(currentWindow);
-        //         }
-        //     });
-        // });
+        window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+
         // set main window state
         if (window.popouts.main) {
             const { left, top:tiptop, width, height } = window.popouts.main; 
@@ -57,30 +57,71 @@ window.addEventListener('load', () => {
             }
         })
 
-        // set tray icon
+        // subscribe to send options when tray is ready
+        fin.desktop.InterApplicationBus.subscribe(currentWindow.uuid,'system-tray','ready',(msg)=>{
+            window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+            let trayOptions = {
+                'always-on-top': window.popouts.alwaysOnTop,
+                'close-on-exit': window.popouts.closeOnExit,
+            }
+            fin.desktop.InterApplicationBus.send(currentWindow.uuid,'system-tray','options', trayOptions);
+        })
+        // create tray icon window
         var sysTray = new fin.desktop.Window({
             name: "system-tray",
             url: `${window.targetUrl}tray.html`,
             defaultWidth: 180,
-            defaultHeight: 38,
-            minHeight: 38,
-            maxHeight: 38,
+            defaultHeight: 163,
             frame: false,
             autoShow: false,
+            shadow: true,
+            saveWindowState: false,
+            alwaysOnTop: true,
+            icon: `${window.targetUrl}icon/symphony.png`,
         });
+        // Click on tray
         const clickListener = clickInfo => {
-            var sysTray = fin.desktop.Window.wrap(fin.desktop.Application.getCurrent().uuid, 'system-tray');
-            var width = 180;
-            var height = 38;
-            sysTray.isShowing(showing => {
-                if(!showing) {
-                    sysTray.showAt(clickInfo.x-width, clickInfo.y-height-5, true, ()=>sysTray.resizeBy(1,1,"bottom-right",sysTray.resizeBy(-1,-1,"bottom-right")));
-                } else {
-                    sysTray.hide();
-                }
-            });
+            if(clickInfo.button === 2) {
+                var sysTray = fin.desktop.Window.wrap(fin.desktop.Application.getCurrent().uuid, 'system-tray');
+                var width = 180;
+                var height = 163;
+                sysTray.isShowing(showing => {
+                    if(!showing) {
+                        sysTray.showAt(clickInfo.x-width, clickInfo.y-height-5, true, ()=>sysTray.resizeBy(1,1,"bottom-right",sysTray.resizeBy(-1,-1,"bottom-right", sysTray.focus())));
+                    } else {
+                        sysTray.hide();
+                    }
+                });    
+            }
         }
+        // set tray
         fin.desktop.Application.getCurrent().setTrayIcon(`${window.targetUrl}icon/symphony.png`, clickListener);
+
+        // listen for always on top
+        fin.desktop.InterApplicationBus.subscribe(currentWindow.uuid,'system-tray','always-on-top',(msg)=>{
+            window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+            window.popouts.alwaysOnTop = !window.popouts.alwaysOnTop;
+            currentWindow.updateOptions({ alwaysOnTop: window.popouts.alwaysOnTop });
+            // set option to all child windows            
+            fin.desktop.Application.getCurrent().getChildWindows(children => {
+                children.forEach(child => {
+                    fin.desktop.Window.wrap(child.uuid, child.name).updateOptions({ alwaysOnTop: window.popouts.alwaysOnTop });;
+                });
+            });         
+            window.localStorage.setItem('wins', JSON.stringify(window.popouts));
+        });
+
+        // startup logic for always on top
+        window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+        let alwaysOnTop = window.popouts;
+        currentWindow.updateOptions({ alwaysOnTop: window.popouts.alwaysOnTop });
+
+        // listen for close on exit
+        fin.desktop.InterApplicationBus.subscribe(currentWindow.uuid,'system-tray','close-on-exit',(msg)=>{
+            window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+            window.popouts.closeOnExit = !window.popouts.closeOnExit;
+            window.localStorage.setItem('wins', JSON.stringify(window.popouts));
+        });
 
         window.once = true;
     }
@@ -90,7 +131,13 @@ window.addEventListener('load', () => {
 app.addEventListener("window-created", obj => {
     window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};    
     let childWin = fin.desktop.Window.wrap(obj.uuid, obj.name)
-    if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter') {
+    //update always on top option for Child Windows
+    if (window.popouts.alwaysOnTop) {
+        childWin.updateOptions({ alwaysOnTop:true })
+    }
+
+    // find window and set bounds
+    if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter' && obj.name !== 'system-tray') {
         for (var pop of Object.keys(window.popouts)) {
             if(window.popouts[pop].name === obj.name) {
                 if(window.popouts[pop].left) {
@@ -99,6 +146,7 @@ app.addEventListener("window-created", obj => {
                 };
             }
         }
+        // listen for bounds changed to update position
         childWin.addEventListener("bounds-changed", win => {
             if(!window.rateLimiter) {
                 window.rateLimiter = true;
@@ -129,7 +177,7 @@ app.addEventListener("window-created", obj => {
 
 app.addEventListener("window-closed", obj => {
     window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
-    if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter') {        
+    if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter' && obj.name !== 'system-tray') {        
         for (var pop of Object.keys(window.popouts)) {
             if(window.popouts[pop] && window.popouts[pop].name === obj.name) {
                 let targetPop = pop;
@@ -283,7 +331,7 @@ window.addEventListener('load', () => {
     };
 
     let curWindow = fin.desktop.Window.getCurrent();
-    if (curWindow.uuid!==curWindow.name && window.name === window.parent.name) {
+    if (curWindow.uuid!==curWindow.name && window.name === window.parent.name && curWindow.name !== 'system-tray') {
         // remove 'x' that does nothing on click
         waitForElement('.close-module',0,el=>el[0].style.display = 'none');
 
@@ -329,13 +377,14 @@ window.addEventListener('load', () => {
                 }        
             })
         });
-    } else {
+    } else if (curWindow.name !== 'system-tray'){
         //Re-open popouts & inbox when app is restarted 
         waitForElement('button.toolbar-btn-inbox',0,el=> inboxCheck(el));    
         waitForElement('.navigation-item-name',0,el=> popoutsCheck(el));
     }
 
-    // Navigation from Inbox
-    waitForElement('#dock',0,el=> inboxNavigation(el));
-
+    if (curWindow.name !== 'system-tray'){
+        // Navigation from Inbox
+        waitForElement('#dock',0,el=> inboxNavigation(el));
+    }
 });
