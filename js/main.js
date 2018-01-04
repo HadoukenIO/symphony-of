@@ -61,7 +61,7 @@ window.SYM_API = {
             // Where to keep version information?
             let version = {
                 containerIdentifier: "SymphonyOpenFin",
-                containerVer: "0.0.12",
+                containerVer: "0.0.14",
                 apiVer: "1.0.0"
             }
             resolve(version)
