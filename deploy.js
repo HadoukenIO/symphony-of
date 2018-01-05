@@ -70,13 +70,13 @@ function* deploy () {
     replServer.question('ok? ', reader);
     yield;
 
-    command = `GIT_PAGER=cat git diff; git show`;
+    command = `npm run build staging`;
     console.log(command);
     execSync(command);
     replServer.question('ok? ', reader);
     yield;
 
-    command = `npm run build staging`;
+    command = `git --no-pager diff upstream/develop`;
     console.log(command);
     execSync(command);
     replServer.question('ok? ', reader);
