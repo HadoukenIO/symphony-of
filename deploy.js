@@ -51,29 +51,18 @@ function* deploy () {
     replServer.question('ok? ', reader);
     yield;
 
+    command = `git rev-list --tags --max-count=1`;
+    const latestTagSha = execSync(command);
 
-
-
-
-    command = "npm version --no-git-tag-version --allow-same-version $(git describe $(git rev-list --tags --max-count=1))"; // 
-    // console.log(command);
-    // execSync(command);
-    // replServer.question('ok? ', reader);
-    // yield;
-
-
-    exec(command, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`exec error: ${error}`);
-          process.exit();
-        }
-        console.log(`stdout: ${stdout}`);
-        console.log(`stderr: ${stderr}`);
-        replServer.question('ok? ', reader);
-      });
-      yield;
-
-
+    command = `git describe ${latestTagSha.toString()}`;
+    const latestTag = execSync(command);
+    console.log('the tag', latestTag.toString());
+    
+    command = `npm version --no-git-tag-version --allow-same-version ${latestTag.toString()}`;
+    console.log(command);
+    execSync(command);
+    replServer.question('ok? ', reader);
+    yield;
 
     command = `npm version patch --force -m "staging build %s"`;
     console.log(command);
