@@ -210,10 +210,13 @@ window.addEventListener('load', () => {
         popsToOpen = [];
   
         Array.from(elements).forEach(el => {
+            //set user id for im
             var userId = el.children[0] && el.children[0].attributes['1'] && el.children[0].attributes['1'].value;
+            //set userID for chatroom
             if (!userId && !el.children[1]) { 
                 userId = el.children[0] && el.children[0].innerText;
             }
+            // set userid for multi-chat
             if(el.children[1]) {
                 var memCount = el.children.length;
                 var userId = [];
@@ -221,29 +224,33 @@ window.addEventListener('load', () => {
                     userId.push(el.children[i].attributes[1].value); 
                 }
             }
-            console.log(userId);
             el.parentNode.parentNode.parentNode.addEventListener('click', () => {
+                // add click handle to focus popout on left sidebar click
                 for (var pop of Object.keys(window.popouts)) {
+                    // logic for multi-chat
                     if(Array.isArray(userId) && Array.isArray(window.popouts[pop].userId) && !window.popouts[pop].hide) {
                         if(userId.includes(window.popouts[pop].userId[0]) && userId.includes(window.popouts[pop].userId[1])) {
                             let popWin = fin.desktop.Window.wrap(window.popouts[pop].uuid, window.popouts[pop].name);
                             window.winFocus(popWin);
                         }
                     }
+                    // for im and chatrooms
                     else if(window.popouts[pop].userId === userId && !window.popouts[pop].hide) {
                         let popWin = fin.desktop.Window.wrap(window.popouts[pop].uuid, window.popouts[pop].name);
                         window.winFocus(popWin);
                     }
                 }
             })
-  
+            
+            // open popouts on startup
             for (var pop of Object.keys(window.popouts)) {
-                // if userid is array - see if all the same userIds in array if so add to pops
-                if(Array.isArray(userId) && Array.isArray(window.popouts[pop].userId) && window.popouts[pop].memberCount === memCount && !window.popouts[pop].hide) {
-                    if(userId.includes(window.popouts[pop].userId[0]) && userId.includes(window.popouts[pop].userId[1])) {
+                //  MULTI-CHAT - if userid is array - see if all the same userIds in array if so add to pops
+                if(Array.isArray(userId) && Array.isArray(window.popouts[pop].userId) && !window.popouts[pop].hide) {
+                    if(userId.includes(window.popouts[pop].userId[0]) && userId.includes(window.popouts[pop].userId[1]) && window.popouts[pop].memberCount === memCount) {
                         popsToOpen.push(el);
                     }
                 }
+                // ims and chatrooms
                 else if(window.popouts[pop].userId && window.popouts[pop].userId === userId && !window.popouts[pop].hide) {
                     popsToOpen.push(el);
                 }
@@ -338,6 +345,7 @@ window.addEventListener('load', () => {
                 // Set userId for startup
                 if(streamId.includes('chatroom')) {
                     streamId = streamId.slice(8);
+                    // set for chatroom
                     waitForElement('#chatroom-header-name',0,ele=> {
                         let userId = ele[0].children[0].children[0].children[0].children[0].innerText;
                         window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};                                
@@ -345,13 +353,16 @@ window.addEventListener('load', () => {
                         window.localStorage.setItem('wins', JSON.stringify(window.popouts));                              
                     })
                 } else {
+                    // is im or multi-chat
                     streamId = streamId.slice(2);
+                    // 1to1 im logic
                     waitForElement('.aliasable.colorable.has-profile.truncate-text',0,elem => {
                         let userId =elem[0] && elem[0].attributes['1'].value;
                         window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};                        
                         window.popouts[streamId].userId = userId;            
                         window.localStorage.setItem('wins', JSON.stringify(window.popouts));
                     })
+                    // multi-chat logic
                     waitForElement('.group-chat__name.text-selectable.truncate-text',0,e => {
                         try {
                             var userId =[e[0].children[0].attributes[1].value, e[0].children[1].attributes[1].value]
