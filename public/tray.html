@@ -101,17 +101,17 @@
 
     const about = () => {
         var about = new fin.desktop.Window({
-        name: "about",
-        url: `${window.targetUrl}about.html`,
-        defaultWidth: 400,
-        defaultHeight: 300,
-        maxHeight:300,
-        defaultCenter:true,
-        resizable: false,
-        autoShow: true,
-        alwaysOnTop: true,
-        icon: `${window.targetUrl}icon/symphony.png`,
-    }, () => about.setAsForeground());
+            name: "about",
+            url: `${window.targetUrl}about.html`,
+            defaultWidth: 400,
+            defaultHeight: 300,
+            maxHeight:300,
+            defaultCenter:true,
+            resizable: false,
+            autoShow: true,
+            alwaysOnTop: true,
+            icon: `${window.targetUrl}icon/symphony.png`,
+        }, () => about.setAsForeground());
     };
     const autoLaunch = () => fin.desktop.Application.getCurrent().getShortcuts(shortcuts=> {
         let option = !shortcuts.systemStartup;
