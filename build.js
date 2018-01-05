@@ -10,6 +10,8 @@ const isProdBuild = !(isLocalBuild || isStagingBuild);
 let targetUrl;
 let launchAppUuid;
 
+// NEED TO UPDATE VERSION FUNCTION IN MAIN.JS SOMEWHERE IN BUILD PROCESS
+
 switch (env) {
     case 'staging': {
         targetUrl = 'https://cdn.openfin.co/demos/symphony-of-staging/';

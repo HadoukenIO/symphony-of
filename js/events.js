@@ -1,6 +1,7 @@
 let app = fin.desktop.Application.getCurrent();
 let win = app.getWindow();
 window.rateLimiter = false;
+window.once = false;
 window.popoutChanges = [];
 //Overwrite closing of application to minimize instead
 
@@ -20,29 +21,18 @@ app.addEventListener("window-navigation-rejected", obj => {
     }
 });
 
+// In case runtime hangs on exit
+app.addEventListener("not-responding", () => {
+    fin.desktop.System.exit(() => console.log("successful exit"), err => console.log("exit failure: " + err));
+});
+
 // Things to do ONLY once and ONLY in the main window:
 window.addEventListener('load', () => {
     let currentWindow = fin.desktop.Window.getCurrent();
-    window.once = false;
     if(currentWindow.uuid===currentWindow.name && !window.once) {
         //navigate to converation from main window on notification click
-        window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};    
-        // KEEPING  THE BELOW JUST IN CASE - IF SYM CLICK API WORKS DELETE THIS
+        window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
 
-        // fin.desktop.InterApplicationBus.subscribe("*", "note-clicked", streamId => {
-        //     let elements = document.querySelectorAll('.navigation-item-name');
-        //     Array.from(elements).forEach(el => {
-        //         let userId = el.children[0] && el.children[0].attributes['1'] && el.children[0].attributes['1'].value;
-        //         if (!userId) { 
-        //             userId = el.children[0] && el.children[0].innerText;
-        //         };
-        //         if (userId === window.popouts[streamId].userId) {
-        //             el.parentNode.parentNode.parentNode.click();
-        //             window.winFocus(currentWindow);
-        //         }
-        //     });
-        // });
-        
         // set main window state
         if (window.popouts.main) {
             const { left, top:tiptop, width, height } = window.popouts.main; 
@@ -87,6 +77,7 @@ window.addEventListener('load', () => {
             shadow: true,
             saveWindowState: false,
             alwaysOnTop: true,
+            icon: `${window.targetUrl}icon/symphony.png`,
         });
         // Click on tray
         const clickListener = clickInfo => {
@@ -146,7 +137,7 @@ app.addEventListener("window-created", obj => {
     }
 
     // find window and set bounds
-    if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter') {
+    if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter' && obj.name !== 'system-tray') {
         for (var pop of Object.keys(window.popouts)) {
             if(window.popouts[pop].name === obj.name) {
                 if(window.popouts[pop].left) {
@@ -186,7 +177,7 @@ app.addEventListener("window-created", obj => {
 
 app.addEventListener("window-closed", obj => {
     window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
-    if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter') {        
+    if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter' && obj.name !== 'system-tray') {        
         for (var pop of Object.keys(window.popouts)) {
             if(window.popouts[pop] && window.popouts[pop].name === obj.name) {
                 let targetPop = pop;
@@ -219,14 +210,27 @@ window.addEventListener('load', () => {
         popsToOpen = [];
   
         Array.from(elements).forEach(el => {
-            let userId = el.children[0] && el.children[0].attributes['1'] && el.children[0].attributes['1'].value;
-            if (!userId) { 
+            var userId = el.children[0] && el.children[0].attributes['1'] && el.children[0].attributes['1'].value;
+            if (!userId && !el.children[1]) { 
                 userId = el.children[0] && el.children[0].innerText;
-            } 
+            }
+            if(el.children[1]) {
+                var memCount = el.children.length;
+                var userId = [];
+                for(var i = 0; i < el.children.length; i+=2) {
+                    userId.push(el.children[i].attributes[1].value); 
+                }
+            }
             el.parentNode.parentNode.parentNode.addEventListener('click', () => {
                 console.log('in click')
                 for (var pop of Object.keys(window.popouts)) {
-                    if(window.popouts[pop].userId === userId && !window.popouts[pop].hide) {
+                    if(Array.isArray(userId) && Array.isArray(window.popouts[pop].userId) && !window.popouts[pop].hide) {
+                        if(userId.includes(window.popouts[pop].userId[0]) && userId.includes(window.popouts[pop].userId[1])) {
+                            let popWin = fin.desktop.Window.wrap(window.popouts[pop].uuid, window.popouts[pop].name);
+                            window.winFocus(popWin);
+                        }
+                    }
+                    else if(window.popouts[pop].userId === userId && !window.popouts[pop].hide) {
                         let popWin = fin.desktop.Window.wrap(window.popouts[pop].uuid, window.popouts[pop].name);
                         window.winFocus(popWin);
                     }
@@ -237,8 +241,14 @@ window.addEventListener('load', () => {
             })
   
             for (var pop of Object.keys(window.popouts)) {
-                if(window.popouts[pop].userId && window.popouts[pop].userId === userId && !window.popouts[pop].hide) {
-                    popsToOpen.push(el)
+                // if userid is array - see if all the same userIds in array if so add to pops
+                if(Array.isArray(userId) && Array.isArray(window.popouts[pop].userId) && window.popouts[pop].memberCount === memCount && !window.popouts[pop].hide) {
+                    if(userId.includes(window.popouts[pop].userId[0]) && userId.includes(window.popouts[pop].userId[1])) {
+                        popsToOpen.push(el);
+                    }
+                }
+                else if(window.popouts[pop].userId && window.popouts[pop].userId === userId && !window.popouts[pop].hide) {
+                    popsToOpen.push(el);
                 }
             }
         });
@@ -319,10 +329,11 @@ window.addEventListener('load', () => {
     };
 
     let curWindow = fin.desktop.Window.getCurrent();
-    if (curWindow.uuid!==curWindow.name && window.name === window.parent.name) {
+    if (curWindow.uuid!==curWindow.name && window.name === window.parent.name && curWindow.name !== 'system-tray') {
         // remove 'x' that does nothing on click
         waitForElement('.close-module',0,el=>el[0].style.display = 'none');
 
+        //set userId on window.popouts so that we can use later when necessary (on startup)
         waitForElement('.floater',0,element=>{
             waitForElement('.simple_grid_main_container',0,el=> {
                 window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};        
@@ -346,16 +357,30 @@ window.addEventListener('load', () => {
                         window.popouts[streamId].type = 'im'; 
                         window.localStorage.setItem('wins', JSON.stringify(window.popouts));
                     })
+                    waitForElement('.group-chat__name.text-selectable.truncate-text',0,e => {
+                        try {
+                            var userId =[e[0].children[0].attributes[1].value, e[0].children[1].attributes[1].value]
+                        } catch(e) {
+                            console.log(e)
+                        }
+                        if (userId) {
+                            window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};                        
+                            window.popouts[streamId].userId = userId;
+                            window.popouts[streamId].memberCount = +e[0].parentNode.children[1].children[0].innerText.slice(0,1)            
+                            window.localStorage.setItem('wins', JSON.stringify(window.popouts));    
+                        }
+                    })
                 }        
             })
         });
-    } else {
+    } else if (curWindow.name !== 'system-tray'){
         //Re-open popouts & inbox when app is restarted 
         waitForElement('button.toolbar-btn-inbox',0,el=> inboxCheck(el));    
         waitForElement('.navigation-item-name',0,el=> popoutsCheck(el));
     }
 
-    // Navigation from Inbox
-    waitForElement('#dock',0,el=> inboxNavigation(el));
-
+    if (curWindow.name !== 'system-tray'){
+        // Navigation from Inbox
+        waitForElement('#dock',0,el=> inboxNavigation(el));
+    }
 });

@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>About Symphony-OpenFin</title>
+    <title>About Symphony</title>
     <style>
         html, body {
             margin: 0;
@@ -19,13 +19,13 @@
         .version-text {
             flex: 1;
             font-size: 1em;
+            padding: 10px;
             color: #2f2f2f;
         }
         .copyright-text {
             flex: 1;
-            padding: 10px;
             font-size: 0.6em;
-            color: #7f7f7f;
+            color: white;
         }
         .content {
             text-align: center;
@@ -47,9 +47,10 @@
 <body>
     <div class="content">
         <img class="logo" src="icon/symphony.png">
-        <span id="app-name" class="name">Symphony-OpenFin</span>
+        <span id="app-name" class="name">Symphony</span>
         <span id="pod-name" class="version-text"></span>
-        <span id="staging" class="version-text"></span>
+        <span id="staging" class="copyright-text"></span>
+        <span id="version" class="copyright-text"></span>
     </div>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -63,9 +64,13 @@
                     pod.innerHTML += manifest.startup_app.url;
                 }
                 if(stage.includes('staging')) {
-                    let stage = document.getElementById('pod-name');
+                    let stage = document.getElementById('staging');
                     stage.innerHTML += '(staging)';
                 }
+                let version = document.getElementById('version');
+                window.ssf.getVersionInfo().then(info => {
+                    version.innerHTML += `v${info.containerVer}`;
+                });
             })
         })
     </script>
