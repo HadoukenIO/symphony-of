@@ -129,7 +129,7 @@ window.addEventListener('load', () => {
 
 // Add logic to keep track of window positioning
 app.addEventListener("window-created", obj => {
-    window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};    
+    window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
     let childWin = fin.desktop.Window.wrap(obj.uuid, obj.name)
     //update always on top option for Child Windows
     if (window.popouts.alwaysOnTop) {
@@ -141,9 +141,16 @@ app.addEventListener("window-created", obj => {
         for (var pop of Object.keys(window.popouts)) {
             if(window.popouts[pop].name === obj.name) {
                 if(window.popouts[pop].left) {
-                    const { left, top, width, height } = window.popouts[pop]; 
-                    childWin.setBounds(left, top, width, height);         
-                };
+                    const { left, top, width, height } = window.popouts[pop];
+                    window.popouts[pop].hide = false;
+                    window.localStorage.setItem('wins', JSON.stringify(window.popouts));
+                    childWin.setBounds(left, top, width, height);       
+                } else {
+                    window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+                    window.popouts[pop] = window.popouts[pop] ? Object.assign(window.popouts[pop], obj) : obj;
+                    window.popouts[pop].hide = false;
+                    window.localStorage.setItem('wins', JSON.stringify(window.popouts));                    
+                }
             }
         }
         // listen for bounds changed to update position
@@ -185,7 +192,7 @@ app.addEventListener("window-closed", obj => {
                     window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};                    
                     window.popouts[targetPop].hide = true;
                     window.localStorage.setItem('wins', JSON.stringify(window.popouts));     
-                },1000)
+                },1200)
             }
         }
     };
@@ -350,6 +357,7 @@ window.addEventListener('load', () => {
                         let userId = ele[0].children[0].children[0].children[0].children[0].innerText;
                         window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};                                
                         window.popouts[streamId].userId = userId;
+                        window.popouts[streamId].hide = false;
                         window.localStorage.setItem('wins', JSON.stringify(window.popouts));                              
                     })
                 } else {
@@ -359,7 +367,8 @@ window.addEventListener('load', () => {
                     waitForElement('.aliasable.colorable.has-profile.truncate-text',0,elem => {
                         let userId =elem[0] && elem[0].attributes['1'].value;
                         window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};                        
-                        window.popouts[streamId].userId = userId;            
+                        window.popouts[streamId].userId = userId;     
+                        window.popouts[streamId].hide = false;       
                         window.localStorage.setItem('wins', JSON.stringify(window.popouts));
                     })
                     // multi-chat logic
@@ -372,7 +381,8 @@ window.addEventListener('load', () => {
                         if (userId) {
                             window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};                        
                             window.popouts[streamId].userId = userId;
-                            window.popouts[streamId].memberCount = +e[0].parentNode.children[1].children[0].innerText.slice(0,1)            
+                            window.popouts[streamId].memberCount = +e[0].parentNode.children[1].children[0].innerText.slice(0,1);
+                            window.popouts[streamId].hide = false;           
                             window.localStorage.setItem('wins', JSON.stringify(window.popouts));    
                         }
                     })
