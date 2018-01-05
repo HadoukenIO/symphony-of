@@ -70,7 +70,7 @@ function* deploy () {
     replServer.question('ok? ', reader);
     yield;
 
-    command = `git show --no-pager`;
+    command = `GIT_PAGER=cat git diff; git show`;
     console.log(command);
     execSync(command);
     replServer.question('ok? ', reader);
