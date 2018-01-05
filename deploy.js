@@ -51,7 +51,7 @@ function* deploy () {
     replServer.question('ok? ', reader);
     yield;
 
-    command = `npm version --no-git-tag-version $(git describe $(git rev-list --tags --max-count=1))`;
+    command = `npm version --no-git-tag-version --allow-same-version $(git describe $(git rev-list --tags --max-count=1))`;
     console.log(command);
     execSync(command);
     replServer.question('ok? ', reader);
@@ -81,7 +81,7 @@ function* deploy () {
     replServer.question('ok? ', reader);
     yield;
 
-    command = `git push upstream HEAD:develop`;
+    command = `git push upstream HEAD:develop_test`;
     console.log(command);
     execSync(command);
     replServer.question('ok? ', reader);
