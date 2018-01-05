@@ -225,7 +225,7 @@ window.addEventListener('load', () => {
             }
             // set userid for multi-chat
             if(el.children[1]) {
-                var memCount = el.children.length;
+                var memCount = Math.ceil(el.children.length/2) + 1;
                 var userId = [];
                 for(var i = 0; i < el.children.length; i+=2) {
                     userId.push(el.children[i].attributes[1].value); 
@@ -236,7 +236,7 @@ window.addEventListener('load', () => {
                 for (var pop of Object.keys(window.popouts)) {
                     // logic for multi-chat
                     if(Array.isArray(userId) && Array.isArray(window.popouts[pop].userId) && !window.popouts[pop].hide) {
-                        if(userId.includes(window.popouts[pop].userId[0]) && userId.includes(window.popouts[pop].userId[1])) {
+                        if(userId.includes(window.popouts[pop].userId[0]) && userId.includes(window.popouts[pop].userId[1]) && window.popouts[pop].memberCount === memCount) {
                             let popWin = fin.desktop.Window.wrap(window.popouts[pop].uuid, window.popouts[pop].name);
                             window.winFocus(popWin);
                         }
@@ -270,9 +270,9 @@ window.addEventListener('load', () => {
             };
             for(var pop of popsToOpen) {
                 pop.click();
-                await timeout(450);
+                await timeout(500);
                 document.getElementsByClassName('enhanced-pop-out')[0].click();
-                await timeout(650);
+                await timeout(600);
             };
         };
         openPopouts();
