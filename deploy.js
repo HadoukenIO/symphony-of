@@ -51,7 +51,7 @@ function* deploy () {
     replServer.question('ok? ', reader);
     yield;
 
-    command = `npm version from-git --force --no-git-tag-version --allow-same-version`;
+    command = `npm version --no-git-tag-version $(git describe $(git rev-list --tags --max-count=1))`;
     console.log(command);
     execSync(command);
     replServer.question('ok? ', reader);
