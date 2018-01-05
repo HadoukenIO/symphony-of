@@ -7,10 +7,6 @@ const msg = 'message';
 let depgen;
 let replServer;
 
-
-
-
-
 // const { exec } = require('child_process');
 // exec('cat *.js bad_file | wc -l', (error, stdout, stderr) => {
 //   if (error) {
@@ -22,22 +18,12 @@ let replServer;
 // });
 
 
-
-
-// Promise.resolve().then(() => {
-//     return new Promise((r) => {
-
-//     })
-// })
-
-
-
-function reader (input) {
-    if (input !== 'y') {process.exit()}
+function reader(input) {
+    if (input !== 'y') { process.exit() }
     depgen.next();
 }
 
-function* deploy () {
+function* deploy() {
     let command = `git fetch --all`;
 
     console.log(command);
@@ -57,7 +43,7 @@ function* deploy () {
     command = `git describe ${latestTagSha.toString()}`;
     const latestTag = execSync(command);
     console.log('the tag', latestTag.toString());
-    
+
     command = `npm version --no-git-tag-version --allow-same-version ${latestTag.toString()}`;
     console.log(command);
     execSync(command);
@@ -71,15 +57,27 @@ function* deploy () {
     yield;
 
     command = `npm run build staging`;
-    console.log(command);
-    execSync(command);
-    replServer.question('ok? ', reader);
+    exec(command, (error, stdout) => {
+        if (error) {
+            console.error(`exec error: ${error}`);
+            process.exit(1)
+            return;
+        }
+        console.log(stdout);
+        replServer.question('ok? ', reader);
+    });
     yield;
 
     command = `git --no-pager diff upstream/develop`;
-    console.log(command);
-    execSync(command);
-    replServer.question('ok? ', reader);
+    exec(command, (error, stdout) => {
+        if (error) {
+            console.error(`exec error: ${error}`);
+            process.exit(1)
+            return;
+        }
+        console.log(stdout);
+        replServer.question('ok? ', reader);
+    });
     yield;
 
     command = `git push upstream --tags`;
@@ -100,7 +98,7 @@ function* deploy () {
 replServer = repl.start({ prompt: '> ', eval: reader })
 depgen = deploy();
 // replServer.write('start deploy? ');
-replServer.question('start deploy? ', reader)
+replServer.question('start deploy? (will call git reset --hard HEAD in current environment) ', reader)
 
 
 
