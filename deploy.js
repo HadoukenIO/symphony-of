@@ -51,7 +51,7 @@ function* deploy () {
     replServer.question('ok? ', reader);
     yield;
 
-    command = "npm version --no-git-tag-version --allow-same-version $(git describe $(git rev-list --tags --max-count=1))";
+    command = "npm version --no-git-tag-version --allow-same-version v0.0.16"; // $(git describe $(git rev-list --tags --max-count=1))
     console.log(command);
     execSync(command, {stdio:['inherit','pipe','pipe']});
     replServer.question('ok? ', reader);
