@@ -1,5 +1,5 @@
 const repl = require('repl');
-const { execSync } = require('child_process');
+const { exec, execSync } = require('child_process');
 
 
 const msg = 'message';
@@ -51,11 +51,29 @@ function* deploy () {
     replServer.question('ok? ', reader);
     yield;
 
-    command = "npm version --no-git-tag-version --allow-same-version v0.0.16"; // $(git describe $(git rev-list --tags --max-count=1))
-    console.log(command);
-    execSync(command, {stdio:['inherit','pipe','pipe']});
-    replServer.question('ok? ', reader);
-    yield;
+
+
+
+
+    command = "npm version --no-git-tag-version --allow-same-version $(git describe $(git rev-list --tags --max-count=1))"; // 
+    // console.log(command);
+    // execSync(command);
+    // replServer.question('ok? ', reader);
+    // yield;
+
+
+    exec(command, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`exec error: ${error}`);
+          process.exit();
+        }
+        console.log(`stdout: ${stdout}`);
+        console.log(`stderr: ${stderr}`);
+        replServer.question('ok? ', reader);
+      });
+      yield;
+
+
 
     command = `npm version patch --force -m "staging build %s"`;
     console.log(command);
