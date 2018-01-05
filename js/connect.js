@@ -66,7 +66,7 @@ if (thiswindow.uuid===thiswindow.name && window.name === window.parent.name && !
     fin.desktop.InterApplicationBus.subscribe("*", "symphony-connect", (msg, uuid, name) => {
         console.log("The application " + uuid + " sent this message: " + msg);
         fin.desktop.InterApplicationBus.send(uuid, name, "symphony-connect-out", 'Symphony Connect!')
-    }, () => fin.desktop.InterApplicationBus.publish("*", "symphony-connect-out", 'Symphony Started!', ()=>console.log('published connect-out')))
+    }, () => fin.desktop.InterApplicationBus.publish("symphony-connect-out", 'Symphony Started!', ()=>console.log('published connect-out')))
     
     // Allow external app to get symphony notifications
     fin.desktop.InterApplicationBus.subscribe("*", "initiate-symphony-notes", (msg, uuid, name) => {

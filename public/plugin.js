@@ -22,6 +22,11 @@ class symphonyPlugin {
                 () => fin.desktop.InterApplicationBus.publish("symphony-connect", {uuid:identity.uuid, name:identity.name}),
                 e=> console.log('connect error:', e)
             );
+
+            fin.desktop.InterApplicationBus.subscribe("*", "symphony-exit-out", () => {
+                // reconnect on symphony exit  
+            })
+
         })
     }
 
@@ -39,7 +44,6 @@ class symphonyPlugin {
 
     getUserContextUpdates(cb) {
         // turn this on? 
-        // fin.desktop.InterApplicationBus.send(this.symphonyUuid, "symphony-get-user", console.log('Symphony will send user context!'));
         fin.desktop.InterApplicationBus.subscribe(this.symphonyUuid, "symphony-user-focus", cb);
     }
 
@@ -59,13 +63,13 @@ class symphonyPlugin {
 
 fin.symphonyPlugin = symphonyPlugin;
 
-// fin.symphonyPlugin.connect()
-// .then(SymOFApi => {
-//    console.log(SymOFApi)
-//    SymOFApi.onNotification(e=>console.log(e));
-//    SymOFApi.surpressNotificationWindows();
-//    SymOFApi.getUserContextUpdates(e => console.log('got user', e));
-//    setTimeout(()=>SymOFApi.changeContext({name:'xavier'}),8000);
-//    setTimeout(()=>SymOFApi.changeContext({emails:['xavier@openfin.co', 'mark@openfin.co']}),8000);
-// })
+fin.symphonyPlugin.connect()
+.then(SymOFApi => {
+   console.log(SymOFApi)
+   SymOFApi.onNotification(e=>console.log(e));
+   SymOFApi.surpressNotificationWindows();
+   SymOFApi.getUserContextUpdates(e => console.log('got user', e));
+   setTimeout(()=>SymOFApi.changeContext({name:'xavier'}),8000);
+   setTimeout(()=>SymOFApi.changeContext({emails:['xavier@openfin.co', 'mark@openfin.co']}),8000);
+})
 

@@ -8,6 +8,8 @@ window.popoutChanges = [];
 win.addEventListener('close-requested',() => {
     window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
     if(window.popouts.closeOnExit) {
+        //if there are any connects, send message letting them know about exit
+        fin.desktop.InterApplicationBus.publish("symphony-exit-out", 'Symphony App Exit!', ()=>console.log('published exit-out'));
         fin.desktop.Application.getCurrent().close(true);
     } else {
         fin.desktop.Application.getCurrent().getWindow().minimize();        
