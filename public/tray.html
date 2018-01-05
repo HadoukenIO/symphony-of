@@ -78,16 +78,19 @@
         window.trayOptions = JSON.parse(window.localStorage.getItem('tray')) || {};
         window.trayOptions = Object.assign(window.trayOptions, options);
         for (const opt of Object.keys(options)) {
-            if(window.trayOptions[opt]) {
+            if(window.trayOptions[opt] && opt !== 'systemStartup') {
                 document.getElementById(opt).className += 'checked';
             }
         }
-
         window.localStorage.setItem('tray', JSON.stringify(window.trayOptions));                    
     },() => {
         fin.desktop.InterApplicationBus.send(fin.desktop.Window.getCurrent().uuid, 'ready', 'ready')
     });
-
+    fin.desktop.Application.getCurrent().getShortcuts(shortcuts=> {
+        if(shortcuts.systemStartup) {
+            document.getElementById('systemStartup').classList.toggle('checked');
+        }
+    });
     const updateOption = option => {
         window.trayOptions = JSON.parse(window.localStorage.getItem('tray')) || {};
         window.trayOptions.option = !window.trayOptions.option;
@@ -95,11 +98,6 @@
         document.getElementById(option).classList.toggle('checked');
         window.localStorage.setItem('tray', JSON.stringify(window.trayOptions));                    
     }
-    fin.desktop.Application.getCurrent().getShortcuts(shortcuts=> {
-        window.trayOptions = JSON.parse(window.localStorage.getItem('tray')) || {};
-        window.trayOptions.systemStartup = !!shortcuts.systemStartup;
-        window.localStorage.setItem('tray', JSON.stringify(window.trayOptions));                    
-    });
 
     const about = () => {
         var about = new fin.desktop.Window({
