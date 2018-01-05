@@ -6,7 +6,7 @@ if (thiswindow.uuid===thiswindow.name && window.name === window.parent.name && !
     window.connections = {notifications:[]};
     window.localStorage.setItem('connects', JSON.stringify(window.connections));    
 
-    //HELPERS---------------------------------------------------------->
+    //HELPERS------------------------------------------------------------------------------>
 
     // takes an array of emails and starts chat with those users
     window.startChatByEmail = (emails) => {
@@ -58,6 +58,7 @@ if (thiswindow.uuid===thiswindow.name && window.name === window.parent.name && !
             }
         })                       
     }
+    // END HELPERS ------------------------------------------------------------------------------------->
 
     console.log('subscribing to external connection logic')
 

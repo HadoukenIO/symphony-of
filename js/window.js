@@ -96,6 +96,12 @@ window.httpPost = (url, body) => {
 //     });
 // }
 
+// NEED DIFFERENT API FOR THIS TO WORK
+// window.sendMessage = (streamId, msg) => {
+//     let id = streamId.split('/').join('_').split('+').join('-').slice(0,-2);
+//     return window.httpPostMsg(`https://openfin.symphony.com/agent/v4/stream/${id}/message/create`, { message: msg });        
+// }
+
 window.startChat = userIdArray => {
     window.httpPost('/pod/v1/im/create', userIdArray)
     .then(data => {
@@ -128,9 +134,4 @@ window.getStreamInfo = streamId => {
     let id = streamId.split('/').join('_').split('+').join('-').slice(0,-2);
     return window.httpGet(`/pod/v1/streams/${id}/info`);
 }
-
-// window.sendMessage = (streamId, msg) => {
-//     let id = streamId.split('/').join('_').split('+').join('-').slice(0,-2);
-//     return window.httpPostMsg(`https://openfin.symphony.com/agent/v4/stream/${id}/message/create`, { message: msg });        
-// }
 
