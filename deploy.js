@@ -51,11 +51,17 @@ function* deploy () {
     replServer.question('ok? ', reader);
     yield;
 
-    // command = `npm version patch --force -m "staging build %s"`;
-    // console.log(command);
-    // execSync(command);
-    // replServer.question('ok? ', reader);
-    // yield;
+    command = `npm version from-git --force --no-git-tag-version`;
+    console.log(command);
+    execSync(command);
+    replServer.question('ok? ', reader);
+    yield;
+
+    command = `npm version patch --force -m "staging build %s"`;
+    console.log(command);
+    execSync(command);
+    replServer.question('ok? ', reader);
+    yield;
 
     command = `git show --no-pager`;
     console.log(command);
