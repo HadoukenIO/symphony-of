@@ -6,7 +6,7 @@ console.log(`running in ${process.cwd()}`);
 const replServer = repl.start({ eval: reader })
 const depgen = deploy();
 
-replServer.question('start deploy? (will reset --hard HEAD in current environment) ', reader);
+replServer.question('start deploy? ', reader);
 
 function reader(input) {
     if (input !== 'y') { process.exit(1) }
