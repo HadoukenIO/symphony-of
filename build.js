@@ -5,6 +5,7 @@ const env = process.argv[2]
 const port = process.argv[3] || '8080'
 const isLocalBuild = env === 'local';
 const isStagingBuild = env === 'staging';
+const version = require('./package.json').version;
 const isProdBuild = !(isLocalBuild || isStagingBuild);
 
 let targetUrl;
@@ -29,7 +30,7 @@ switch (env) {
     }
 }
 
-fs.writeFileSync('./buildtarget.js', `window.targetUrl='${targetUrl}';`);
+fs.writeFileSync('./buildtarget.js', `window.targetUrl='${targetUrl}';window.symphonyOpenFinVersion='${version}';`);
 
 const fileString = "./buildtarget.js ./js/targetUrl.js ./js/window.js ./js/notify.js ./js/screensnippet.js ./js/main.js ./js/events.js > ./public/bundle.js";
 
