@@ -76,7 +76,7 @@ function* deploy() {
     replServer.question('ok? ', reader);
     yield;
 
-    command = `git push upstream HEAD:develop_test`;
+    command = `git push upstream HEAD:develop`;
     console.log(command);
     execSync(command);
     replServer.question('ok? ', reader);
