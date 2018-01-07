@@ -83,6 +83,7 @@ function* deploy() {
     yield;
 
     command = `aws s3 cp ./public s3://cdn.openfin.co/demos/symphony-of-staging/ --recursive`;
+    console.log(command);
     exec(command, (error, stdout) => {
         if (error) {
             console.error(`exec error: ${error}`);
@@ -95,6 +96,7 @@ function* deploy() {
     yield;
 
     command = `aws cloudfront create-invalidation --distribution-id E16N7NZUXTHZCF --paths /demos/symphony-of-staging/*`;
+    console.log(command);
     exec(command, (error, stdout) => {
         if (error) {
             console.error(`exec error: ${error}`);
