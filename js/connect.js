@@ -93,7 +93,7 @@ if (thiswindow.uuid===thiswindow.name && window.name === window.parent.name && !
     fin.desktop.InterApplicationBus.subscribe("*", "symphony-context", (message, uuid, name) => {
         console.log("The application " + uuid + '/' + name + " sent this message: " + message);
         //takes an array of user emails - if emails array exists, search it
-        if(message&& message.emails && Array.isArray(message.emails)) {
+        if(message && message.emails && Array.isArray(message.emails)) {
             window.startChatByEmail(message.emails);
             // cannot search multiple people by name... could get too many results to resolve... 
         } else if(message && message.name) {
