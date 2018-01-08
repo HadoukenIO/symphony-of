@@ -57,8 +57,6 @@ class symphonyPlugin {
     }
 
     getUserContextUpdates(cb) {
-        console.log('in get user, before sub')
-        // turn this on? 
         let listener = (msg, uuid, name) => {
             cb(msg);
         };
