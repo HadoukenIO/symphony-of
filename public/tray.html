@@ -78,16 +78,19 @@
         window.trayOptions = JSON.parse(window.localStorage.getItem('tray')) || {};
         window.trayOptions = Object.assign(window.trayOptions, options);
         for (const opt of Object.keys(options)) {
-            if(window.trayOptions[opt]) {
+            if(window.trayOptions[opt] && opt !== 'systemStartup') {
                 document.getElementById(opt).className += 'checked';
             }
         }
-
         window.localStorage.setItem('tray', JSON.stringify(window.trayOptions));                    
     },() => {
         fin.desktop.InterApplicationBus.send(fin.desktop.Window.getCurrent().uuid, 'ready', 'ready')
     });
-
+    fin.desktop.Application.getCurrent().getShortcuts(shortcuts=> {
+        if(shortcuts.systemStartup) {
+            document.getElementById('systemStartup').classList.toggle('checked');
+        }
+    });
     const updateOption = option => {
         window.trayOptions = JSON.parse(window.localStorage.getItem('tray')) || {};
         window.trayOptions.option = !window.trayOptions.option;
@@ -95,25 +98,20 @@
         document.getElementById(option).classList.toggle('checked');
         window.localStorage.setItem('tray', JSON.stringify(window.trayOptions));                    
     }
-    fin.desktop.Application.getCurrent().getShortcuts(shortcuts=> {
-        window.trayOptions = JSON.parse(window.localStorage.getItem('tray')) || {};
-        window.trayOptions.systemStartup = !!shortcuts.systemStartup;
-        window.localStorage.setItem('tray', JSON.stringify(window.trayOptions));                    
-    });
 
     const about = () => {
         var about = new fin.desktop.Window({
-        name: "about",
-        url: `${window.targetUrl}about.html`,
-        defaultWidth: 400,
-        defaultHeight: 300,
-        maxHeight:300,
-        defaultCenter:true,
-        resizable: false,
-        autoShow: true,
-        alwaysOnTop: true,
-        icon: `${window.targetUrl}icon/symphony.png`,
-    }, () => about.setAsForeground());
+            name: "about",
+            url: `${window.targetUrl}about.html`,
+            defaultWidth: 400,
+            defaultHeight: 300,
+            maxHeight:300,
+            defaultCenter:true,
+            resizable: false,
+            autoShow: true,
+            alwaysOnTop: true,
+            icon: `${window.targetUrl}icon/symphony.png`,
+        }, () => about.setAsForeground());
     };
     const autoLaunch = () => fin.desktop.Application.getCurrent().getShortcuts(shortcuts=> {
         let option = !shortcuts.systemStartup;

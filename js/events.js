@@ -3,37 +3,108 @@ let win = app.getWindow();
 window.rateLimiter = false;
 window.once = false;
 window.popoutChanges = [];
-//Overwrite closing of application to minimize instead
-
-win.addEventListener('close-requested',() => {
-    window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
-    if(window.popouts.closeOnExit) {
-        //if there are any connects, send message letting them know about exit
-        fin.desktop.InterApplicationBus.publish("symphony-exit-out", 'Symphony App Exit!', ()=>console.log('published exit-out'));
-        fin.desktop.Application.getCurrent().close(true);
-    } else {
-        fin.desktop.Application.getCurrent().getWindow().minimize();        
-    }
-});
-
-//add handling for navigation outside of symphony
-app.addEventListener("window-navigation-rejected", obj => {
-    if (name==='main') {
-        fin.desktop.System.openUrlWithBrowser(obj.url);
-    }
-});
-
-// In case runtime hangs on exit
-app.addEventListener("not-responding", () => {
-    fin.desktop.System.exit(() => console.log("successful exit"), err => console.log("exit failure: " + err));
-});
 
 // Things to do ONLY once and ONLY in the main window:
 window.addEventListener('load', () => {
     let currentWindow = fin.desktop.Window.getCurrent();
+    let application = fin.desktop.Application.getCurrent();
+
     if(currentWindow.uuid===currentWindow.name && !window.once) {
         //navigate to converation from main window on notification click
         window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+
+        //Overwrite closing of application to minimize instead
+        currentWindow.addEventListener('close-requested',() => {
+            window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+            if(window.popouts.closeOnExit) {
+                fin.desktop.Application.getCurrent().close(true);
+            } else {
+                fin.desktop.Application.getCurrent().getWindow().minimize();        
+            }
+        });
+
+        //add handling for navigation outside of symphony
+        application.addEventListener("window-navigation-rejected", obj => {
+            if (name==='main') {
+                fin.desktop.System.openUrlWithBrowser(obj.url);
+            }
+        });
+
+        // In case runtime hangs on exit
+        application.addEventListener("not-responding", () => {
+            fin.desktop.System.exit(() => console.log("successful exit"), err => console.log("exit failure: " + err));
+        });
+
+        application.addEventListener("window-closed", obj => {
+            window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+            if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter' && obj.name !== 'system-tray') {        
+                for (var pop of Object.keys(window.popouts)) {
+                    if(window.popouts[pop] && window.popouts[pop].name === obj.name) {
+                        let targetPop = pop;
+                        setTimeout(()=> {
+                            window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};                    
+                            window.popouts[targetPop].hide = true;
+                            window.localStorage.setItem('wins', JSON.stringify(window.popouts));     
+                        },1200)
+                    }
+                }
+            };
+        });
+
+        // Add logic to keep track of window positioning
+        application.addEventListener("window-created", obj => {
+            window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+            let childWin = fin.desktop.Window.wrap(obj.uuid, obj.name)
+            //update always on top option for Child Windows
+            if (window.popouts.alwaysOnTop) {
+                childWin.updateOptions({ alwaysOnTop:true })
+            }
+
+            // find window and set bounds
+            if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter' && obj.name !== 'system-tray') {
+                for (var pop of Object.keys(window.popouts)) {
+                    if(window.popouts[pop].name === obj.name) {
+                        if(window.popouts[pop].left) {
+                            const { left, top, width, height } = window.popouts[pop];
+                            window.popouts[pop].hide = false;
+                            window.localStorage.setItem('wins', JSON.stringify(window.popouts));
+                            childWin.setBounds(left, top, width, height);       
+                        } else {
+                            window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+                            window.popouts[pop] = window.popouts[pop] ? Object.assign(window.popouts[pop], obj) : obj;
+                            window.popouts[pop].hide = false;
+                            window.localStorage.setItem('wins', JSON.stringify(window.popouts));                    
+                        }
+                    }
+                }
+                // listen for bounds changed to update position
+                childWin.addEventListener("bounds-changed", win => {
+                    if(!window.rateLimiter) {
+                        window.rateLimiter = true;
+                        setTimeout(()=> {
+                            window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+                            for (var pop of Object.keys(window.popouts)) {
+                                if(window.popouts[pop].name === win.name) {
+                                    window.popouts[pop] = Object.assign(window.popouts[pop], win)
+                                }
+                            }
+                            window.popoutChanges.forEach(fn=>fn());
+                            window.popoutChanges = [];
+                            window.localStorage.setItem('wins', JSON.stringify(window.popouts));                    
+                            window.rateLimiter = false;
+                        },1000);
+                    } else {
+                        window.popoutChanges.push(()=>{
+                            for (var pop of Object.keys(window.popouts)) {
+                                if(window.popouts[pop].name === win.name) {
+                                    window.popouts[pop] = Object.assign(window.popouts[pop], win)
+                                }
+                            }
+                        })
+                    }
+                })
+            }
+        });
 
         // set main window state
         if (window.popouts.main) {
@@ -129,69 +200,7 @@ window.addEventListener('load', () => {
     }
 });
 
-// Add logic to keep track of window positioning
-app.addEventListener("window-created", obj => {
-    window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};    
-    let childWin = fin.desktop.Window.wrap(obj.uuid, obj.name)
-    //update always on top option for Child Windows
-    if (window.popouts.alwaysOnTop) {
-        childWin.updateOptions({ alwaysOnTop:true })
-    }
 
-    // find window and set bounds
-    if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter' && obj.name !== 'system-tray') {
-        for (var pop of Object.keys(window.popouts)) {
-            if(window.popouts[pop].name === obj.name) {
-                if(window.popouts[pop].left) {
-                    const { left, top, width, height } = window.popouts[pop]; 
-                    childWin.setBounds(left, top, width, height);         
-                };
-            }
-        }
-        // listen for bounds changed to update position
-        childWin.addEventListener("bounds-changed", win => {
-            if(!window.rateLimiter) {
-                window.rateLimiter = true;
-                setTimeout(()=> {
-                    window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
-                    for (var pop of Object.keys(window.popouts)) {
-                        if(window.popouts[pop].name === win.name) {
-                            window.popouts[pop] = Object.assign(window.popouts[pop], win)
-                        }
-                    }
-                    window.popoutChanges.forEach(fn=>fn());
-                    window.popoutChanges = [];
-                    window.localStorage.setItem('wins', JSON.stringify(window.popouts));                    
-                    window.rateLimiter = false;
-                },1000);
-            } else {
-                window.popoutChanges.push(()=>{
-                    for (var pop of Object.keys(window.popouts)) {
-                        if(window.popouts[pop].name === win.name) {
-                            window.popouts[pop] = Object.assign(window.popouts[pop], win)
-                        }
-                    }
-                })
-            }
-        })
-    }
-});
-
-app.addEventListener("window-closed", obj => {
-    window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
-    if(obj.name !== obj.uuid && !obj.name.includes('Notifications') && obj.name !== 'queueCounter' && obj.name !== 'system-tray') {        
-        for (var pop of Object.keys(window.popouts)) {
-            if(window.popouts[pop] && window.popouts[pop].name === obj.name) {
-                let targetPop = pop;
-                setTimeout(()=> {
-                    window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};                    
-                    window.popouts[targetPop].hide = true;
-                    window.localStorage.setItem('wins', JSON.stringify(window.popouts));     
-                },1000)
-            }
-        }
-    };
-});
 
 window.addEventListener('load', () => {
     function timeout(ms) {
@@ -212,26 +221,31 @@ window.addEventListener('load', () => {
         popsToOpen = [];
   
         Array.from(elements).forEach(el => {
+            //set user id for im
             var userId = el.children[0] && el.children[0].attributes['1'] && el.children[0].attributes['1'].value;
+            //set userID for chatroom
             if (!userId && !el.children[1]) { 
                 userId = el.children[0] && el.children[0].innerText;
             }
+            // set userid for multi-chat
             if(el.children[1]) {
-                var memCount = el.children.length;
+                var memCount = Math.ceil(el.children.length/2) + 1;
                 var userId = [];
                 for(var i = 0; i < el.children.length; i+=2) {
                     userId.push(el.children[i].attributes[1].value); 
                 }
             }
             el.parentNode.parentNode.parentNode.addEventListener('click', () => {
-                console.log('in click')
+                // add click handle to focus popout on left sidebar click
                 for (var pop of Object.keys(window.popouts)) {
+                    // logic for multi-chat
                     if(Array.isArray(userId) && Array.isArray(window.popouts[pop].userId) && !window.popouts[pop].hide) {
-                        if(userId.includes(window.popouts[pop].userId[0]) && userId.includes(window.popouts[pop].userId[1])) {
+                        if(userId.includes(window.popouts[pop].userId[0]) && userId.includes(window.popouts[pop].userId[1]) && window.popouts[pop].memberCount === memCount) {
                             let popWin = fin.desktop.Window.wrap(window.popouts[pop].uuid, window.popouts[pop].name);
                             window.winFocus(popWin);
                         }
                     }
+                    // for im and chatrooms
                     else if(window.popouts[pop].userId === userId && !window.popouts[pop].hide) {
                         let popWin = fin.desktop.Window.wrap(window.popouts[pop].uuid, window.popouts[pop].name);
                         window.winFocus(popWin);
@@ -241,14 +255,16 @@ window.addEventListener('load', () => {
                     fin.desktop.InterApplicationBus.publish("symphony-user-focus", { user: userInfo });
                 });
             })
-  
+            
+            // open popouts on startup
             for (var pop of Object.keys(window.popouts)) {
-                // if userid is array - see if all the same userIds in array if so add to pops
-                if(Array.isArray(userId) && Array.isArray(window.popouts[pop].userId) && window.popouts[pop].memberCount === memCount && !window.popouts[pop].hide) {
-                    if(userId.includes(window.popouts[pop].userId[0]) && userId.includes(window.popouts[pop].userId[1])) {
+                //  MULTI-CHAT - if userid is array - see if all the same userIds in array if so add to pops
+                if(Array.isArray(userId) && Array.isArray(window.popouts[pop].userId) && !window.popouts[pop].hide) {
+                    if(userId.includes(window.popouts[pop].userId[0]) && userId.includes(window.popouts[pop].userId[1]) && window.popouts[pop].memberCount === memCount) {
                         popsToOpen.push(el);
                     }
                 }
+                // ims and chatrooms
                 else if(window.popouts[pop].userId && window.popouts[pop].userId === userId && !window.popouts[pop].hide) {
                     popsToOpen.push(el);
                 }
@@ -261,9 +277,9 @@ window.addEventListener('load', () => {
             };
             for(var pop of popsToOpen) {
                 pop.click();
-                await timeout(450);
+                await timeout(500);
                 document.getElementsByClassName('enhanced-pop-out')[0].click();
-                await timeout(650);
+                await timeout(600);
             };
         };
         openPopouts();
@@ -343,22 +359,26 @@ window.addEventListener('load', () => {
                 // Set userId for startup
                 if(streamId.includes('chatroom')) {
                     streamId = streamId.slice(8);
+                    // set for chatroom
                     waitForElement('#chatroom-header-name',0,ele=> {
                         let userId = ele[0].children[0].children[0].children[0].children[0].innerText;
                         window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};                                
                         window.popouts[streamId].userId = userId;
-                        window.popouts[streamId].type = 'chatroom';
+                        window.popouts[streamId].hide = false;
                         window.localStorage.setItem('wins', JSON.stringify(window.popouts));                              
                     })
                 } else {
+                    // is im or multi-chat
                     streamId = streamId.slice(2);
+                    // 1to1 im logic
                     waitForElement('.aliasable.colorable.has-profile.truncate-text',0,elem => {
                         let userId =elem[0] && elem[0].attributes['1'].value;
                         window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};                        
-                        window.popouts[streamId].userId = userId;            
-                        window.popouts[streamId].type = 'im'; 
+                        window.popouts[streamId].userId = userId;     
+                        window.popouts[streamId].hide = false;       
                         window.localStorage.setItem('wins', JSON.stringify(window.popouts));
                     })
+                    // multi-chat logic
                     waitForElement('.group-chat__name.text-selectable.truncate-text',0,e => {
                         try {
                             var userId =[e[0].children[0].attributes[1].value, e[0].children[1].attributes[1].value]
@@ -368,7 +388,8 @@ window.addEventListener('load', () => {
                         if (userId) {
                             window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};                        
                             window.popouts[streamId].userId = userId;
-                            window.popouts[streamId].memberCount = +e[0].parentNode.children[1].children[0].innerText.slice(0,1)            
+                            window.popouts[streamId].memberCount = +e[0].parentNode.children[1].children[0].innerText.slice(0,1);
+                            window.popouts[streamId].hide = false;           
                             window.localStorage.setItem('wins', JSON.stringify(window.popouts));    
                         }
                     })
