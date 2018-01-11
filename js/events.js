@@ -173,7 +173,7 @@ window.addEventListener('load', () => {
         // listen for always on top
         fin.desktop.InterApplicationBus.subscribe(currentWindow.uuid,'system-tray','always-on-top',(msg)=>{
             window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
-            window.popouts.alwaysOnTop = !window.popouts.alwaysOnTop;
+            window.popouts.alwaysOnTop = msg;
             currentWindow.updateOptions({ alwaysOnTop: window.popouts.alwaysOnTop });
             // set option to all child windows            
             fin.desktop.Application.getCurrent().getChildWindows(children => {
