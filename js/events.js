@@ -186,13 +186,12 @@ window.addEventListener('load', () => {
 
         // startup logic for always on top
         window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
-        let alwaysOnTop = window.popouts;
         currentWindow.updateOptions({ alwaysOnTop: window.popouts.alwaysOnTop });
 
         // listen for close on exit
         fin.desktop.InterApplicationBus.subscribe(currentWindow.uuid,'system-tray','close-on-exit',(msg)=>{
             window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
-            window.popouts.closeOnExit = !window.popouts.closeOnExit;
+            window.popouts.closeOnExit = msg;
             window.localStorage.setItem('wins', JSON.stringify(window.popouts));
         });
 
