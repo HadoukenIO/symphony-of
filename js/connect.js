@@ -60,7 +60,7 @@ if (thiswindow.uuid===thiswindow.name && window.name === window.parent.name && !
     }
     // END HELPERS ------------------------------------------------------------------------------------->
 
-    console.log('subscribing to external connection logic')
+    console.log('subscribing to external connection logic');
 
     // Initiate connection
     fin.desktop.InterApplicationBus.subscribe("*", "symphony-connect", (msg, uuid, name) => {
@@ -82,14 +82,23 @@ if (thiswindow.uuid===thiswindow.name && window.name === window.parent.name && !
 
     // Allow external app to surpress symphony notifications
     fin.desktop.InterApplicationBus.subscribe("*", "surpress-symphony-notes", (msg, uuid, name) => {
-        console.log('in surpress sym notes')
+        console.log('surpress sym notes')
         window.connections = JSON.parse(window.localStorage.getItem('connects')) || {notifications: []};
         window.connections.surpressNotifications = true;
         window.localStorage.setItem('connects', JSON.stringify(window.connections));    
-        console.log("The application " + uuid + "surpressed notifications!");
+        console.log("The application " + uuid + " surpressed notifications!");
     })
 
-    // Allow external app to get symphony context
+    // Allow external app to undo surpress symphony notifications
+    fin.desktop.InterApplicationBus.subscribe("*", "unsurpress-symphony-notes", (msg, uuid, name) => {
+        console.log('unsurpress sym notes')
+        window.connections = JSON.parse(window.localStorage.getItem('connects')) || {notifications: []};
+        window.connections.surpressNotifications = false;
+        window.localStorage.setItem('connects', JSON.stringify(window.connections));    
+        console.log("The application " + uuid + " unsurpressed notifications!");
+    })
+
+    // Allow external app to update symphony context
     fin.desktop.InterApplicationBus.subscribe("*", "symphony-context", (message, uuid, name) => {
         console.log("The application " + uuid + '/' + name + " sent this message: " + message);
         //takes an array of user emails - if emails array exists, search it

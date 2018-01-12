@@ -11,7 +11,6 @@ class Notify {
 
         // connections that have requested notifications
         window.connections = JSON.parse(window.localStorage.getItem('connects')) || {notifications: []};
-        console.log('connections in note', window.connections)
         
         if (window.connections.notifications && window.connections.notifications.length) {
             window.connections.notifications.forEach(uuid => {

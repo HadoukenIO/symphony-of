@@ -9,13 +9,16 @@ class symphonyPlugin {
             symphonyPlugin.connect()
             .then(SymOFApi => {
                 this.symphonyUuid = SymOFApi.symphonyUuid;
-                let redoFunctions = this.functions;
-                this.functions = [];
-                redoFunctions.forEach(fn => fn());
-                return SymOFApi;
+                let redoFunctions = this.notificationFunctions;
+                this.notificationFunctions = [];
+                redoFunctions.forEach(fn => fn.call(this));
+                if(this.surpress) {
+                    fin.desktop.InterApplicationBus.send(this.symphonyUuid, "surpress-symphony-notes", 'surpress-notes', () => console.log('Notes Surpressed!'));
+                }
             });
         });
-        this.functions = this.functions ? this.functions : [];
+        this.surpress = this.surpress ? this.surpress : false;
+        this.notificationFunctions = this.notificationFunctions ? this.notificationFunctions : [];
     }
 
     static connect() {
@@ -25,16 +28,16 @@ class symphonyPlugin {
 
         return new Promise(resolve => {
             let identity = fin.desktop.Window.getCurrent();            
-            let listener = (msg, uuid, name)=> {
+            let listener = (msg, uuid, name) => {
                 console.log('connect out sub listener fired');
                 fin.desktop.InterApplicationBus.unsubscribe("*", "symphony-connect-out", listener);
                 resolve(new symphonyPlugin(identity, uuid));
             }
 
-            fin.desktop.InterApplicationBus.subscribe("*", "symphony-connect-out", listener,
-                () => fin.desktop.InterApplicationBus.publish("symphony-connect", {uuid:identity.uuid, name:identity.name}),
-                e=> console.log('connect error:', e)
-            );
+            fin.desktop.InterApplicationBus.subscribe("*", "symphony-connect-out", listener, () => {
+                    fin.desktop.InterApplicationBus.publish("symphony-connect", {uuid:identity.uuid, name:identity.name})
+                }, e => console.log(e)
+            )
         })
     }
 
@@ -45,15 +48,25 @@ class symphonyPlugin {
         };
         fin.desktop.InterApplicationBus.subscribe(this.symphonyUuid, "symphony-notes", listener, () => {
             fin.desktop.InterApplicationBus.send(this.symphonyUuid, "initiate-symphony-notes");
-            this.functions.push(() => fin.desktop.InterApplicationBus.send(this.symphonyUuid, "initiate-symphony-notes"));
+            this.notificationFunctions.push(() => fin.desktop.InterApplicationBus.send(this.symphonyUuid, "initiate-symphony-notes"));
         }, e => console.log('connect error:', e));
+        let unsubscribe = () => fin.desktop.InterApplicationBus.unsubscribe(this.symphonyUuid, "symphony-notes", listener);
+        return unsubscribe;
     }
 
-    surpressNotificationWindows() {
+    undoSurpressNotifications() {
+        fin.desktop.InterApplicationBus.send(this.symphonyUuid, "unsurpress-symphony-notes", 'unsurpress-notes', () => {
+            console.log('Notes unSurpressed!')
+            this.surpress = false;
+        });
+    }
+
+    surpressNotificationWindows(symphonyUuid) {
         fin.desktop.InterApplicationBus.send(this.symphonyUuid, "surpress-symphony-notes", 'surpress-notes', () => {
             console.log('Notes Surpressed!')
-            this.functions.push(() => this.surpressNotificationWindows()); 
+            this.surpress = true;
         });
+        return this.undoSurpressNotifications.bind(this);
     }
 
     getUserContextUpdates(cb) {
@@ -63,6 +76,8 @@ class symphonyPlugin {
         fin.desktop.InterApplicationBus.subscribe(this.symphonyUuid, "symphony-user-focus", listener, () => {
             console.log('getting user context updates');
         }, e => console.log('connect error:', e));
+        let unsubscribe = () => fin.desktop.InterApplicationBus.unsubscribe(this.symphonyUuid, "symphony-user-focus", listener);
+        return unsubscribe;
     }
 
     // takes an obj that either has 'emails' property of an array or 'name' as a string
@@ -81,14 +96,15 @@ class symphonyPlugin {
 
 fin.symphonyPlugin = symphonyPlugin;
 
+
 fin.symphonyPlugin.connect()
 .then(SymOFApi => {
    console.log(SymOFApi)
    window.api = SymOFApi;
-   SymOFApi.onNotification(e=>console.log(e));
-   SymOFApi.surpressNotificationWindows();
-   SymOFApi.getUserContextUpdates(e => console.log('got user', e));
+   window.notificationUnSub = SymOFApi.onNotification(e=>console.log(e));
+   window.surpressNotificationUnSub = SymOFApi.surpressNotificationWindows();
+   window.userContextUnSub = SymOFApi.getUserContextUpdates(e => console.log('got user', e));
    setTimeout(()=>SymOFApi.changeContext({name:'xavier'}),8000);
-   setTimeout(()=>SymOFApi.changeContext({emails:['xavier@openfin.co', 'mark@openfin.co']}),8000);
+   setTimeout(()=>SymOFApi.changeContext({emails:['xavier@openfin.co', 'mark@openfin.co']}),12000);
 })
 
