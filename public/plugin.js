@@ -33,11 +33,10 @@ class symphonyPlugin {
                 fin.desktop.InterApplicationBus.unsubscribe("*", "symphony-connect-out", listener);
                 resolve(new symphonyPlugin(identity, uuid));
             }
+            fin.desktop.InterApplicationBus.subscribe("*", "symphony-connect-out", listener);
 
-            fin.desktop.InterApplicationBus.subscribe("*", "symphony-connect-out", listener, () => {
-                    fin.desktop.InterApplicationBus.publish("symphony-connect", {uuid:identity.uuid, name:identity.name})
-                }, e => console.log(e)
-            )
+            // this should be in the success callback of the subscribe above, but I believe due to a core bug, that success cb isnt being called
+            fin.desktop.InterApplicationBus.publish("symphony-connect", {uuid:identity.uuid, name:identity.name})
         })
     }
 
