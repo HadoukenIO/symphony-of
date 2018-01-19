@@ -24,6 +24,7 @@ switch (env) {
         launchAppUuid = 'Symphony-OpenFin-Landing-Local';
     }
     break;
+    case 'prod':
     default: {
         targetUrl = 'https://cdn.openfin.co/demos/symphony-of/';
         launchAppUuid = 'Symphony-OpenFin-Landing';
