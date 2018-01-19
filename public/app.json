@@ -27,7 +27,7 @@
     },
     "runtime": {
         "arguments": "--noerrdialogs --frameStrategy=frames",
-        "version": "8.56.27.74",
+        "version": "8.56.27.75",
         "fallbackVersion": "8.56.26.38"
     },
     "shortcut": {
