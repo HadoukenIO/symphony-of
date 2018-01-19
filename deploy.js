@@ -1,7 +1,25 @@
 const repl = require('repl');
 const { exec, execSync } = require('child_process');
+const buildType = process.argv[2] || 'staging';
+
+if (!['staging', 'prod'].includes(buildType)) {
+    console.log(`${buildType} is not a valid build target`);
+    process.exit(1);
+}
+
+let upstreamBranch;
+let s3Target;
+
+if (buildType === 'prod') {
+    upstreamBranch = 'master';
+    s3Target = 'symphony-of';
+} else {
+    upstreamBranch = 'develop';
+    s3Target = 'symphony-of-staging';
+}
 
 console.log(`running in ${process.cwd()}`);
+console.log(`build type: ${buildType}, upstream branch: ${upstreamBranch}, s3 target: ${s3Target}`);
 
 const replServer = repl.start({ eval: reader })
 const depgen = deploy();
@@ -40,13 +58,13 @@ function* deploy() {
     replServer.question('ok? ', reader);
     yield;
 
-    command = `npm version patch --force -m "staging build %s"`;
+    command = `npm version patch --force -m "${buildType} build %s"`;
     console.log(command);
     execSync(command);
     replServer.question('ok? ', reader);
     yield;
 
-    command = `npm run build staging`;
+    command = `npm run build ${buildType}`;
     exec(command, (error, stdout) => {
         if (error) {
             console.error(`exec error: ${error}`);
@@ -76,13 +94,13 @@ function* deploy() {
     replServer.question('ok? ', reader);
     yield;
 
-    command = `git push upstream HEAD:develop`;
+    command = `git push upstream HEAD:${upstreamBranch}`;
     console.log(command);
     execSync(command);
     replServer.question('ok? ', reader);
     yield;
 
-    command = `aws s3 cp ./public s3://cdn.openfin.co/demos/symphony-of-staging/ --recursive`;
+    command = `aws s3 cp ./public s3://cdn.openfin.co/demos/${s3Target}/ --recursive`;
     console.log(command);
     exec(command, (error, stdout) => {
         if (error) {
@@ -95,7 +113,7 @@ function* deploy() {
     });
     yield;
 
-    command = `aws cloudfront create-invalidation --distribution-id E16N7NZUXTHZCF --paths /demos/symphony-of-staging/*`;
+    command = `aws cloudfront create-invalidation --distribution-id E16N7NZUXTHZCF --paths /demos/${s3Target}/*`;
     console.log(command);
     exec(command, (error, stdout) => {
         if (error) {
