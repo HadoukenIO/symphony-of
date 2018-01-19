@@ -1,0 +1,24 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\Program Files\\nodejs\\node.exe',
+1 verbose cli   'C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'version',
+1 verbose cli   '--no-git-tag-version',
+1 verbose cli   '--allow-same-version',
+1 verbose cli   'v0.0.31' ]
+2 info using npm@3.10.10
+3 info using node@v6.10.3
+4 verbose stack Error: Version not changed
+4 verbose stack     at persistVersion (C:\Users\openfin\AppData\Roaming\nvm\v6.10.2\node_modules\npm\lib\version.js:92:47)
+4 verbose stack     at C:\Users\openfin\AppData\Roaming\nvm\v6.10.2\node_modules\npm\lib\version.js:47:7
+4 verbose stack     at C:\Users\openfin\AppData\Roaming\nvm\v6.10.2\node_modules\npm\lib\version.js:119:5
+4 verbose stack     at C:\Users\openfin\AppData\Roaming\nvm\v6.10.2\node_modules\npm\node_modules\graceful-fs\graceful-fs.js:78:16
+4 verbose stack     at FSReqWrap.readFileAfterClose [as oncomplete] (fs.js:446:3)
+5 verbose cwd C:\Users\openfin\Documents\symphony-of
+6 error Windows_NT 10.0.16299
+7 error argv "C:\\Program Files\\nodejs\\node.exe" "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "version" "--no-git-tag-version" "--allow-same-version" "v0.0.31"
+8 error node v6.10.3
+9 error npm  v3.10.10
+10 error Version not changed
+11 error If you need help, you may report this error at:
+11 error     <https://github.com/npm/npm/issues>
+12 verbose exit [ 1, true ]
