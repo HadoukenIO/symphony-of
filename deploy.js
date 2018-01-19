@@ -7,7 +7,7 @@ if (!['staging', 'prod'].includes(buildType)) {
     process.exit(1);
 }
 
-let upstreamBranch;
+let upstreamBranch; // need to resolve push to master issue, for now just push back to develop
 let s3Target;
 
 if (buildType === 'prod') {
@@ -94,7 +94,7 @@ function* deploy() {
     replServer.question('ok? ', reader);
     yield;
 
-    command = `git push upstream HEAD:${upstreamBranch}`;
+    command = `git push upstream HEAD:develop`;
     console.log(command);
     execSync(command);
     replServer.question('ok? ', reader);
