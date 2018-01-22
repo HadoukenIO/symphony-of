@@ -17,6 +17,7 @@ window.addEventListener('load', () => {
         currentWindow.addEventListener('close-requested',() => {
             window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
             if(window.popouts.closeOnExit) {
+                fin.desktop.InterApplicationBus.publish("symphony-exit-out", 'Symphony App Exit!', ()=>console.log('published exit-out'));
                 fin.desktop.Application.getCurrent().close(true);
             } else {
                 fin.desktop.Application.getCurrent().getWindow().minimize();        
@@ -251,6 +252,9 @@ window.addEventListener('load', () => {
                         window.winFocus(popWin);
                     }
                 }
+                window.findUserById(userId).then(userInfo => {
+                    fin.desktop.InterApplicationBus.publish("symphony-user-focus", { user: userInfo });
+                });
             })
             
             // open popouts on startup

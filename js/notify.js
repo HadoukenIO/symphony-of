@@ -6,8 +6,24 @@ class Notify {
 
     constructor(title,options){
         let msg = options || {};
-        console.log('Notification Options:', options);        
-        msg.title =  title;
+        msg.title =  title;        
+        console.log('Notification Options:', options);
+
+        // connections that have requested notifications
+        window.connections = JSON.parse(window.localStorage.getItem('connects')) || {notifications: []};
+        
+        if (window.connections.notifications && window.connections.notifications.length) {
+            window.connections.notifications.forEach(uuid => {
+                console.log('sending ntoe out')
+                fin.desktop.InterApplicationBus.send(uuid, 'symphony-notes', msg);
+            });
+        }
+
+        if(window.connections.surpressNotifications) {
+            console.log('Notification surpressed!');
+            return
+        }
+
         let timeout = 5000;
         let clickHandle = () => {
             // KEEPING  THE BELOW JUST IN CASE - IF SYM CLICK API WORKS DELETE THIS
@@ -19,7 +35,7 @@ class Notify {
             //     fin.desktop.InterApplicationBus.publish("note-clicked", msg.data.streamId);
             // }
         }
-        let onClick = clickHandle;
+        let onClick = () => { clickHandle(options.data)};
         if (msg.sticky) {
             timeout = 60000*60*24; // 24 hours
             this.sticky = msg.sticky;
@@ -38,6 +54,7 @@ class Notify {
             opacity: 0.92
         });
         this._data = msg.data || null;
+        this.callbackJSON = options.data;
     }
 
     static get permission(){
@@ -56,10 +73,25 @@ class Notify {
     addEventListener(event, cb) {
         if(event === 'click' && this.notification) {
             this.notification.noteWin.onClick = () => {
+                // find the correct userId to look up user and send context
+                window.getStreamInfo(this._data.streamId)
+                .then(info => {
+                    window.httpGet(`/pod/v2/sessioninfo`)
+                    .then(me => {
+                        // RIGHT NOW ONLY FOR ONE USER CONTEXT - SOLVE FOR ROOMS/MULTI-CHAT
+                        let targetId = info.streamAttributes.members.find(memberId => memberId !== me.id);
+                        window.findUserById(targetId).then(userInfo => {
+                            fin.desktop.InterApplicationBus.publish("symphony-user-focus", { user: userInfo });
+                        });
+                    })
+                })
+
+                // execute the symphony callback
+                cb({target:{callbackJSON:this._data}}); 
+
                 if (this.sticky) {
                     this.notification.close();                    
                 }
-                cb({target:{callbackJSON:this._data}}); 
             }
         }
         // }
@@ -92,4 +124,3 @@ class Notify {
         // How is this different from close?
     }
 }
-

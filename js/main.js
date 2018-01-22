@@ -66,6 +66,11 @@ window.SYM_API = {
             }
             resolve(version)
         })
+    },
+    registerProtocolHandler: function(protocolHandler) {
+        if (typeof protocolHandler === 'function') {
+            window.processProtocolAction = protocolHandler;
+        }
     }
 }
 

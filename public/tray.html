@@ -121,6 +121,7 @@
     const alwaysOnTop = () => updateOption('always-on-top');
     const closeOnExit = () => updateOption('close-on-exit');
     const exit = () => {
+        fin.desktop.InterApplicationBus.publish("symphony-exit-out", 'Symphony App Exit!', ()=>console.log('published exit-out'));
         fin.desktop.Application.getCurrent().close(true);
     }
 
