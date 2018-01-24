@@ -8,27 +8,27 @@
         body {
           font-family: Helvetica, sans-serif;
           background-color: #000;
-          color:#fff;
+          color:#000000;
           margin:0;
           overflow: hidden;
           -webkit-user-select: none;
         }
         #notification-text {
           font-weight: bold;
-          color:#fff;
         }
         #image {
-          height:50px;
+          height: 30px;
           position:absolute;
-          top:6px;
-          left:6px;
+          top: 15px;
+          left: 10px;
         }
         #title {
           position:absolute;
-          top:6px;
-          left:62px;
+          top: 22px;
+          left: 48px;
           font-weight: bold;
           display: -webkit-box;
+          font-size: 14px;
           width: 205px;
           -webkit-line-clamp: 1;
           -webkit-box-orient: vertical;
@@ -38,11 +38,11 @@
         #message {
           position: absolute;
           display: -webkit-box;
-          top: 12px;
-          left: 62px;
+          top: 38px;
+          left: 11px;
           word-wrap: break-word;
           width: 225px;
-          font-size: 11pt;
+          font-size: 12px;
           -webkit-line-clamp: 3;
           -webkit-box-orient: vertical;
           overflow: hidden;
@@ -51,9 +51,9 @@
         }
         #close {
           position: absolute;
-          right:4px;
-          top:4px;
-          fill:#fff;
+          right: 8px;
+          top: 8px;
+          fill: #fff;
         }
         </style>
     </head>
@@ -96,5 +96,20 @@
           }, 1000);
         }
       }
+      
+      var notificationWindow = fin.desktop.Window.getCurrent()
+      
+      notificationWindow.updateOptions({
+        cornerRounding: {height: 2, width: 3}
+      });
+      
+      notificationWindow.resizeTo(300, 80);
+      
+      // fin.desktop.System.getMonitorInfo(function (monitorInfo) {
+      //   var left = monitorInfo.primaryMonitor.availableRect.left
+      //   var newLeft = left - 300;
+      //   notificationWindow.moveTo(newLeft, 0);
+      // });
+      
     </script>
 </html>
