@@ -30,50 +30,30 @@ class Notify {
             //     this.notification.close();
             // }
         }
-        function createNotification(i) {
-          msg.notificationPosition = i;
-          
-          var notification = new window.fin.desktop.Window({
-            autoShow: true,
-            customData: msg,
-            name: "Symphony-Notifications-" + msg.title,
-            cornerRounding: {height: 2, width: 3},
-            defaultWidth: 300,
-            defaultHeight: 80,
-            frame: false,
-            resizeable: false,
-            url: `${window.targetUrl}notification.html`,
-            opacity: 0.92
-          }, function (success) {
-            console.log(success, "SUCCESS")
-          }, function (err) {
-            console.log(err, "ERROR");
-          });
-        }
+        
+        var notificationWindows = [];
+        var conflict = false;
         
         fin.desktop.Application.getCurrent().getChildWindows(function(windows) {
-          var notificationWindows = [];
-          
-          var conflict = false;
+          console.log("windows", windows);
           for (var i = 0; i < windows.length; i++) {
             var childWindow = windows[i];
             
-            if (childWindow.name.includes("Symphony-Notifications-")) {
+            if (childWindow.name.includes("==")) {
               notificationWindows.push(childWindow);
             }
           }
           
-          var conflict = false;
           var conflictIdx = -1;
           console.log("notificationWindows", notificationWindows)
           for (var i = 0; i < notificationWindows.length; i++) {
             var childWindow = notificationWindows[i];
             console.log('childWindow.name', childWindow.name)
-            if (childWindow.name === "Symphony-Notifications-" + msg.title) {
+            if (childWindow.name.includes(msg.tag)) {
               console.log("IN CHILDWINDOW.NAME")
               console.log(childWindow.name)
               console.log("INDEX", i);
-              childWindow.close(false,() => createNotification(notificationWindows.length - 1));
+              childWindow.close();
               conflict = true;
               conflictIdx = i;
             }
@@ -97,11 +77,45 @@ class Notify {
               });
             }
           }
-          
-          if (!conflict) {
-            createNotification(notificationWindows.length);
-          }
         });
+        
+        var randomString = Math.random().toString(36).slice(-8);
+        
+        var notification = new window.fin.desktop.Window({
+          customData: msg,
+          name: msg.tag + randomString,
+          cornerRounding: {height: 2, width: 3},
+          defaultWidth: 300,
+          defaultHeight: 80,
+          frame: false,
+          resizeable: false,
+          url: `${window.targetUrl}notification.html`,
+          opacity: 0.92
+        }, function (success) {
+          console.log(success, "SUCCESS")
+          console.log(notification, "notification")
+          fin.desktop.System.getMonitorInfo(function (monitorInfo) {
+            var left = monitorInfo.primaryMonitor.availableRect.right
+            var newLeft = left - 300;
+            console.log("notificationWindows", notificationWindows)
+            var notificationPosition = notificationWindows.length;
+            console.log("notificationPosition", notificationPosition);
+            
+            console.log("CONFLICT", conflict);
+            if (conflict) {
+              notificationPosition -= 1;
+            }
+            console.log("notificationPosition", notificationPosition);
+            notification.moveTo(newLeft, 90 * notificationPosition);
+            notification.show();
+          });
+        }, function (err) {
+          console.log(err, "ERROR");
+        });
+        
+        this.notification = notification;
+        
+
         
 
         
@@ -119,12 +133,18 @@ class Notify {
 
     close(cb) {
         // This gets called immediately on a new notification...so commented out for now.
-        // this.notification.close(cb)
+        this.notification.close();
     }
 
     addEventListener(event, cb) {
+      if (event === 'click') {
+        this.notification.addEventListener('focused', () => {
+          cb({target:{callbackJSON:this._data}});
+          this.notification.close();
+        });
+      }
         // if(event === 'click' && this.notification) {
-        //     this.notification.noteWin.onClick = () => {
+        //     this.notification.onClick = () => {
         //         if (this.sticky) {
         //             this.notification.close();                    
         //         }
@@ -142,6 +162,12 @@ class Notify {
     }
 
     removeEventListener(event, cb){
+      if (event === 'click') {
+        this.notification.removeEventListener('focused', () => {
+          cb({target:{callbackJSON:this._data}});
+          this.notification.close();
+        });
+      }
         // if(event === 'click') {
         //     // this.notification.noteWin.onClick = () => {};
         // } else if(event === 'close') {
