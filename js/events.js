@@ -53,6 +53,7 @@ window.addEventListener('load', () => {
 
         // Add logic to keep track of window positioning
         application.addEventListener("window-created", obj => {
+            console.log("obj", obj);
             window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
             let childWin = fin.desktop.Window.wrap(obj.uuid, obj.name)
             //update always on top option for Child Windows
@@ -192,7 +193,7 @@ window.addEventListener('load', () => {
         // listen for close on exit
         fin.desktop.InterApplicationBus.subscribe(currentWindow.uuid,'system-tray','close-on-exit',(msg)=>{
             window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
-            window.popouts.closeOnExit = !window.popouts.closeOnExit;
+            window.popouts.closeOnExit = msg;
             window.localStorage.setItem('wins', JSON.stringify(window.popouts));
         });
 

@@ -76,31 +76,28 @@
 
     <script type="text/javascript">
       // messages received from the application creating the application
-      // function onNotificationMessage(message) {
-      var notificationWindow = fin.desktop.Window.getCurrent()
-      var customData;
-      notificationWindow.getOptions(function(options) {
-        console.log(options);
-        customData = options.customData;
-        document.querySelectorAll('#title')[0].innerText = customData.title || '';
-        document.querySelectorAll('#message')[0].innerHTML = customData.body || ' ';
-        if(!customData.icon) {
+      function onNotificationMessage(message) {
+        document.querySelectorAll('#title')[0].innerText = message.title || '';
+        document.querySelectorAll('#message')[0].innerHTML = message.body || ' ';
+        if(!message.icon) {
           document.querySelectorAll('#image')[0].style.display = 'none';
         } else {
-          document.querySelectorAll('#image')[0].src = customData.icon || '';
+          document.querySelectorAll('#image')[0].src = message.icon || '';
         }
-        document.body.style.backgroundColor = "#" + customData.color || '000';
-        if (customData.flash) {
+        document.body.style.backgroundColor = "#" + message.color || '000';
+        if (message.flash) {
           let origColor = document.body.style.backgroundColor;
           setInterval(function() {
             if (document.body.style.backgroundColor === 'red') {
-              document.body.style.backgroundColor = origColor;
+                document.body.style.backgroundColor = origColor;
             } else {
-              document.body.style.backgroundColor = 'red';
+                document.body.style.backgroundColor = 'red';
             }
           }, 1000);
         }
-      });
+      }
+      
+      var notificationWindow = fin.desktop.Window.getCurrent()
       
       notificationWindow.updateOptions({
         cornerRounding: {height: 2, width: 3}
@@ -108,15 +105,6 @@
       
       notificationWindow.resizeTo(300, 80);
       
-      fin.desktop.System.getMonitorInfo(function (monitorInfo) {
-        var left = monitorInfo.primaryMonitor.availableRect.right
-        var newLeft = left - 300;
-        console.log(customData.notificationPosition);
-        notificationWindow.moveTo(newLeft, 90 * customData.notificationPosition);
-        // var left = monitorInfo.primaryMonitor.availableRect.left
-        // var newLeft = left - 300;
-        // notificationWindow.moveTo(newLeft, 0);
-      });
       
     </script>
 </html>
