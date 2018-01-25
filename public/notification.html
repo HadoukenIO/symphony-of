@@ -106,16 +106,11 @@
         cornerRounding: {height: 2, width: 3}
       });
       
-      notificationWindow.resizeTo(300, 80);
-      
       fin.desktop.System.getMonitorInfo(function (monitorInfo) {
         var left = monitorInfo.primaryMonitor.availableRect.right
         var newLeft = left - 300;
         console.log(customData.notificationPosition);
         notificationWindow.moveTo(newLeft, 90 * customData.notificationPosition);
-        // var left = monitorInfo.primaryMonitor.availableRect.left
-        // var newLeft = left - 300;
-        // notificationWindow.moveTo(newLeft, 0);
       });
       
     </script>
