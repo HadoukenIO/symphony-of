@@ -77,10 +77,10 @@
     <script type="text/javascript">
       // messages received from the application creating the application
       // function onNotificationMessage(message) {
-      var notificationWindow = fin.desktop.Window.getCurrent()
+      var notificationWindow = fin.desktop.Window.getCurrent();
       var customData;
       notificationWindow.getOptions(function(options) {
-        console.log(options);
+        console.log("options", options);
         customData = options.customData;
         document.querySelectorAll('#title')[0].innerText = customData.title || '';
         document.querySelectorAll('#message')[0].innerHTML = customData.body || ' ';
@@ -100,6 +100,8 @@
             }
           }, 1000);
         }
+      }, function (error) {
+        console.log("Error", error);
       });
       
     </script>
