@@ -2,9 +2,12 @@
 * Class representing a Symphony notification
 */
 
+
+
 class Notify {
 
     constructor(title,options){
+        
         let msg = options || {};
         console.log('Notification Options:', options);        
         msg.title =  title;
@@ -31,53 +34,20 @@ class Notify {
             // }
         }
         
-        var notificationWindows = [];
-        var conflict = false;
+          
+            
+        // msg.monitorInfo = Notify.monitorInfo;
+        // 
+        // console.log("msg.monitorInfo", Notify.monitorInfo);
         
-        fin.desktop.Application.getCurrent().getChildWindows(function(windows) {
-          console.log("windows", windows);
-          for (var i = 0; i < windows.length; i++) {
-            var childWindow = windows[i];
-            
-            if (childWindow.name.includes("==")) {
-              notificationWindows.push(childWindow);
-            }
-          }
-          
-          var conflictIdx = -1;
-          console.log("notificationWindows", notificationWindows)
-          for (var i = 0; i < notificationWindows.length; i++) {
-            var childWindow = notificationWindows[i];
-            console.log('childWindow.name', childWindow.name)
-            if (childWindow.name.includes(msg.tag)) {
-              console.log("IN CHILDWINDOW.NAME")
-              console.log(childWindow.name)
-              console.log("INDEX", i);
-              childWindow.close();
-              conflict = true;
-              conflictIdx = i;
-            }
-          }
-          
-          console.log("conflictIdx", conflictIdx);
-          
-          if (conflictIdx >= 0) {
-            var windowsToShift = notificationWindows.slice(conflictIdx + 1);
-            console.log("IN SHIFT")
-            console.log("windowsToShift", windowsToShift)
-            
-            for (var i = 0; i < windowsToShift.length; i++) {
-              windowsToShift[i].animate({
-                position: {
-                  left: 0,
-                  top: -90,
-                  duration: 500,
-                  relative: true
-                }
-              });
-            }
-          }
-        });
+        // var notificationPosition = Notify.openWindows.length;
+        // console.log("notificationPosition", notificationPosition);
+        // if (conflict) {
+        //   notificationPosition -= 1;
+        // }
+        // console.log("notificationPosition", notificationPosition);
+        
+        // msg.notificationPosition = notificationPosition;
         
         var randomString = Math.random().toString(36).slice(-8);
         
@@ -92,34 +62,59 @@ class Notify {
           url: `${window.targetUrl}notification.html`,
           opacity: 0.92
         }, function (success) {
-          console.log(success, "SUCCESS")
-          console.log(notification, "notification")
-          fin.desktop.System.getMonitorInfo(function (monitorInfo) {
-            var left = monitorInfo.primaryMonitor.availableRect.right
-            var newLeft = left - 300;
-            console.log("notificationWindows", notificationWindows)
-            var notificationPosition = notificationWindows.length;
-            console.log("notificationPosition", notificationPosition);
+            var conflict = false;
+            console.log("windows", Notify.openWindows);
             
-            console.log("CONFLICT", conflict);
-            if (conflict) {
-              notificationPosition -= 1;
+            var conflictIdx = -1;
+            console.log("notificationWindows", Notify.openWindows)
+            for (var i = 0; i < Notify.openWindows.length; i++) {
+              var childWindow = Notify.openWindows[i];
+              console.log('childWindow.name', childWindow.name)
+              if (childWindow.name.includes(msg.tag)) {
+                console.log("IN CHILDWINDOW.NAME")
+                console.log(childWindow.name)
+                console.log("INDEX", i);
+                childWindow.close();
+                conflict = true;
+                conflictIdx = i;
+              }
             }
+            
+            console.log("conflictIdx", conflictIdx);
+            
+            if (conflictIdx >= 0) {
+              var windowsToShift = Notify.openWindows.slice(conflictIdx + 1);
+              console.log("IN SHIFT")
+              console.log("windowsToShift", windowsToShift)
+              
+              for (var i = 0; i < windowsToShift.length; i++) {
+                windowsToShift[i].animate({
+                  position: {
+                    left: 0,
+                    top: -90,
+                    duration: 500,
+                    relative: true
+                  }
+                });
+              }
+              
+              Notify.openWindows.splice(conflictIdx, 1);
+            }
+            
+            Notify.openWindows.push(notification);
+            var notificationPosition = Notify.openWindows.length - 1;
             console.log("notificationPosition", notificationPosition);
+            console.log("notificationPosition", notificationPosition);
+            var left = Notify.monitorInfo.primaryMonitor.availableRect.right;
+            var newLeft = left - 300;
             notification.moveTo(newLeft, 90 * notificationPosition);
             notification.show();
-          });
+            console.log(success, "SUCCESS");
         }, function (err) {
           console.log(err, "ERROR");
         });
         
         this.notification = notification;
-        
-
-        
-
-        
-        
         this._data = msg.data || null;
     }
 
@@ -132,17 +127,102 @@ class Notify {
     }
 
     close(cb) {
-        // This gets called immediately on a new notification...so commented out for now.
-        this.notification.close();
+        // This gets called immediately on a new notification...so commented out for now.  
+        // this.notification.close();
+        
+        // var shiftNotification = this.notification;
+        // 
+        // fin.desktop.Application.getCurrent().getChildWindows(function(windows) {
+        //   console.log("WINDOWSSS", windows)
+        //   var notificationWindows = [];
+        //   for (var i = 0; i < windows.length; i++) {
+        //     var childWindow = windows[i];
+        // 
+        //     if (childWindow.name.includes("==")) {
+        //       notificationWindows.push(childWindow);
+        //     }
+        //   }
+        // 
+        //   var conflictIdx = -1;
+        //   for (var i = 0; i < notificationWindows.length; i++) {
+        //     var childWindow = notificationWindows[i];
+        //     console.log('childWindow.nameeee', shiftNotification.name)
+        //     if (childWindow.name === obj.name) {
+        //       console.log("IN CHILDWINDOW.NAMEEEE")
+        //       console.log(childWindow.name)
+        //       console.log("INDEXXXXX", i);
+        //       conflictIdx = i;
+        //     }
+        //   }
+        // 
+        //   if (conflictIdx >= 0) {
+        //     var windowsToShift = notificationWindows.slice(conflictIdx + 1);
+        //     console.log("IN SHIFTTTT");
+        //     console.log("windowsToShifttttt", windowsToShift);
+        // 
+        //     for (var i = 0; i < windowsToShift.length; i++) {
+        //       windowsToShift[i].animate({
+        //         position: {
+        //           left: 0,
+        //           top: -90,
+        //           duration: 500,
+        //           relative: true
+        //         }
+        //       });
+        //     }
+        //   }
+        // 
+        //   shiftNotification.close();
+        // });
+        
+        console.log("windows", Notify.openWindows);
+        
+        var conflictIdx = -1;
+        console.log("notificationWindows", Notify.openWindows)
+        for (var i = 0; i < Notify.openWindows.length; i++) {
+          var childWindow = Notify.openWindows[i];
+          console.log('childWindow.name', childWindow.name)
+          if (childWindow.name === this.notification.name) {
+            console.log("IN CHILDWINDOW.NAME")
+            console.log(childWindow.name)
+            console.log("INDEX", i);
+            childWindow.close();
+            conflictIdx = i;
+          }
+        }
+        
+        console.log("conflictIdx", conflictIdx);
+        
+        if (conflictIdx >= 0) {
+          var windowsToShift = Notify.openWindows.slice(conflictIdx + 1);
+          console.log("IN SHIFT")
+          console.log("windowsToShift", windowsToShift)
+          
+          for (var i = 0; i < windowsToShift.length; i++) {
+            windowsToShift[i].animate({
+              position: {
+                left: 0,
+                top: -90,
+                duration: 500,
+                relative: true
+              }
+            });
+          }
+          
+          Notify.openWindows.splice(conflictIdx, 1);
+        }
     }
 
     addEventListener(event, cb) {
       if (event === 'click') {
         this.notification.addEventListener('focused', () => {
           cb({target:{callbackJSON:this._data}});
-          this.notification.close();
+          this.close();
         });
       }
+      
+      
+      
         // if(event === 'click' && this.notification) {
         //     this.notification.onClick = () => {
         //         if (this.sticky) {
@@ -165,7 +245,7 @@ class Notify {
       if (event === 'click') {
         this.notification.removeEventListener('focused', () => {
           cb({target:{callbackJSON:this._data}});
-          this.notification.close();
+          this.close();
         });
       }
         // if(event === 'click') {
@@ -186,5 +266,13 @@ class Notify {
     destroy(){
         // How is this different from close?
     }
+}
+
+Notify.openWindows = [];
+Notify.monitorInfo = false;
+if (Notify.monitorInfo === false) {
+  fin.desktop.System.getMonitorInfo(function (monitorInfo) {
+    Notify.monitorInfo = monitorInfo;
+  });
 }
 
