@@ -7,10 +7,6 @@
 class Notify {
 
     constructor(title,options){
-        console.log("NOTIFICATION VERSION: ", Notify.notificationsVersion)
-        console.log("NOTIFICATION VERSION: ", Notify.notificationsVersion)
-        console.log("NOTIFICATION VERSION: ", Notify.notificationsVersion)
-        console.log("NOTIFICATION VERSION: ", Notify.notificationsVersion)
         
         let msg = options || {};
         console.log('Notification Options:', options);        
@@ -37,29 +33,36 @@ class Notify {
             //     this.notification.close();
             // }
         }
-        if (Notify.notificationsVersion === "V1") {
-          this.notification = new window.fin.desktop.Notification({
-              url: `${window.targetUrl}notificationV1.html`,
-              message: msg,
-              onClick,
-              timeout,
-              opacity: 0.92
-          });
-        } else {
-          var randomString = Math.random().toString(36).slice(-8);
+        
           
-          var notification = new window.fin.desktop.Window({
-            customData: msg,
-            name: msg.tag + randomString,
-            cornerRounding: {height: 2, width: 3},
-            defaultWidth: 300,
-            defaultHeight: 80,
-            frame: false,
-            resizeable: false,
-            url: `${window.targetUrl}notificationV2.html`,
-            opacity: 0.92,
-            alwaysOnTop: true
-          }, function (success) {
+            
+        // msg.monitorInfo = Notify.monitorInfo;
+        // 
+        // console.log("msg.monitorInfo", Notify.monitorInfo);
+        
+        // var notificationPosition = Notify.openWindows.length;
+        // console.log("notificationPosition", notificationPosition);
+        // if (conflict) {
+        //   notificationPosition -= 1;
+        // }
+        // console.log("notificationPosition", notificationPosition);
+        
+        // msg.notificationPosition = notificationPosition;
+        
+        var randomString = Math.random().toString(36).slice(-8);
+        
+        var notification = new window.fin.desktop.Window({
+          customData: msg,
+          name: msg.tag + randomString,
+          cornerRounding: {height: 2, width: 3},
+          defaultWidth: 300,
+          defaultHeight: 80,
+          frame: false,
+          resizeable: false,
+          url: `${window.targetUrl}notification.html`,
+          opacity: 0.92,
+          alwaysOnTop: true
+        }, function (success) {
             var conflict = false;
             console.log("windows", Notify.openWindows);
             
@@ -108,13 +111,11 @@ class Notify {
             notification.moveTo(newLeft, 90 * notificationPosition);
             notification.show();
             console.log(success, "SUCCESS");
-          }, function (err) {
-            console.log(err, "ERROR");
-          });
-          
-          this.notification = notification;
-        }
+        }, function (err) {
+          console.log(err, "ERROR");
+        });
         
+        this.notification = notification;
         this._data = msg.data || null;
     }
 
@@ -175,64 +176,50 @@ class Notify {
         //   shiftNotification.close();
         // });
         
-        if (Notify.notificationsVersion === "V2") {
-          console.log("windows", Notify.openWindows);
-          
-          var conflictIdx = -1;
-          console.log("notificationWindows", Notify.openWindows)
-          for (var i = 0; i < Notify.openWindows.length; i++) {
-            var childWindow = Notify.openWindows[i];
-            console.log('childWindow.name', childWindow.name)
-            if (childWindow.name === this.notification.name) {
-              console.log("IN CHILDWINDOW.NAME")
-              console.log(childWindow.name)
-              console.log("INDEX", i);
-              childWindow.close();
-              conflictIdx = i;
-            }
-          }
-          
-          console.log("conflictIdx", conflictIdx);
-          
-          if (conflictIdx >= 0) {
-            var windowsToShift = Notify.openWindows.slice(conflictIdx + 1);
-            console.log("IN SHIFT")
-            console.log("windowsToShift", windowsToShift)
-            
-            for (var i = 0; i < windowsToShift.length; i++) {
-              windowsToShift[i].animate({
-                position: {
-                  left: 0,
-                  top: -90,
-                  duration: 500,
-                  relative: true
-                }
-              });
-            }
-            
-            Notify.openWindows.splice(conflictIdx, 1);
+        console.log("windows", Notify.openWindows);
+        
+        var conflictIdx = -1;
+        console.log("notificationWindows", Notify.openWindows)
+        for (var i = 0; i < Notify.openWindows.length; i++) {
+          var childWindow = Notify.openWindows[i];
+          console.log('childWindow.name', childWindow.name)
+          if (childWindow.name === this.notification.name) {
+            console.log("IN CHILDWINDOW.NAME")
+            console.log(childWindow.name)
+            console.log("INDEX", i);
+            childWindow.close();
+            conflictIdx = i;
           }
         }
         
+        console.log("conflictIdx", conflictIdx);
+        
+        if (conflictIdx >= 0) {
+          var windowsToShift = Notify.openWindows.slice(conflictIdx + 1);
+          console.log("IN SHIFT")
+          console.log("windowsToShift", windowsToShift)
+          
+          for (var i = 0; i < windowsToShift.length; i++) {
+            windowsToShift[i].animate({
+              position: {
+                left: 0,
+                top: -90,
+                duration: 500,
+                relative: true
+              }
+            });
+          }
+          
+          Notify.openWindows.splice(conflictIdx, 1);
+        }
     }
 
     addEventListener(event, cb) {
-      if (Notify.notificationsVersion === "V1") {
-        if(event === 'click' && this.notification) {
-            this.notification.noteWin.onClick = () => {
-                if (this.sticky) {
-                    this.notification.close();                    
-                }
-                cb({target:{callbackJSON:this._data}}); 
-            }
-        }
-      } else {        
-        if (event === 'click') {
-          this.notification.addEventListener('focused', () => {
-            cb({target:{callbackJSON:this._data}});
-            this.close();
-          });
-        }
+      if (event === 'click') {
+        this.notification.addEventListener('focused', () => {
+          cb({target:{callbackJSON:this._data}});
+          this.close();
+        });
       }
       
       
@@ -256,13 +243,11 @@ class Notify {
     }
 
     removeEventListener(event, cb){
-      if (Notify.notificationsVersion === "V2") {        
-        if (event === 'click') {
-          this.notification.removeEventListener('focused', () => {
-            cb({target:{callbackJSON:this._data}});
-            this.close();
-          });
-        }
+      if (event === 'click') {
+        this.notification.removeEventListener('focused', () => {
+          cb({target:{callbackJSON:this._data}});
+          this.close();
+        });
       }
         // if(event === 'click') {
         //     // this.notification.noteWin.onClick = () => {};
@@ -286,23 +271,9 @@ class Notify {
 
 Notify.openWindows = [];
 Notify.monitorInfo = false;
-Notify.notificationsVersion = "V1";
 if (Notify.monitorInfo === false) {
   fin.desktop.System.getMonitorInfo(function (monitorInfo) {
     Notify.monitorInfo = monitorInfo;
   });
 }
-
-fin.desktop.Application.getCurrent().getManifest(function (manifest) {
-  console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotificationsV2)
-  console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotificationsV2)
-  console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotificationsV2)
-  console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotificationsV2)
-    if (manifest.startup_app.symphonyNotificationsV2) {
-      console.log("IN IF")
-      console.log("IN IF")
-      console.log("IN IF")
-      Notify.notificationsVersion = "V2";
-    }
-});
 

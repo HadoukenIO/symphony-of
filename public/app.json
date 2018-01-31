@@ -23,7 +23,8 @@
         "defaultWidth": 800,
         "minWidth": 625,
         "saveWindowState":false,
-        "preload": "https://cdn.openfin.co/demos/symphony-of/bundle.js"
+        "preload": "https://cdn.openfin.co/demos/symphony-of/bundle.js",
+        "symphonyNotificationsV2": true
     },
     "runtime": {
         "arguments": "--noerrdialogs --frameStrategy=frames",
