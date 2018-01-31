@@ -294,15 +294,15 @@ if (Notify.monitorInfo === false) {
 }
 
 fin.desktop.Application.getCurrent().getManifest(function (manifest) {
-  console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotificationsV2)
-  console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotificationsV2)
-  console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotificationsV2)
-  console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotificationsV2)
-    if (manifest.startup_app.symphonyNotificationsV2) {
+  console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotifications)
+  console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotifications)
+  console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotifications)
+  console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotifications)
+    if (manifest.startup_app.symphonyNotifications) {
       console.log("IN IF")
       console.log("IN IF")
       console.log("IN IF")
-      Notify.notificationsVersion = "V2";
+      Notify.notificationsVersion = manifest.startup_app.symphonyNotifications;
     }
 });
 
