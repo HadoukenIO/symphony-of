@@ -60,7 +60,8 @@ class Notify {
           frame: false,
           resizeable: false,
           url: `${window.targetUrl}notification.html`,
-          opacity: 0.92
+          opacity: 0.92,
+          alwaysOnTop: true
         }, function (success) {
             var conflict = false;
             console.log("windows", Notify.openWindows);
