@@ -51,28 +51,171 @@
             padding:0 6px 0 0;
         }
 
+        li#available-pods {
+            user-select: none;
+        }
+
         .dropdown-content li {
             transition: 0.3s;
         }
 
         /* Change color of dropdown links on hover */
-        .dropdown-content li:hover {
+        .dropdown-content > li:hover {
             background-color: #ebebeb
         }
+
+        li.pod-list {
+            /* display: none; */
+        }
+
+        li.hide {
+            display: none;
+        }
+
+        li.show {
+            display: block;
+        }
+
+        li > li {
+            padding: 0.7em 1.5em;
+        }
+
+        .sublist > li {
+            padding-left: 0.2em;
+        }
+
+        .sublist  {
+            padding-left: 0;
+        }
+
+        #add-pod-text {
+            display: block;
+        }
+        #new-pod-url {
+            display: none;
+            font-size: 0.9em;
+        }
+        .close {
+            float: right;
+        }
+
     </style>
 </head>
 <body>
     <div>
         <ul id="myDropdown" class="dropdown-content">
             <li onclick="about()">About Symphony</li>
+            <li id="available-pods">
+                <div class="li-header" onclick="podMgmt()">Symphony Pods</div>
+            </li>
+            <li class="checked pod-list" style="background-color: #a7a7fa" id="primary-pod">primary pod...</li>
+            <li class="pod-list" style="background-color: #b3e4af" id="add-pod">
+                <span onclick="addPodUrl()" id="add-pod-text">+ Add pod</span>
+                <input id="new-pod-url" type="text">
+            </li>
             <li id="systemStartup" onclick="autoLaunch()">Launch On Startup</li>    
             <li id="always-on-top" onclick="alwaysOnTop()">Always On Top</li>    
-            <li id="close-on-exit" onclick="closeOnExit()">Close On Exit</li>    
+            <li id="close-on-exit" onclick="closeOnExit()">Close On Exit</li>
             <li onclick="exit()">Quit Symphony</li>
         </ul>
     </div>
 </body>
 <script type="text/javascript">
+    const podList = document.getElementById('pod-list');
+    const myDropdown = document.getElementById('myDropdown');
+    const primaryPod = document.getElementById('primary-pod');
+    const addPod = document.getElementById('add-pod');
+    const addPodText = document.getElementById('add-pod-text');
+    const newPodUrl = document.getElementById('new-pod-url');
+    const POD_LS_KEY = 'pods';
+    const pods = new Set(JSON.parse(localStorage.getItem(POD_LS_KEY) || '[]'));
+    
+    renderPodList();
+    podMgmt(true);
+
+    newPodUrl.addEventListener('keypress', evt => {
+        if (evt.key === 'Enter' ) {
+            localStorage.setItem(POD_LS_KEY, JSON.stringify(Array.from(pods.add(newPodUrl.value.trim()))))
+            newPodUrl.value = '';
+            renderPodList();
+            addPodUrl ();
+        }
+
+        if (evt.key === 'Escape') addPodUrl();
+    });
+
+    myDropdown.addEventListener('click', evt => {
+        window.e = evt;
+
+        if (evt.target.classList.contains('close')) {
+            console.log(evt.target.parentElement.dataset.podUrl)
+            pods.delete(evt.target.parentElement.dataset.podUrl);
+            localStorage.setItem(POD_LS_KEY, JSON.stringify(Array.from(pods)));
+            renderPodList();
+        }
+
+        if (evt.target.classList.contains('additional-pod')) {
+            evt.target.classList.add('checked');
+
+        }
+    });
+
+    function renderPodList() {
+        const frag = document.createDocumentFragment();
+        const checkMap = new Map();
+
+        for (const node of myDropdown.querySelectorAll('.additional-pod')) {
+            checkMap.set(node.dataset.podUrl, node.classList.contains('checked'))
+            node.parentElement.removeChild(node);
+        }
+        
+        for (const pod of pods) {
+            const li = document.createElement('li');
+            const close = document.createElement('span');
+            const liVal = document.createAttribute('data-pod-url');
+            liVal.value = pod;
+
+            li.textContent = pod;
+            li.classList.add('additional-pod');
+            li.classList.add('pod-list');
+            checkMap.get(pod) ? li.classList.add('checked') : null;
+
+            close.textContent = '\u26DD';
+            close.classList.add('close');
+
+            li.appendChild(close);
+            li.attributes.setNamedItem(liVal)
+
+            frag.appendChild(li);
+        }
+
+        myDropdown.insertBefore(frag, addPod);
+    }
+
+    function addPodUrl () {
+        newPodUrl.style.display = newPodUrl.style.display === 'block' ?  'none' : 'block';
+        addPodText.style.display = newPodUrl.style.display === 'block' ?  'none' : 'block';
+        newPodUrl.value = 'https://';
+        newPodUrl.style.display === 'block' ? newPodUrl.focus() : null;
+        newPodUrl.selectionStart = newPodUrl.selectionEnd = newPodUrl.value.length;
+    }
+
+    function podMgmt(init) {
+        for (const node of myDropdown.querySelectorAll('.pod-list')) {
+            if (init) {
+                node.classList.add('hide')
+            } else  {
+                node.classList.contains('hide') ? node.classList.remove('hide') : node.classList.add('hide');
+            }
+        }
+    }
+
+    const uuid = fin.desktop.Window.getCurrent().uuid;
+
+    fin.desktop.Window.wrap(uuid, uuid).getInfo(i => {
+        primaryPod.innerHTML = i.url.replace(/https?:\/\//, '').replace(/(\/$)/, '');
+    })
+
     // Initialization
     fin.desktop.InterApplicationBus.subscribe(fin.desktop.Window.getCurrent().uuid,'options', options => {
         window.trayOptions = JSON.parse(window.localStorage.getItem('tray')) || {};
@@ -125,6 +268,6 @@
     }
 
     // close system tray if not in focus
-    fin.desktop.Window.getCurrent().addEventListener('blurred', () => fin.desktop.Window.getCurrent().hide());
+    fin.desktop.Window.getCurrent().addEventListener('blurred', () => fin.desktop.Window.getCurrent().hide(), podList.style.display = 'none');
     </script>
 </html>
