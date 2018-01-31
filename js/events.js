@@ -209,7 +209,17 @@ window.addEventListener('load', () => {
     }
     const waitForElement = (query, count, cb) => {
         let elements = document.querySelectorAll(query);  
+        if (query === '.field-configure-desktop-alerts' || query === '.app-settings') {
+          console.log("ELEMENTS", elements);
+        }
         if(elements.length) {            
+          if (query === '.field-configure-desktop-alerts' || query === '.app-settings') {
+            console.log("IN ELEMENTS LENGTH")
+            console.log(elements.length);
+            console.log(elements);
+            console.log(cb);
+            console.log(count);
+          }
             cb(elements);
         } else {
             if(count<15) {
@@ -395,9 +405,41 @@ window.addEventListener('load', () => {
             })
         });
     } else if (curWindow.name !== 'system-tray'){
+        console.log("IN MAIN WINDOWWWWW")
+        console.log("IN MAIN WINDOWWWWW")
+        console.log("IN MAIN WINDOWWWWW")
+        console.log("IN MAIN WINDOWWWWW")
+        console.log("IN MAIN WINDOWWWWW")
         //Re-open popouts & inbox when app is restarted 
         waitForElement('button.toolbar-btn-inbox',0,el=> inboxCheck(el));    
         waitForElement('.navigation-item-name',0,el=> popoutsCheck(el));
+        
+        
+        // Create Desktop Position window on CONFIGURE DESKTOP ALERT POSITIONS button
+        waitForElement('.app-settings', -50, element => {
+          console.log("IN APP SETTINGS ONE")
+          waitForElement('.field-configure-desktop-alerts', -50, el => {
+            console.log("ONEONEONEONEONE")
+            console.log("el", el)
+            console.log("el[0]", el[0])
+            console.log("el[0].children", el[0].children)
+            el[0].children[0].addEventListener('click', (e) => {
+              console.log("CLICK EVENT", e)
+              var notificationPositioning = new window.fin.desktop.Window({
+                autoShow: true,
+                name: 'Notification Positioning Window',
+                cornerRounding: {height: 2, width: 3},
+                defaultWidth: 300,
+                defaultHeight: 400,
+                frame: true,
+                resizeable: false,
+                url: `${window.targetUrl}notification-positioning-window.html`,
+                opacity: 1,
+                alwaysOnTop: true
+              })
+            })
+          })
+        })
     }
 
     if (curWindow.name !== 'system-tray'){
