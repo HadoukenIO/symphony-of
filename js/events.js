@@ -144,7 +144,7 @@ window.addEventListener('load', () => {
             name: "system-tray",
             url: `${window.targetUrl}tray.html`,
             defaultWidth: 180,
-            defaultHeight: 163,
+            defaultHeight: 163 + 33,
             frame: false,
             autoShow: false,
             shadow: true,
@@ -153,22 +153,22 @@ window.addEventListener('load', () => {
             icon: `${window.targetUrl}icon/symphony.png`,
         });
         // Click on tray
-        const clickListener = clickInfo => {
-            if(clickInfo.button === 2) {
-                var sysTray = fin.desktop.Window.wrap(fin.desktop.Application.getCurrent().uuid, 'system-tray');
-                var width = 180;
-                var height = 163;
-                sysTray.isShowing(showing => {
-                    if(!showing) {
-                        sysTray.showAt(clickInfo.x-width, clickInfo.y-height-5, true, ()=>sysTray.resizeBy(1,1,"bottom-right",sysTray.resizeBy(-1,-1,"bottom-right", sysTray.focus())));
-                    } else {
-                        sysTray.hide();
-                    }
-                });    
-            }
-        }
-        // set tray
-        fin.desktop.Application.getCurrent().setTrayIcon(`${window.targetUrl}icon/symphony.png`, clickListener);
+        // const clickListener = clickInfo => {
+        //     if(clickInfo.button === 2) {
+        //         var sysTray = fin.desktop.Window.wrap(fin.desktop.Application.getCurrent().uuid, 'system-tray');
+        //         var width = 180;
+        //         var height = 163;
+        //         sysTray.isShowing(showing => {
+        //             if(!showing) {
+        //                 sysTray.showAt(clickInfo.x-width, clickInfo.y-height-5, true, ()=>sysTray.resizeBy(1,1,"bottom-right",sysTray.resizeBy(-1,-1,"bottom-right", sysTray.focus())));
+        //             } else {
+        //                 sysTray.hide();
+        //             }
+        //         });    
+        //     }
+        // }
+        // // set tray
+        // fin.desktop.Application.getCurrent().setTrayIcon(`${window.targetUrl}icon/symphony.png`, clickListener);
 
         // listen for always on top
         fin.desktop.InterApplicationBus.subscribe(currentWindow.uuid,'system-tray','always-on-top',(msg)=>{

@@ -129,36 +129,89 @@
     const newPodUrl = document.getElementById('new-pod-url');
     const POD_LS_KEY = 'pods';
     const pods = new Set(JSON.parse(localStorage.getItem(POD_LS_KEY) || '[]'));
+
+    const thisWin = fin.desktop.Window.getCurrent();
+    const uuid = thisWin.uuid;
+    const symApp = fin.desktop.Application.wrap(uuid);
+    const symWin = fin.desktop.Window.wrap(uuid, uuid);
+    const baseDimentions = {
+        width: 180,
+        height: 163 + 33,
+    };
+
+    let clickBasex;
+    let clickBasey;
+    
+
+    function makePromise (ofCall) {
+        return (...args) => new Promise((res, rej) => ofCall.apply(null, args.concat([res, rej])));
+    }
+
+    const manifest = makePromise(symApp.getManifest.bind(symApp));
+    const baseOpts = makePromise(symWin.getOptions.bind(symWin));
+    const thisWinBounds = makePromise(thisWin.getBounds.bind(thisWin));
+
+    // const baseOpts = () => {
+    //     return new Promise((res, rej) => {
+    //         fin.desktop.Window.wrap(uuid, uuid).getOptions(res, rej);
+    //     });
+    // };
+
+    const commandLineOpts = () => {
+        return new Promise((res, rej) => {
+            fin.desktop.System.getCommandLineArguments(res, rej);
+        });
+    }
     
     renderPodList();
     podMgmt(true);
 
     newPodUrl.addEventListener('keypress', evt => {
-        if (evt.key === 'Enter' ) {
-            localStorage.setItem(POD_LS_KEY, JSON.stringify(Array.from(pods.add(newPodUrl.value.trim()))))
+        if (evt.key === 'Enter') {
+            const urlToAdd = newPodUrl.value.trim();
+
+            if (urlToAdd === '') return addPodUrl();
+
+            localStorage.setItem(POD_LS_KEY, JSON.stringify(Array.from(pods.add(urlToAdd))))
             newPodUrl.value = '';
             renderPodList();
-            addPodUrl ();
+            growToFitPodList();
+            addPodUrl();
+            
         }
 
         if (evt.key === 'Escape') addPodUrl();
     });
 
-    myDropdown.addEventListener('click', evt => {
-        window.e = evt;
+    async function clickHandler(evt) {
 
         if (evt.target.classList.contains('close')) {
             console.log(evt.target.parentElement.dataset.podUrl)
             pods.delete(evt.target.parentElement.dataset.podUrl);
             localStorage.setItem(POD_LS_KEY, JSON.stringify(Array.from(pods)));
+            // shrinkToFitHiddenPodList();
+            growToFitPodList();
             renderPodList();
+
         }
 
         if (evt.target.classList.contains('additional-pod')) {
-            evt.target.classList.add('checked');
+            const podUrl = evt.target.dataset.podUrl;
 
+            if (evt.target.classList.contains('checked')) {
+                evt.target.classList.remove('checked');
+                fin.desktop.Application.wrap(podUrl).close(true);
+            } else {
+                evt.target.classList.add('checked');
+                const opts = await baseOpts();
+                opts.url = podUrl;
+                opts.uuid = podUrl;
+                const podApp = new fin.desktop.Application(opts, _ => podApp.run(), e => console.log(e));
+            }
         }
-    });
+    }
+
+    myDropdown.addEventListener('click', clickHandler);
 
     function renderPodList() {
         const frag = document.createDocumentFragment();
@@ -173,22 +226,23 @@
             const li = document.createElement('li');
             const close = document.createElement('span');
             const liVal = document.createAttribute('data-pod-url');
+            
             liVal.value = pod;
-
             li.textContent = pod;
             li.classList.add('additional-pod');
             li.classList.add('pod-list');
-            checkMap.get(pod) ? li.classList.add('checked') : null;
+
+            if (checkMap.get(pod)) li.classList.add('checked');
 
             close.textContent = '\u26DD';
             close.classList.add('close');
-
             li.appendChild(close);
             li.attributes.setNamedItem(liVal)
 
             frag.appendChild(li);
         }
 
+        // myDropdown.insertBefore(frag, addPod.nextSibling);
         myDropdown.insertBefore(frag, addPod);
     }
 
@@ -200,21 +254,103 @@
         newPodUrl.selectionStart = newPodUrl.selectionEnd = newPodUrl.value.length;
     }
 
-    function podMgmt(init) {
-        for (const node of myDropdown.querySelectorAll('.pod-list')) {
+    async function growToFitPodList() {
+        // const podNodes = myDropdown.querySelectorAll('.pod-list');
+        const numNodes = pods.size;
+        const expandBy = 33*numNodes;
+        const baseHeight = 6*33;
+
+        const { height, left, top, width, right, bottom} = await thisWinBounds();
+        
+        // setBounds(left, top, width, height, callbackopt, errorCallbackopt)
+        thisWin.setBounds(left,clickBasey - baseHeight - expandBy,width,baseHeight+expandBy);
+
+        /*
+        {
+            height: 40, //the height of the window.
+            left: 40, //left-most coordinate of the window.
+            top: 40, //top-most coordinate of the window.
+            width: 40, //the width of the window.
+            right: 80, //right-most coordinate of the window.
+            bottom: 80 //bottom-most coordinate of the window.
+        }
+        */
+
+        // thisWin.animate({
+        //     size: {
+        //         //  width: 600,
+        //         height: 33 * (amt || numNodes),
+        //         duration: 250,
+        //         relative: true
+        //     },
+        //     position: {
+        //         top: 33 * (amt || numNodes) * -1, //Defaults to the window's current top position in virtual screen coordinates.
+        //         duration: 250, //The total time in milliseconds this transition should take.
+        //         relative: true //Treat 'left' and 'top' as absolute or as deltas. Defaults to false.
+        //     }
+        // });
+    }
+
+    async function shrinkToFitHiddenPodList() {
+        const numNodes = 0;
+        const expandBy = 33*numNodes;
+        const baseHeight = 6*33;
+
+        const { height, left, top, width, right, bottom} = await thisWinBounds();
+        
+        // setBounds(left, top, width, height, callbackopt, errorCallbackopt)
+        thisWin.setBounds(left,clickBasey - baseHeight - expandBy,width,baseHeight+expandBy);
+    }
+
+    async function podMgmt(init) {
+        const podNodes = myDropdown.querySelectorAll('.pod-list');
+        const numNodes = podNodes.length;
+        let isHidden;
+
+        for (const node of podNodes) {
             if (init) {
                 node.classList.add('hide')
             } else  {
-                node.classList.contains('hide') ? node.classList.remove('hide') : node.classList.add('hide');
+                isHidden = node.classList.contains('hide');
+                isHidden ? node.classList.remove('hide') : node.classList.add('hide');
             }
         }
+
+        if ( !init && podNodes[0] && !podNodes[0].classList.contains('hide')) {
+            growToFitPodList();
+        } else {
+            shrinkToFitHiddenPodList();
+        }
+
     }
 
-    const uuid = fin.desktop.Window.getCurrent().uuid;
+    
 
     fin.desktop.Window.wrap(uuid, uuid).getInfo(i => {
         primaryPod.innerHTML = i.url.replace(/https?:\/\//, '').replace(/(\/$)/, '');
     })
+
+    const clickListener = clickInfo => {
+        if(clickInfo.button === 2) {
+            var sysTray = fin.desktop.Window.wrap(fin.desktop.Application.getCurrent().uuid, 'system-tray');
+            var width = 180;
+            var height = 163+33;
+            sysTray.isShowing(showing => {
+                if(!showing) {
+                    clickBasey = clickInfo.y;
+                    sysTray.showAt(clickInfo.x-width, clickInfo.y-height-5, true, ()=>sysTray.resizeBy(1,1,"bottom-right",sysTray.resizeBy(-1,-1,"bottom-right", sysTray.focus())));
+                } else {
+                    sysTray.hide();
+                }
+            });    
+        }
+    }
+    // set tray
+    fin.desktop.Application.getCurrent().setTrayIcon(`${window.targetUrl}icon/symphony.png`, clickListener);
+
+
+
+
 
     // Initialization
     fin.desktop.InterApplicationBus.subscribe(fin.desktop.Window.getCurrent().uuid,'options', options => {
@@ -268,6 +404,6 @@
     }
 
     // close system tray if not in focus
-    fin.desktop.Window.getCurrent().addEventListener('blurred', () => fin.desktop.Window.getCurrent().hide(), podList.style.display = 'none');
+    fin.desktop.Window.getCurrent().addEventListener('blurred', () => fin.desktop.Window.getCurrent().hide(), podMgmt(true));
     </script>
 </html>
