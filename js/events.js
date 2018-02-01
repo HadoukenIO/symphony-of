@@ -143,8 +143,8 @@ window.addEventListener('load', () => {
         var sysTray = new fin.desktop.Window({
             name: "system-tray",
             url: `${window.targetUrl}tray.html`,
-            defaultWidth: 180,
-            defaultHeight: 163 + 33,
+            defaultWidth: 200,
+            defaultHeight: 6*33, // 6 base entries 33px tall
             frame: false,
             autoShow: false,
             shadow: true,
@@ -200,8 +200,16 @@ window.addEventListener('load', () => {
 });
 
 
-
 window.addEventListener('load', () => {
+    window.addEventListener('click', t => {
+        if (t.target.nodeName === 'A' && t.target.target === '_blank') {
+            t.preventDefault();
+            fin.desktop.System.openUrlWithBrowser(t.target.href,
+                _ => console.log('opened ', t.target.href, 'from ', location.href),
+                e => console.log(e, location.href));
+        }
+    });
+
     function timeout(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }

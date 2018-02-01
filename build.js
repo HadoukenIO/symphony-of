@@ -56,9 +56,11 @@ if (isLocalBuild) {
     let contentNavigation = app.startup_app.contentNavigation;
     
     app.startup_app.preload = `${targetUrl}bundle.js`;
-    app.startup_app.url =  "https://openfin.symphony.com";
-    contentNavigation.whitelist = contentNavigation.whitelist.filter(x=>!/localhost/.test(x))
-    contentNavigation.whitelist.push(targetUrl+'*');
+    app.startup_app.url = "https://openfin.symphony.com";
+    if (contentNavigation) {
+        contentNavigation.whitelist = contentNavigation.whitelist.filter(x => !/localhost/.test(x))
+        contentNavigation.whitelist.push(targetUrl + '*');
+    }
     app.startup_app.preload = `${targetUrl}bundle.js`;
     app.startup_app.name = `OpenFin-Symphony-Client-Local`;
     app.startup_app.uuid = `OpenFin-Symphony-Client-Local`;
