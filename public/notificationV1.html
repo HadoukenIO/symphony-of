@@ -97,14 +97,12 @@
         }
       }
       
-      var notificationWindow = fin.desktop.Window.getCurrent()
+      var notificationWindow = fin.desktop.Window.getCurrent();
       
       notificationWindow.updateOptions({
-        cornerRounding: {height: 2, width: 3}
+        cornerRounding: {height: 0, width: 0}
       });
       
       notificationWindow.resizeTo(300, 80);
-      
-      
     </script>
 </html>

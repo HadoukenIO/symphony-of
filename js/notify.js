@@ -51,9 +51,8 @@ class Notify {
           var notification = new window.fin.desktop.Window({
             customData: msg,
             name: msg.tag + randomString,
-            cornerRounding: {height: 2, width: 3},
             defaultWidth: 300,
-            defaultHeight: 80,
+            defaultHeight: Notify.notificationsHeight,
             frame: false,
             resizeable: false,
             url: `${window.targetUrl}notificationV2.html`,
@@ -89,7 +88,7 @@ class Notify {
                 windowsToShift[i].animate({
                   position: {
                     left: 0,
-                    top: -90,
+                    top: ((Notify.notificationsHeight + 10) * -1),
                     duration: 500,
                     relative: true
                   }
@@ -105,7 +104,7 @@ class Notify {
             console.log("notificationPosition", notificationPosition);
             var left = Notify.monitorInfo.primaryMonitor.availableRect.right;
             var newLeft = left - 300;
-            notification.moveTo(newLeft, 90 * notificationPosition);
+            notification.moveTo(newLeft, (Notify.notificationsHeight + 10) * notificationPosition);
             notification.show();
             console.log(success, "SUCCESS");
           }, function (err) {
@@ -203,7 +202,7 @@ class Notify {
               windowsToShift[i].animate({
                 position: {
                   left: 0,
-                  top: -90,
+                  top: ((Notify.notificationsHeight + 10) * -1),
                   duration: 500,
                   relative: true
                 }
@@ -293,6 +292,7 @@ class Notify {
 Notify.openWindows = [];
 Notify.monitorInfo = false;
 Notify.notificationsVersion = "V1";
+Notify.notificationsHeight = 80;
 if (Notify.monitorInfo === false) {
   fin.desktop.System.getMonitorInfo(function (monitorInfo) {
     Notify.monitorInfo = monitorInfo;
@@ -305,11 +305,12 @@ fin.desktop.Application.getCurrent().getManifest(function (manifest) {
   console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotifications)
   console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotifications)
   console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotifications)
-    if (manifest.startup_app.symphonyNotifications) {
+    if (manifest.startup_app.symphonyNotifications == "V2") {
       console.log("IN IF")
       console.log("IN IF")
       console.log("IN IF")
-      Notify.notificationsVersion = manifest.startup_app.symphonyNotifications;
+      Notify.notificationsVersion = "V2";
+      Notify.notificationsHeight = 60;
     }
 });
 

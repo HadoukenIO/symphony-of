@@ -19,13 +19,13 @@
         #image {
           height: 30px;
           position:absolute;
-          top: 15px;
-          left: 10px;
+          top: 5px;
+          left: 5px;
         }
         #title {
           position:absolute;
-          top: 22px;
-          left: 48px;
+          top: 12px;
+          left: 40px;
           font-weight: bold;
           display: -webkit-box;
           font-size: 14px;
@@ -38,8 +38,8 @@
         #message {
           position: absolute;
           display: -webkit-box;
-          top: 38px;
-          left: 11px;
+          top: 26px;
+          left: 7px;
           word-wrap: break-word;
           width: 225px;
           font-size: 12px;
@@ -78,17 +78,14 @@
       var notificationWindow = fin.desktop.Window.getCurrent();
     
       document.querySelector('#close').addEventListener('click', (e) => {
-        console.log("CLOSE CLICK");
         e.stopPropagation();
         notificationWindow.close();
       });
       
       document.body.addEventListener('click', (e) => {
-        console.log("BODY CLICK")
         notificationWindow.minimize();
       });
-      // messages received from the application creating the application
-      // function onNotificationMessage(message) {
+
       var customData;
       notificationWindow.getOptions(function(options) {
         console.log("options", options);
