@@ -7,10 +7,8 @@
 class Notify {
 
     constructor(title,options){
-        console.log("NOTIFICATION VERSION: ", Notify.notificationsVersion)
-        console.log("NOTIFICATION VERSION: ", Notify.notificationsVersion)
-        console.log("NOTIFICATION VERSION: ", Notify.notificationsVersion)
-        console.log("NOTIFICATION VERSION: ", Notify.notificationsVersion)
+        var notificationsVersion = window.localStorage.getItem('notificationsVersion')
+        var notificationsHeight = parseInt(window.localStorage.getItem('notificationsHeight'))
         
         let msg = options || {};
         console.log('Notification Options:', options);        
@@ -37,7 +35,7 @@ class Notify {
             //     this.notification.close();
             // }
         }
-        if (Notify.notificationsVersion === "V1") {
+        if (notificationsVersion === "V1") {
           this.notification = new window.fin.desktop.Notification({
               url: `${window.targetUrl}notificationV1.html`,
               message: msg,
@@ -48,11 +46,16 @@ class Notify {
         } else {
           var randomString = Math.random().toString(36).slice(-8);
           
+          console.log("notificationsHeight", notificationsHeight)
+          console.log("notificationsHeight", notificationsHeight)
+          console.log("notificationsHeight", notificationsHeight)
+          console.log("notificationsHeight", notificationsHeight)
+          
           var notification = new window.fin.desktop.Window({
             customData: msg,
             name: msg.tag + randomString,
             defaultWidth: 300,
-            defaultHeight: Notify.notificationsHeight,
+            defaultHeight: notificationsHeight,
             frame: false,
             resizeable: false,
             url: `${window.targetUrl}notificationV2.html`,
@@ -61,6 +64,11 @@ class Notify {
           }, function (success) {
             var conflict = false;
             console.log("windows", Notify.openWindows);
+            console.log("notification", notification);
+            console.log("notification", notification);
+            console.log("notification", notification);
+            console.log("notification", notification);
+            console.log("notification", notification);
             
             var conflictIdx = -1;
             console.log("notificationWindows", Notify.openWindows)
@@ -88,7 +96,7 @@ class Notify {
                 windowsToShift[i].animate({
                   position: {
                     left: 0,
-                    top: ((Notify.notificationsHeight + 10) * -1),
+                    top: ((notificationsHeight + 10) * -1),
                     duration: 500,
                     relative: true
                   }
@@ -102,9 +110,15 @@ class Notify {
             var notificationPosition = Notify.openWindows.length - 1;
             console.log("notificationPosition", notificationPosition);
             console.log("notificationPosition", notificationPosition);
-            var left = Notify.monitorInfo.primaryMonitor.availableRect.right;
+            // var left = Notify.monitorInfo.primaryMonitor.availableRect.right;
+            var monitorInfo = JSON.parse(window.localStorage.getItem('monitorInfo'));
+            console.log("monitorInfo", monitorInfo);
+            console.log("monitorInfo", monitorInfo);
+            console.log("monitorInfo", monitorInfo);
+            console.log("monitorInfo", monitorInfo);
+            var left = monitorInfo.primaryMonitor.availableRect.right;
             var newLeft = left - 300;
-            notification.moveTo(newLeft, (Notify.notificationsHeight + 10) * notificationPosition);
+            notification.moveTo(newLeft, (notificationsHeight + 10) * notificationPosition);
             notification.show();
             console.log(success, "SUCCESS");
           }, function (err) {
@@ -174,7 +188,10 @@ class Notify {
         //   shiftNotification.close();
         // });
         
-        if (Notify.notificationsVersion === "V2") {
+        var notificationsVersion = window.localStorage.getItem('notificationsVersion')
+        var notificationsHeight = parseInt(window.localStorage.getItem('notificationsHeight'))
+        
+        if (notificationsVersion === "V2") {
           console.log("windows", Notify.openWindows);
           
           var conflictIdx = -1;
@@ -202,7 +219,7 @@ class Notify {
               windowsToShift[i].animate({
                 position: {
                   left: 0,
-                  top: ((Notify.notificationsHeight + 10) * -1),
+                  top: ((notificationsHeight + 10) * -1),
                   duration: 500,
                   relative: true
                 }
@@ -216,7 +233,8 @@ class Notify {
     }
 
     addEventListener(event, cb) {
-      if (Notify.notificationsVersion === "V1") {
+      var notificationsVersion = window.localStorage.getItem('notificationsVersion')
+      if (notificationsVersion === "V1") {
         if(event === 'click' && this.notification) {
             this.notification.noteWin.onClick = () => {
                 if (this.sticky) {
@@ -261,7 +279,9 @@ class Notify {
     }
 
     removeEventListener(event, cb){
-      if (Notify.notificationsVersion === "V2") {        
+      var notificationsVersion = window.localStorage.getItem('notificationsVersion')
+      
+      if (notificationsVersion === "V2") {        
         if (event === 'click') {
           this.notification.removeEventListener('focused', () => {
             cb({target:{callbackJSON:this._data}});
@@ -290,31 +310,32 @@ class Notify {
 }
 
 Notify.openWindows = [];
-Notify.monitorInfo = false;
-Notify.notificationsVersion = "V1";
-Notify.notificationsHeight = 80;
-if (Notify.monitorInfo === false) {
-  fin.desktop.System.getMonitorInfo(function (monitorInfo) {
-    Notify.monitorInfo = monitorInfo;
-  });
-}
-
-
-fin.desktop.Application.getCurrent().getManifest(function (manifest) {
-  console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotifications)
-  console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotifications)
-  console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotifications)
-  console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotifications)
-    if (manifest.startup_app.symphonyNotifications == "V2") {
-      console.log("IN IF")
-      console.log("IN IF")
-      console.log("IN IF")
-      Notify.notificationsVersion = "V2";
-      Notify.notificationsHeight = 60;
-    }
-});
+// Notify.notificationsVersion = "V1";
+// Notify.notificationsHeight = 80;
+// if (Notify.monitorInfo === false) {
+//   fin.desktop.System.getMonitorInfo(function (monitorInfo) {
+//     Notify.monitorInfo = monitorInfo;
+//   });
+// }
+// 
+// 
+// fin.desktop.Application.getCurrent().getManifest(function (manifest) {
+//   console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotifications)
+//   console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotifications)
+//   console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotifications)
+//   console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotifications)
+//     if (manifest.startup_app.symphonyNotifications == "V2") {
+//       console.log("IN IF")
+//       console.log("IN IF")
+//       console.log("IN IF")
+//       Notify.notificationsVersion = "V2";
+//       Notify.notificationsHeight = 60;
+//     }
+// });
 
 window.addEventListener('load', () => {
+  var notificationsVersion = window.localStorage.getItem('notificationsVersion')
+  var notificationsHeight = parseInt(window.localStorage.getItem('notificationsHeight'))
   var thisWindow = fin.desktop.Window.getCurrent();
   
   const waitForElement = (query, count, cb) => {
@@ -339,7 +360,7 @@ window.addEventListener('load', () => {
       }
   };
 
-  if (thisWindow.name !== 'system-tray' && Notify.notificationsVersion === "V2"){
+  if (thisWindow.name !== 'system-tray' && notificationsVersion === "V2"){
     console.log("IN MAIN WINDOWWWWW")
     console.log("IN MAIN WINDOWWWWW")
     console.log("IN MAIN WINDOWWWWW")
