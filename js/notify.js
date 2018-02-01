@@ -299,6 +299,7 @@ if (Notify.monitorInfo === false) {
   });
 }
 
+
 fin.desktop.Application.getCurrent().getManifest(function (manifest) {
   console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotifications)
   console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotifications)
@@ -310,5 +311,84 @@ fin.desktop.Application.getCurrent().getManifest(function (manifest) {
       console.log("IN IF")
       Notify.notificationsVersion = manifest.startup_app.symphonyNotifications;
     }
+});
+
+window.addEventListener('load', () => {
+  var thisWindow = fin.desktop.Window.getCurrent();
+  
+  const waitForElement = (query, count, cb) => {
+      let elements = document.querySelectorAll(query);  
+      if (query === '.field-configure-desktop-alerts' || query === '.app-settings') {
+        console.log("ELEMENTS", elements);
+      }
+      if(elements.length) {            
+        if (query === '.field-configure-desktop-alerts' || query === '.app-settings') {
+          console.log("IN ELEMENTS LENGTH")
+          console.log(elements.length);
+          console.log(elements);
+          console.log(cb);
+          console.log(count);
+        }
+          cb(elements);
+      } else {
+          if(count<15) {
+              count++;
+              setTimeout(()=>waitForElement(query, count, cb),450)
+          }
+      }
+  };
+
+  if (thisWindow.name !== 'system-tray' && Notify.notificationsVersion === "V2"){
+    console.log("IN MAIN WINDOWWWWW")
+    console.log("IN MAIN WINDOWWWWW")
+    console.log("IN MAIN WINDOWWWWW")
+    console.log("IN MAIN WINDOWWWWW")
+    console.log("IN MAIN WINDOWWWWW")
+    
+    function desktopAlertClickHandler(el) {
+      el[0].children[0].addEventListener('click', (e) => {
+        console.log("CLICK EVENT", e)
+        var notificationPositioning = new window.fin.desktop.Window({
+          autoShow: true,
+          name: 'Notification Positioning Window',
+          cornerRounding: {height: 2, width: 3},
+          defaultWidth: 300,
+          defaultHeight: 400,
+          frame: true,
+          resizeable: false,
+          url: `${window.targetUrl}notification-positioning-window.html`,
+          opacity: 1,
+          alwaysOnTop: true
+        })
+      })
+    }
+    
+    // Create Desktop Position window on CONFIGURE DESKTOP ALERT POSITIONS button
+    waitForElement('.sym-menu-tooltip__target', 0, element => {
+      console.log(" IN sym-menu-tooltip__target");
+      element[0].addEventListener('click', function () {
+        console.log("Clicked sym-menu-tooltip__target");
+        
+        waitForElement('.sym-menu-tooltip__overlay', 0, el1 => {
+          console.log(" IN sym-menu-tooltip__overlay");
+          
+          el1[0].addEventListener('click', function () {
+            console.log("clicked sym-menu-tooltip__overlay");
+            
+            waitForElement('.tempo-tabs__tab', 0, el2 => {
+              console.log("in tempo-tabs__tab");
+              
+              el2[0].addEventListener('click', function () {
+                console.log("clicked tempo-tabs__tab");
+                waitForElement('.field-configure-desktop-alerts', 0, (el3) => desktopAlertClickHandler(el3))
+              })
+            })
+            
+            waitForElement('.field-configure-desktop-alerts', 0, (el4) => desktopAlertClickHandler(el4))
+          })
+        })
+      })
+    })
+  }
 });
 
