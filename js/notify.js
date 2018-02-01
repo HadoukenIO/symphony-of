@@ -228,8 +228,14 @@ class Notify {
         }
       } else {        
         if (event === 'click') {
-          this.notification.addEventListener('focused', () => {
+          // On click of the body of the notification, the notification window is set to minimize, 
+          // but on click of the "X", it closes. That way, we can choose to dismiss 
+          // notifications instead of always directing to the chat window.
+          this.notification.addEventListener('minimized', (e) => {
             cb({target:{callbackJSON:this._data}});
+            this.close();
+          });
+          this.notification.addEventListener('closed', (e) => {
             this.close();
           });
         }
