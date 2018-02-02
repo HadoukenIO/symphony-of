@@ -7,7 +7,7 @@
         <style>
         body {
           font-family: Helvetica, sans-serif;
-          background-color: #000;
+          background-color: #FFFFFF;
           color:#FFFFFF;
           margin:0;
           overflow: hidden;
@@ -76,20 +76,27 @@
 
     <script type="text/javascript">
       var notificationWindow = fin.desktop.Window.getCurrent();
+      console.log("notificationWindow", notificationWindow);
     
-      document.querySelector('#close').addEventListener('click', (e) => {
-        e.stopPropagation();
-        notificationWindow.close();
-      });
-      
-      document.body.addEventListener('click', (e) => {
-        notificationWindow.minimize();
-      });
 
       var customData;
       notificationWindow.getOptions(function(options) {
         console.log("options", options);
         customData = options.customData;
+        
+        document.querySelector('#close').addEventListener('click', (e) => {
+          e.stopPropagation();
+          fin.desktop.InterApplicationBus.publish(`${options.name} close`, "test");
+          console.log(`${options.name} close`)
+          notificationWindow.hide();
+        });
+        
+        document.addEventListener('click', (e) => {
+          fin.desktop.InterApplicationBus.publish(`${options.name} body`, "test");
+          console.log(`${options.name} body`)
+          notificationWindow.hide();
+        });
+        
         document.querySelectorAll('#title')[0].innerText = customData.title || '';
         document.querySelectorAll('#message')[0].innerHTML = customData.body || ' ';
         if(!customData.icon) {
@@ -106,7 +113,7 @@
             } else {
               document.body.style.backgroundColor = 'red';
             }
-          }, 1000);
+          }, 2000);
         }
       }, function (error) {
         console.log("Error", error);

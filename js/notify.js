@@ -60,7 +60,7 @@ class Notify {
             defaultWidth: 300,
             defaultHeight: notificationsHeight,
             frame: false,
-            resizeable: false,
+            resizable: false,
             url: `${window.targetUrl}notificationV2.html`,
             opacity: 0.92,
             alwaysOnTop: true
@@ -101,7 +101,7 @@ class Notify {
             //       position: {
             //         left: 0,
             //         top: ((notificationsHeight + 10) * -1),
-            //         duration: 500,
+            //         duration: 250,
             //         relative: true
             //       }
             //     }, {
@@ -117,7 +117,7 @@ class Notify {
             //       position: {
             //         left: 0,
             //         top: ((notificationsHeight + 10) * -1),
-            //         duration: 500,
+            //         duration: 250,
             //         relative: true
             //       }
             //     }, {
@@ -136,7 +136,7 @@ class Notify {
             //       position: {
             //         left: 0,
             //         top: ((notificationsHeight + 10) * -1),
-            //         duration: 500,
+            //         duration: 250,
             //         relative: true
             //       }
             //     }, {
@@ -149,10 +149,13 @@ class Notify {
             
             console.log("Notify.openWindows AFTER SHIFTING", Notify.openWindows)
             
-            Notify.openWindows.push(notification);
-            var notificationPosition = Notify.openWindows.length - 1;
+            var notificationPosition = Notify.openWindows.length;
+            console.log("BEFORE LOCATION PLACEMENT")
+            console.log("BEFORE LOCATION PLACEMENT")
+            console.log("BEFORE LOCATION PLACEMENT")
+            console.log("BEFORE LOCATION PLACEMENT")
             console.log("notificationPosition", notificationPosition);
-            console.log("notificationPosition", notificationPosition);
+            console.log("notificationsLocation", notificationsLocation);
             console.log("monitorInfo", monitorInfo)
             var rightBound = monitorInfo.primaryMonitor.availableRect.right;
             var rightBoundPlacement = rightBound - 300;
@@ -164,12 +167,37 @@ class Notify {
             } else if (notificationsLocation === "top-left") {
               notification.moveTo(0, (notificationsHeight + 10) * notificationPosition);
             } else if (notificationsLocation === "bottom-left") {
+                for (var i = 0; i < Notify.openWindows.length; i++) {
+                  Notify.openWindows[i].animate({
+                    position: {
+                      left: 0,
+                      top: ((notificationsHeight + 10) * -1),
+                      duration: 250,
+                      relative: true
+                    }
+                  }, {
+                    interrupt: false
+                  });
+                }
               notification.moveTo(0, bottomBoundPlacement);
             } else {
+              for (var i = 0; i < Notify.openWindows.length; i++) {
+                Notify.openWindows[i].animate({
+                  position: {
+                    left: 0,
+                    top: ((notificationsHeight + 10) * -1),
+                    duration: 250,
+                    relative: true
+                  }
+                }, {
+                  interrupt: false
+                });
+              }
               notification.moveTo(rightBoundPlacement, bottomBoundPlacement);
             }
             
             notification.show();
+            Notify.openWindows.push(notification);
             console.log(success, "SUCCESS");
           }, function (err) {
             console.log(err, "ERROR");
@@ -190,53 +218,6 @@ class Notify {
     }
 
     close(cb) {
-        // This gets called immediately on a new notification...so commented out for now.  
-        // this.notification.close();
-        
-        // var shiftNotification = this.notification;
-        // 
-        // fin.desktop.Application.getCurrent().getChildWindows(function(windows) {
-        //   console.log("WINDOWSSS", windows)
-        //   var notificationWindows = [];
-        //   for (var i = 0; i < windows.length; i++) {
-        //     var childWindow = windows[i];
-        // 
-        //     if (childWindow.name.includes("==")) {
-        //       notificationWindows.push(childWindow);
-        //     }
-        //   }
-        // 
-        //   var conflictIdx = -1;
-        //   for (var i = 0; i < notificationWindows.length; i++) {
-        //     var childWindow = notificationWindows[i];
-        //     console.log('childWindow.nameeee', shiftNotification.name)
-        //     if (childWindow.name === obj.name) {
-        //       console.log("IN CHILDWINDOW.NAMEEEE")
-        //       console.log(childWindow.name)
-        //       console.log("INDEXXXXX", i);
-        //       conflictIdx = i;
-        //     }
-        //   }
-        // 
-        //   if (conflictIdx >= 0) {
-        //     var windowsToShift = notificationWindows.slice(conflictIdx + 1);
-        //     console.log("IN SHIFTTTT");
-        //     console.log("windowsToShifttttt", windowsToShift);
-        // 
-        //     for (var i = 0; i < windowsToShift.length; i++) {
-        //       windowsToShift[i].animate({
-        //         position: {
-        //           left: 0,
-        //           top: -90,
-        //           duration: 500,
-        //           relative: true
-        //         }
-        //       });
-        //     }
-        //   }
-        // 
-        //   shiftNotification.close();
-        // });
         console.log("CLOSE FUNCTION IS HIT WHAT")
         console.log("CLOSE FUNCTION IS HIT WHAT")
         console.log("CLOSE FUNCTION IS HIT WHAT")
@@ -257,48 +238,8 @@ class Notify {
         var notificationsHeight = parseInt(window.localStorage.getItem('notificationsHeight'))
         
         if (notificationsVersion === "V2") {
-          // console.log("windows", Notify.openWindows);
-          // 
-          // var conflictIdx = -1;
-          // console.log("notificationWindows", Notify.openWindows)
-          // for (var i = 0; i < Notify.openWindows.length; i++) {
-          //   var childWindow = Notify.openWindows[i];
-          //   console.log('childWindow.name', childWindow.name)
-          //   if (childWindow.name === this.notification.name) {
-          //     console.log("IN CHILDWINDOW.NAME")
-          //     console.log(childWindow.name)
-          //     console.log("INDEX", i);
-          //     childWindow.close();
-          //     conflictIdx = i;
-          //   }
-          // }
-          // 
-          // console.log("conflictIdx", conflictIdx);
-          // 
-          // if (conflictIdx >= 0) {
-          //   var windowsToShift = Notify.openWindows.slice(conflictIdx + 1);
-          //   console.log("IN SHIFT")
-          //   console.log("windowsToShift", windowsToShift)
-          // 
-          //   for (var i = 0; i < windowsToShift.length; i++) {
-          //     windowsToShift[i].animate({
-          //       position: {
-          //         left: 0,
-          //         top: ((notificationsHeight + 10) * -1),
-          //         duration: 500,
-          //         relative: true
-          //       }
-          //     }, {
-          //       interrupt: false
-          //     });
-          //   }
-          // 
-          //   Notify.openWindows.splice(conflictIdx, 1);
-          // }
-          
-          var conflict = false;
           console.log("windows", Notify.openWindows);
-          
+          var conflict = false;
           var conflictIdx = -1;
           console.log("notificationWindows before pruning", Notify.openWindows)
           for (var i = 0; i < Notify.openWindows.length; i++) {
@@ -309,22 +250,20 @@ class Notify {
               console.log(childWindow.name)
               console.log("INDEX", i);
               childWindow.close();
-              conflict = true;
               conflictIdx = i;
+              conflict = true;
             }
           }
           
           console.log("conflictIdx after pruning", conflictIdx);
-          console.log("conflict after pruning", conflict);
           console.log("notificationsLocation", notificationsLocation)
           console.log("Notify.openWindows AFTER PRUNING", Notify.openWindows)
           
           
-          
-          if (conflict && notificationsLocation == "top-right" || notificationsLocation === "top-left") {
+          if (conflict && (notificationsLocation === "top-right" || notificationsLocation === "top-left")) {
             var windowsToShift = Notify.openWindows.slice(conflictIdx + 1);
-            console.log("IN SHIFT")
-            console.log("windowsToShift", windowsToShift)
+            console.log("IN SHIFT");
+            console.log("windowsToShift", windowsToShift);
             
             for (var i = 0; i < windowsToShift.length; i++) {
               console.log("ANIMATING ", windowsToShift[i].name)
@@ -332,7 +271,7 @@ class Notify {
                 position: {
                   left: 0,
                   top: ((notificationsHeight + 10) * -1),
-                  duration: 500,
+                  duration: 250,
                   relative: true
                 }
               }, {
@@ -341,22 +280,8 @@ class Notify {
             } 
             
             Notify.openWindows.splice(conflictIdx, 1);
-          } else if (conflict === false && notificationsLocation === "bottom-right" || notificationsLocation === "bottom-left") {
-            console.log("IN BOTTOM SHIFT NO CONFLICT")
-            for (var i = 0; i < Notify.openWindows.length; i++) {
-              Notify.openWindows[i].animate({
-                position: {
-                  left: 0,
-                  top: ((notificationsHeight + 10) * -1),
-                  duration: 500,
-                  relative: true
-                }
-              }, {
-                interrupt: false
-              });
-            }
-          } else if (conflict && notificationsLocation === "bottom-right" || notificationsLocation === "bottom-left") {
-            var windowsToShift = Notify.openWindows.slice(conflictIdx + 1);
+          } else if (conflict && (notificationsLocation === "bottom-right" || notificationsLocation === "bottom-left")) {
+            var windowsToShift = Notify.openWindows.slice(0, conflictIdx);
             console.log("IN BOTTOM")
             console.log("windowsToShift", windowsToShift)
             
@@ -366,8 +291,8 @@ class Notify {
               windowsToShift[i].animate({
                 position: {
                   left: 0,
-                  top: ((notificationsHeight + 10) * -1),
-                  duration: 500,
+                  top: (notificationsHeight + 10),
+                  duration: 250,
                   relative: true
                 }
               }, {
@@ -378,11 +303,11 @@ class Notify {
             Notify.openWindows.splice(conflictIdx, 1);
           }
         }
-        
     }
 
     addEventListener(event, cb) {
       var notificationsVersion = window.localStorage.getItem('notificationsVersion')
+      var notificationName = this.notification.name
       if (notificationsVersion === "V1") {
         if(event === 'click' && this.notification) {
             this.notification.noteWin.onClick = () => {
@@ -397,13 +322,22 @@ class Notify {
           // On click of the body of the notification, the notification window is set to minimize, 
           // but on click of the "X", it closes. That way, we can choose to dismiss 
           // notifications instead of always directing to the chat window.
-          this.notification.addEventListener('minimized', (e) => {
-            console.log("IN MINIMIZED WHAT")
+          // this.notification.addEventListener('minimized', (e) => {
+          //   console.log("IN MINIMIZED WHAT")
+          //   cb({target:{callbackJSON:this._data}});
+          //   this.close();
+          // });
+          // this.notification.addEventListener('closed', (e) => {
+          //   this.close();
+          // });
+          
+          fin.desktop.InterApplicationBus.subscribe("*", `${notificationName} body`, (message, uuid, name) => {
+            console.log(`IN ${notificationName} body click IAB`)
             cb({target:{callbackJSON:this._data}});
             this.close();
           });
-          this.notification.addEventListener('blur', (e) => {
-            console.log('BLURRRR');
+          fin.desktop.InterApplicationBus.subscribe("*", `${notificationName} close`, (message, uuid, name) => {
+            console.log(`IN ${notificationName} close click IAB`)
             this.close();
           });
         }

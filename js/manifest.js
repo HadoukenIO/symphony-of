@@ -19,4 +19,4 @@ fin.desktop.Application.getCurrent().getManifest(function (manifest) {
     }
 });
 
-window.localStorage.setItem('notificationsLocation', "bottom-left");
+window.localStorage.setItem('notificationsLocation', "bottom-right");
