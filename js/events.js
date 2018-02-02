@@ -151,6 +151,8 @@ window.addEventListener('load', () => {
             saveWindowState: false,
             alwaysOnTop: true,
             icon: `${window.targetUrl}icon/symphony.png`,
+        }, () => {
+            console.log('this has created a sys tray window');
         });
         // Click on tray
         // const clickListener = clickInfo => {

@@ -110,6 +110,11 @@
             text-overflow: ellipsis;
             overflow: hidden
         }
+        #primary-pod {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
 
     </style>
 </head>
@@ -151,8 +156,11 @@
         height: 163 + 33,
     };
 
-    let clickBasex;
     let clickBasey;
+
+    symWin.getInfo(i => {
+        primaryPod.innerHTML = stripProtocol(i.url); //.replace(/https?:\/\//, '').replace(/(\/$)/, '');
+    })
 
     myDropdown.addEventListener('click', clickHandler);
     
@@ -165,12 +173,6 @@
     const manifest = makePromise(symApp.getManifest.bind(symApp));
     const baseOpts = makePromise(symWin.getOptions.bind(symWin));
     const thisWinBounds = makePromise(thisWin.getBounds.bind(thisWin));
-
-    const commandLineOpts = () => {
-        return new Promise((res, rej) => {
-            fin.desktop.System.getCommandLineArguments(res, rej);
-        });
-    }
     
     renderPodList();
     podMgmt(true);
@@ -310,9 +312,6 @@
         return url.replace(/https?:\/\//, '')
             .replace(/(\/$)/, '');
     }
-    fin.desktop.Window.wrap(uuid, uuid).getInfo(i => {
-        primaryPod.innerHTML = stripProtocol(i.url); //.replace(/https?:\/\//, '').replace(/(\/$)/, '');
-    })
 
     const clickListener = clickInfo => {
         if(clickInfo.button === 2) {
@@ -330,6 +329,7 @@
         }
     }
 
+
     setTrayIcon(`${window.targetUrl}icon/symphony.png`, clickListener).then(() => {
         const whenCreated = Date.now();
 
@@ -346,6 +346,8 @@
         });
 
         fin.desktop.InterApplicationBus.publish('sys-tray-created', whenCreated);
+    }).catch(e => {
+        console.log('BAD THING!', e);
     })
 
     // set tray
