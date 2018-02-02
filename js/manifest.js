@@ -19,4 +19,6 @@ fin.desktop.Application.getCurrent().getManifest(function (manifest) {
     }
 });
 
-window.localStorage.setItem('notificationsLocation', "bottom-right");
+if (window.localStorage.getItem('notificationsLocation') === null) {
+  window.localStorage.setItem('notificationsLocation', "bottom-right");
+}
