@@ -350,13 +350,7 @@
         console.log('BAD THING!', e);
     })
 
-    // set tray
-    // fin.desktop.Application.getCurrent().setTrayIcon(`${window.targetUrl}icon/symphony.png`, clickListener);
-
-
-
-
-
+    
     // Initialization
     fin.desktop.InterApplicationBus.subscribe(fin.desktop.Window.getCurrent().uuid,'options', options => {
         window.trayOptions = JSON.parse(window.localStorage.getItem('tray')) || {};
