@@ -7,22 +7,99 @@
         <style>
         body {
           font-family: Helvetica, sans-serif;
-          background-color: #000;
-          color:#000000;
+          background-color: #181818;
+          color: rgba(225, 225, 225, 0.88);
           margin:0;
           overflow: hidden;
           -webkit-user-select: none;
+        }
+        
+        #container {
+          display: flex;
+          margin: 10px;
+          padding: 10px;
+          height: 70vh;
+          vertical-align: middle;
+          align-items: center;
+          justify-content: space-around;
+          box-sizing: border-box;
+          flex-direction: column;
+        }
+        
+        .current-corner {
+          font-size: 20px;
+          font-weight: bold;
+          text-align: center;
+        }
+        
+        .corner-button-container {
+          display: flex;
+          flex-wrap: wrap;
+        }
+        
+        .corner-button {
+          width: 45%;
+          border: 2px solid #00a4b1;
+          padding: 5px;
+          text-align: center;
+          box-sizing: border-box;
+          margin: 5px;
+          font-size: 14px;
+          border-radius: 3px;
+        }
+        
+        .corner-button:hover {
+          background: #00bccc;
+          cursor: pointer;
+        }
+        
+        .corner-button:active {
+          background: #00ecff;
         }
         </style>
     </head>
 
     <body>
         <div id="container">
-          THIS IS THE NOTIFICATION POSITIONING WINDOW
+          <div class="current-corner"></div>
+          <div class="corner-button-container">
+            <div class="corner-button top-left">Top Left</div>
+            <div class="corner-button top-right">Top Right</div>
+            <div class="corner-button bottom-left">Bottom Left</div>
+            <div class="corner-button bottom-right">Bottom Right</div>
+          </div>
         </div>
     </body>
 
     <script type="text/javascript">
+      var corners = {
+        'top-right': "Top Right",
+        'top-left': "Top Left",
+        'bottom-left': "Bottom Left",
+        'bottom-right': "Bottom Right"
+      }
       
+      var notificationsLocation = window.localStorage.getItem('notificationsLocation');
+      
+      document.querySelectorAll('.current-corner')[0].innerText = `Current Corner: ${corners[notificationsLocation]}`;
+      
+      document.querySelectorAll('.top-right')[0].addEventListener('click', function () {
+        document.querySelectorAll('.current-corner')[0].innerText = `Current Corner: Top Right`;
+        fin.desktop.InterApplicationBus.publish('notificationsLocation', 'top-right');
+        
+      })
+      document.querySelectorAll('.top-left')[0].addEventListener('click', function () {
+        document.querySelectorAll('.current-corner')[0].innerText = `Current Corner: Top Left`;
+        fin.desktop.InterApplicationBus.publish('notificationsLocation', 'top-left');
+      })
+      document.querySelectorAll('.bottom-left')[0].addEventListener('click', function () {
+        document.querySelectorAll('.current-corner')[0].innerText = `Current Corner: Bottom Left`;
+        fin.desktop.InterApplicationBus.publish('notificationsLocation', 'bottom-left');
+
+      })
+      document.querySelectorAll('.bottom-right')[0].addEventListener('click', function () {
+        document.querySelectorAll('.current-corner')[0].innerText = `Current Corner: Bottom Right`;
+        fin.desktop.InterApplicationBus.publish('notificationsLocation', 'bottom-right');
+      })
     </script>
 </html>

@@ -314,6 +314,95 @@ window.addEventListener('load', () => {
           }
       }
   };
+  
+  fin.desktop.InterApplicationBus.subscribe("*", `notificationsLocation`, (message, uuid, name) => {
+    console.log("RECEIVED LOCATION", message)
+    window.localStorage.setItem('notificationsLocation', message);
+    repositionWindows(message);
+  });
+  
+  function repositionWindows(corner) {
+    fin.desktop.Application.getCurrent().getChildWindows((childWindows) => {
+      var openNotificationWindows = [];
+      for (var i = 0; i < childWindows.length; i++) {
+        if (childWindows[i].name.includes("///")) {
+          openNotificationWindows.push(childWindows[i])
+        }
+      }
+      
+      console.log("openNotificationWindows", openNotificationWindows);
+      
+      
+      var notificationsHeight = parseInt(window.localStorage.getItem('notificationsHeight'));
+      var monitorInfo = JSON.parse(window.localStorage.getItem('monitorInfo'));
+      var rightBound = monitorInfo.primaryMonitor.availableRect.right;
+      var rightBoundPlacement = rightBound - 300;
+      var bottomBound = monitorInfo.primaryMonitor.availableRect.bottom;
+      var bottomBoundPlacement = bottomBound - notificationsHeight;
+      console.log("monitorInfo", monitorInfo)
+      console.log("rightBound", rightBound)
+      console.log("rightBoundPlacement", rightBoundPlacement)
+      
+      if (corner === 'top-right') {
+        for (var i = 0; i < openNotificationWindows.length; i++) {
+          var openNotificationWindow = openNotificationWindows[i];
+          openNotificationWindow.animate({
+            position: {
+              left: rightBoundPlacement,
+              top: (notificationsHeight + 10) * i,
+              duration: 500
+            }
+          }, {
+            interrupt: false
+          });
+        }
+      } else if (corner === 'top-left') {
+        for (var i = 0; i < openNotificationWindows.length; i++) {
+          var openNotificationWindow = openNotificationWindows[i];
+          openNotificationWindow.animate({
+            position: {
+              left: 0,
+              top: (notificationsHeight + 10) * i,
+              duration: 500
+            }
+          }, {
+            interrupt: false
+          });
+        }
+      } else if (corner === 'bottom-left') {
+        var bottomIdx = openNotificationWindows.length - 1;
+        for (var i = 0; i < openNotificationWindows.length; i++) {
+          var openNotificationWindow = openNotificationWindows[bottomIdx];
+          openNotificationWindow.animate({
+            position: {
+              left: 0,
+              top: (bottomBoundPlacement - ((notificationsHeight + 10) * i)),
+              duration: 500
+            }
+          }, {
+            interrupt: false
+          });
+          bottomIdx--;
+        }
+      } else if (corner === 'bottom-right') {
+        var bottomIdx = openNotificationWindows.length - 1;
+        for (var i = 0; i < openNotificationWindows.length; i++) {
+          var openNotificationWindow = openNotificationWindows[bottomIdx];
+          openNotificationWindow.animate({
+            position: {
+              left: rightBoundPlacement,
+              top: (bottomBoundPlacement - ((notificationsHeight + 10) * i)),
+              duration: 500
+            }
+          }, {
+            interrupt: false
+          });
+          bottomIdx--;
+        }
+      }
+    });
+    
+  }
 
   if (thisWindow.name !== 'system-tray' && notificationsVersion === "V2"){
     console.log("IN MAIN WINDOWWWWW")
