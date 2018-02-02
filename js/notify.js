@@ -65,87 +65,6 @@ class Notify {
             opacity: 0.92,
             alwaysOnTop: true
           }, function (success) {
-            // var conflict = false;
-            // console.log("windows", Notify.openWindows);
-            // 
-            // var conflictIdx = -1;
-            // console.log("notificationWindows before pruning", Notify.openWindows)
-            // for (var i = 0; i < Notify.openWindows.length; i++) {
-            //   var childWindow = Notify.openWindows[i];
-            //   console.log('childWindow.name', childWindow.name)
-            //   if (childWindow.name.includes(msg.tag)) {
-            //     console.log("IN CHILDWINDOW.NAME")
-            //     console.log(childWindow.name)
-            //     console.log("INDEX", i);
-            //     childWindow.close();
-            //     conflict = true;
-            //     conflictIdx = i;
-            //   }
-            // }
-            // 
-            // console.log("conflictIdx after pruning", conflictIdx);
-            // console.log("conflict after pruning", conflict);
-            // console.log("notificationsLocation", notificationsLocation)
-            // console.log("Notify.openWindows AFTER PRUNING", Notify.openWindows)
-            // 
-            // 
-            // 
-            // if (conflict && notificationsLocation == "top-right" || notificationsLocation === "top-left") {
-            //   var windowsToShift = Notify.openWindows.slice(conflictIdx + 1);
-            //   console.log("IN SHIFT")
-            //   console.log("windowsToShift", windowsToShift)
-            // 
-            //   for (var i = 0; i < windowsToShift.length; i++) {
-            //     console.log("ANIMATING ", windowsToShift[i].name)
-            //     windowsToShift[i].animate({
-            //       position: {
-            //         left: 0,
-            //         top: ((notificationsHeight + 10) * -1),
-            //         duration: 250,
-            //         relative: true
-            //       }
-            //     }, {
-            //       interrupt: false
-            //     });
-            //   } 
-            // 
-            //   Notify.openWindows.splice(conflictIdx, 1);
-            // } else if (conflict === false && notificationsLocation === "bottom-right" || notificationsLocation === "bottom-left") {
-            //   console.log("IN BOTTOM SHIFT NO CONFLICT")
-            //   for (var i = 0; i < Notify.openWindows.length; i++) {
-            //     Notify.openWindows[i].animate({
-            //       position: {
-            //         left: 0,
-            //         top: ((notificationsHeight + 10) * -1),
-            //         duration: 250,
-            //         relative: true
-            //       }
-            //     }, {
-            //       interrupt: false
-            //     });
-            //   }
-            // } else if (conflict && notificationsLocation === "bottom-right" || notificationsLocation === "bottom-left") {
-            //   var windowsToShift = Notify.openWindows.slice(conflictIdx + 1);
-            //   console.log("IN BOTTOM")
-            //   console.log("windowsToShift", windowsToShift)
-            // 
-            //   console.log("IN BOTTOM SHIFT CONFLICT")
-            //   console.log("notificationsLocation", notificationsLocation)
-            //   for (var i = 0; i < windowsToShift.length; i++) {
-            //     windowsToShift[i].animate({
-            //       position: {
-            //         left: 0,
-            //         top: ((notificationsHeight + 10) * -1),
-            //         duration: 250,
-            //         relative: true
-            //       }
-            //     }, {
-            //       interrupt: false
-            //     });
-            //   }
-            // 
-            //   Notify.openWindows.splice(conflictIdx, 1);
-            // }
             
             console.log("Notify.openWindows AFTER SHIFTING", Notify.openWindows)
             
@@ -322,14 +241,6 @@ class Notify {
           // On click of the body of the notification, the notification window is set to minimize, 
           // but on click of the "X", it closes. That way, we can choose to dismiss 
           // notifications instead of always directing to the chat window.
-          // this.notification.addEventListener('minimized', (e) => {
-          //   console.log("IN MINIMIZED WHAT")
-          //   cb({target:{callbackJSON:this._data}});
-          //   this.close();
-          // });
-          // this.notification.addEventListener('closed', (e) => {
-          //   this.close();
-          // });
           
           fin.desktop.InterApplicationBus.subscribe("*", `${notificationName} body`, (message, uuid, name) => {
             console.log(`IN ${notificationName} body click IAB`)
@@ -342,25 +253,6 @@ class Notify {
           });
         }
       }
-      
-      
-      
-        // if(event === 'click' && this.notification) {
-        //     this.notification.onClick = () => {
-        //         if (this.sticky) {
-        //             this.notification.close();                    
-        //         }
-        //         cb({target:{callbackJSON:this._data}}); 
-        //     }
-        // }
-        // }
-        // if(event === 'click') {
-        //     this.notification.noteWin.onClick = cb.bind(this,this._data);
-        // } else if(event === 'close') {
-        //     this.notification.noteWin.onClose = cb
-        // } else if(event === 'error') {
-        //     this.notification.noteWin.onError = cb
-        // }
     }
 
     removeEventListener(event, cb){
@@ -395,28 +287,6 @@ class Notify {
 }
 
 Notify.openWindows = [];
-// Notify.notificationsVersion = "V1";
-// Notify.notificationsHeight = 80;
-// if (Notify.monitorInfo === false) {
-//   fin.desktop.System.getMonitorInfo(function (monitorInfo) {
-//     Notify.monitorInfo = monitorInfo;
-//   });
-// }
-// 
-// 
-// fin.desktop.Application.getCurrent().getManifest(function (manifest) {
-//   console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotifications)
-//   console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotifications)
-//   console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotifications)
-//   console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotifications)
-//     if (manifest.startup_app.symphonyNotifications == "V2") {
-//       console.log("IN IF")
-//       console.log("IN IF")
-//       console.log("IN IF")
-//       Notify.notificationsVersion = "V2";
-//       Notify.notificationsHeight = 60;
-//     }
-// });
 
 window.addEventListener('load', () => {
   var notificationsVersion = window.localStorage.getItem('notificationsVersion')
