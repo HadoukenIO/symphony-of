@@ -143,32 +143,17 @@ window.addEventListener('load', () => {
         var sysTray = new fin.desktop.Window({
             name: "system-tray",
             url: `${window.targetUrl}tray.html`,
-            defaultWidth: 180,
-            defaultHeight: 163,
+            defaultWidth: 200,
+            defaultHeight: 6*33, // 6 base entries 33px tall
             frame: false,
             autoShow: false,
             shadow: true,
             saveWindowState: false,
             alwaysOnTop: true,
             icon: `${window.targetUrl}icon/symphony.png`,
+        }, () => {
+            console.log('this has created a sys tray window');
         });
-        // Click on tray
-        const clickListener = clickInfo => {
-            if(clickInfo.button === 2) {
-                var sysTray = fin.desktop.Window.wrap(fin.desktop.Application.getCurrent().uuid, 'system-tray');
-                var width = 180;
-                var height = 163;
-                sysTray.isShowing(showing => {
-                    if(!showing) {
-                        sysTray.showAt(clickInfo.x-width, clickInfo.y-height-5, true, ()=>sysTray.resizeBy(1,1,"bottom-right",sysTray.resizeBy(-1,-1,"bottom-right", sysTray.focus())));
-                    } else {
-                        sysTray.hide();
-                    }
-                });    
-            }
-        }
-        // set tray
-        fin.desktop.Application.getCurrent().setTrayIcon(`${window.targetUrl}icon/symphony.png`, clickListener);
 
         // listen for always on top
         fin.desktop.InterApplicationBus.subscribe(currentWindow.uuid,'system-tray','always-on-top',(msg)=>{
@@ -200,8 +185,16 @@ window.addEventListener('load', () => {
 });
 
 
-
 window.addEventListener('load', () => {
+    window.addEventListener('click', t => {
+        if (t.target.nodeName === 'A' && t.target.target === '_blank') {
+            t.preventDefault();
+            fin.desktop.System.openUrlWithBrowser(t.target.href,
+                _ => console.log('opened ', t.target.href, 'from ', location.href),
+                e => console.log(e, location.href));
+        }
+    });
+
     function timeout(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
