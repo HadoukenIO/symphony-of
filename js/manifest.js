@@ -2,8 +2,6 @@ fin.desktop.System.getMonitorInfo(function (monitorInfo) {
   window.localStorage.setItem('monitorInfo', JSON.stringify(monitorInfo));
 });
 
-
-
 fin.desktop.Application.getCurrent().getManifest(function (manifest) {
   console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotifications)
   console.log("IN GET MANIFEST", manifest.startup_app.symphonyNotifications)
@@ -20,3 +18,5 @@ fin.desktop.Application.getCurrent().getManifest(function (manifest) {
       console.log("IN IF3")
     }
 });
+
+window.localStorage.setItem('notificationsLocation', "bottom-left");
