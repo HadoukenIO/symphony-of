@@ -20,5 +20,5 @@ fin.desktop.Application.getCurrent().getManifest(function (manifest) {
 });
 
 if (window.localStorage.getItem('notificationsLocation') === null) {
-  window.localStorage.setItem('notificationsLocation', "bottom-right");
+  window.localStorage.setItem('notificationsLocation', "top-right");
 }
