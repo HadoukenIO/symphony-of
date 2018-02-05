@@ -326,9 +326,6 @@ window.addEventListener('load', () => {
       var notificationsLocation = window.localStorage.getItem('notificationsLocation');
       var notificationsMonitor = parseInt(window.localStorage.getItem('notificationsMonitor'));
       console.log("notificationsMonitor", notificationsMonitor)
-      console.log("notificationsMonitor", notificationsMonitor)
-      console.log("notificationsMonitor", notificationsMonitor)
-      console.log("notificationsMonitor", notificationsMonitor)
       var monitorInfo = JSON.parse(window.localStorage.getItem('monitorInfo'));
       var monitor;
       if (notificationsMonitor === 1) {
@@ -340,18 +337,12 @@ window.addEventListener('load', () => {
       }
       
       console.log("monitor", monitor)
-      console.log("monitor", monitor)
-      console.log("monitor", monitor)
       
       var rightBound = monitor.availableRect.right;
       var rightBoundPlacement = rightBound - 300;
       var bottomBound = monitor.availableRect.bottom;
       var bottomBoundPlacement = bottomBound - notificationsHeight;
       var leftBound = monitor.availableRect.left;
-      
-      console.log("monitorInfo", monitorInfo)
-      console.log("rightBound", rightBound)
-      console.log("rightBoundPlacement", rightBoundPlacement)
       
       if (notificationsLocation === 'top-right') {
         for (var i = 0; i < openNotificationWindows.length; i++) {
