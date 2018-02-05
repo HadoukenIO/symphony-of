@@ -10,6 +10,7 @@ class Notify {
         var notificationsVersion = window.localStorage.getItem('notificationsVersion');
         var notificationsLocation = window.localStorage.getItem('notificationsLocation');
         var notificationsHeight = parseInt(window.localStorage.getItem('notificationsHeight'));
+        var notificationsMonitor = parseInt(window.localStorage.getItem('notificationsMonitor'));
         var monitorInfo = JSON.parse(window.localStorage.getItem('monitorInfo'));
         
         
@@ -72,18 +73,28 @@ class Notify {
             console.log("notificationsLocation", notificationsLocation);
             console.log("monitorInfo", monitorInfo)
             
-            var rightBound = monitorInfo.primaryMonitor.availableRect.right;
+            var monitor;
+            if (notificationsMonitor === 1) {
+              monitor = monitorInfo.primaryMonitor;
+            } else if (monitorInfo.nonPrimaryMonitors[notificationsMonitor - 2]) {
+              monitor = monitorInfo.nonPrimaryMonitors[notificationsMonitor - 2];
+            } else {
+              monitor = monitorInfo.primaryMonitor;
+            }
+            
+            var rightBound = monitor.availableRect.right;
             var rightBoundPlacement = rightBound - 300;
-            var bottomBound = monitorInfo.primaryMonitor.availableRect.bottom;
+            var bottomBound = monitor.availableRect.bottom;
             var bottomBoundPlacement = bottomBound - notificationsHeight;
+            var leftBound = monitor.availableRect.left;
             
             if (notificationsLocation === "top-right") {
               notification.moveTo(rightBoundPlacement, (notificationsHeight + 10) * notificationPosition);
             } else if (notificationsLocation === "top-left") {
-              notification.moveTo(0, (notificationsHeight + 10) * notificationPosition);
+              notification.moveTo(leftBound, (notificationsHeight + 10) * notificationPosition);
             } else if (notificationsLocation === "bottom-left") {
               Notify.shiftBottomWindowsBeforeCreation(Notify.openWindows, notificationsHeight);
-              notification.moveTo(0, bottomBoundPlacement);
+              notification.moveTo(leftBound, bottomBoundPlacement);
             } else {
               Notify.shiftBottomWindowsBeforeCreation(Notify.openWindows, notificationsHeight);
               notification.moveTo(rightBoundPlacement, bottomBoundPlacement);
@@ -291,12 +302,16 @@ window.addEventListener('load', () => {
   };
   
   fin.desktop.InterApplicationBus.subscribe("*", `notificationsLocation`, (message, uuid, name) => {
-    console.log("RECEIVED LOCATION", message)
-    window.localStorage.setItem('notificationsLocation', message);
-    repositionWindows(message);
+    fin.desktop.System.getMonitorInfo(function (monitorInfo) {
+      window.localStorage.setItem('monitorInfo', JSON.stringify(monitorInfo));
+      console.log("RECEIVED LOCATION", message)
+      window.localStorage.setItem('notificationsLocation', message.notificationsLocation);
+      window.localStorage.setItem('notificationsMonitor', message.notificationsMonitor);
+      repositionWindows();
+    });
   });
   
-  function repositionWindows(corner) {
+  function repositionWindows() {
     fin.desktop.Application.getCurrent().getChildWindows((childWindows) => {
       var openNotificationWindows = [];
       for (var i = 0; i < childWindows.length; i++) {
@@ -308,17 +323,37 @@ window.addEventListener('load', () => {
       console.log("openNotificationWindows", openNotificationWindows);
       
       var notificationsHeight = parseInt(window.localStorage.getItem('notificationsHeight'));
+      var notificationsLocation = window.localStorage.getItem('notificationsLocation');
+      var notificationsMonitor = parseInt(window.localStorage.getItem('notificationsMonitor'));
+      console.log("notificationsMonitor", notificationsMonitor)
+      console.log("notificationsMonitor", notificationsMonitor)
+      console.log("notificationsMonitor", notificationsMonitor)
+      console.log("notificationsMonitor", notificationsMonitor)
       var monitorInfo = JSON.parse(window.localStorage.getItem('monitorInfo'));
-      var rightBound = monitorInfo.primaryMonitor.availableRect.right;
+      var monitor;
+      if (notificationsMonitor === 1) {
+        monitor = monitorInfo.primaryMonitor;
+      } else if (monitorInfo.nonPrimaryMonitors[notificationsMonitor - 2]) {
+        monitor = monitorInfo.nonPrimaryMonitors[notificationsMonitor - 2];
+      } else {
+        monitor = monitorInfo.primaryMonitor;
+      }
+      
+      console.log("monitor", monitor)
+      console.log("monitor", monitor)
+      console.log("monitor", monitor)
+      
+      var rightBound = monitor.availableRect.right;
       var rightBoundPlacement = rightBound - 300;
-      var bottomBound = monitorInfo.primaryMonitor.availableRect.bottom;
+      var bottomBound = monitor.availableRect.bottom;
       var bottomBoundPlacement = bottomBound - notificationsHeight;
+      var leftBound = monitor.availableRect.left;
       
       console.log("monitorInfo", monitorInfo)
       console.log("rightBound", rightBound)
       console.log("rightBoundPlacement", rightBoundPlacement)
       
-      if (corner === 'top-right') {
+      if (notificationsLocation === 'top-right') {
         for (var i = 0; i < openNotificationWindows.length; i++) {
           var openNotificationWindow = openNotificationWindows[i];
           openNotificationWindow.animate({
@@ -331,12 +366,12 @@ window.addEventListener('load', () => {
             interrupt: false
           });
         }
-      } else if (corner === 'top-left') {
+      } else if (notificationsLocation === 'top-left') {
         for (var i = 0; i < openNotificationWindows.length; i++) {
           var openNotificationWindow = openNotificationWindows[i];
           openNotificationWindow.animate({
             position: {
-              left: 0,
+              left: leftBound,
               top: (notificationsHeight + 10) * i,
               duration: 500
             }
@@ -344,13 +379,13 @@ window.addEventListener('load', () => {
             interrupt: false
           });
         }
-      } else if (corner === 'bottom-left') {
+      } else if (notificationsLocation === 'bottom-left') {
         var bottomIdx = openNotificationWindows.length - 1;
         for (var i = 0; i < openNotificationWindows.length; i++) {
           var openNotificationWindow = openNotificationWindows[bottomIdx];
           openNotificationWindow.animate({
             position: {
-              left: 0,
+              left: leftBound,
               top: (bottomBoundPlacement - ((notificationsHeight + 10) * i)),
               duration: 500
             }
@@ -359,7 +394,7 @@ window.addEventListener('load', () => {
           });
           bottomIdx--;
         }
-      } else if (corner === 'bottom-right') {
+      } else if (notificationsLocation === 'bottom-right') {
         var bottomIdx = openNotificationWindows.length - 1;
         for (var i = 0; i < openNotificationWindows.length; i++) {
           var openNotificationWindow = openNotificationWindows[bottomIdx];
