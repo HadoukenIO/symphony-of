@@ -50,9 +50,6 @@ class Notify {
           var randomString = Math.random().toString(36).slice(-8);
           
           console.log("RIGHT BEFORE CREATING NEW NOTIFICATION")
-          console.log("RIGHT BEFORE CREATING NEW NOTIFICATION")
-          console.log("RIGHT BEFORE CREATING NEW NOTIFICATION")
-          console.log("RIGHT BEFORE CREATING NEW NOTIFICATION")
           
           var notification = new window.fin.desktop.Window({
             customData: msg,
@@ -69,13 +66,12 @@ class Notify {
             console.log("Notify.openWindows AFTER SHIFTING", Notify.openWindows)
             
             var notificationPosition = Notify.openWindows.length;
-            console.log("BEFORE LOCATION PLACEMENT")
-            console.log("BEFORE LOCATION PLACEMENT")
-            console.log("BEFORE LOCATION PLACEMENT")
+            
             console.log("BEFORE LOCATION PLACEMENT")
             console.log("notificationPosition", notificationPosition);
             console.log("notificationsLocation", notificationsLocation);
             console.log("monitorInfo", monitorInfo)
+            
             var rightBound = monitorInfo.primaryMonitor.availableRect.right;
             var rightBoundPlacement = rightBound - 300;
             var bottomBound = monitorInfo.primaryMonitor.availableRect.bottom;
@@ -86,32 +82,10 @@ class Notify {
             } else if (notificationsLocation === "top-left") {
               notification.moveTo(0, (notificationsHeight + 10) * notificationPosition);
             } else if (notificationsLocation === "bottom-left") {
-                for (var i = 0; i < Notify.openWindows.length; i++) {
-                  Notify.openWindows[i].animate({
-                    position: {
-                      left: 0,
-                      top: ((notificationsHeight + 10) * -1),
-                      duration: 250,
-                      relative: true
-                    }
-                  }, {
-                    interrupt: false
-                  });
-                }
+              Notify.shiftBottomWindowsBeforeCreation(Notify.openWindows, notificationsHeight);
               notification.moveTo(0, bottomBoundPlacement);
             } else {
-              for (var i = 0; i < Notify.openWindows.length; i++) {
-                Notify.openWindows[i].animate({
-                  position: {
-                    left: 0,
-                    top: ((notificationsHeight + 10) * -1),
-                    duration: 250,
-                    relative: true
-                  }
-                }, {
-                  interrupt: false
-                });
-              }
+              Notify.shiftBottomWindowsBeforeCreation(Notify.openWindows, notificationsHeight);
               notification.moveTo(rightBoundPlacement, bottomBoundPlacement);
             }
             
@@ -128,9 +102,25 @@ class Notify {
         this._data = msg.data || null;
     }
 
+    static shiftBottomWindowsBeforeCreation(windowsArr, notificationHeight) {
+      for (var i = 0; i < windowsArr.length; i++) {
+        windowsArr[i].animate({
+          position: {
+            left: 0,
+            top: ((notificationHeight + 10) * -1),
+            duration: 250,
+            relative: true
+          }
+        }, {
+          interrupt: false
+        });
+      }
+    }
+    
     static get permission(){
         return "granted";
     }
+    
 
     get data(){
         return this._data;
@@ -138,18 +128,7 @@ class Notify {
 
     close(cb) {
         console.log("CLOSE FUNCTION IS HIT WHAT")
-        console.log("CLOSE FUNCTION IS HIT WHAT")
-        console.log("CLOSE FUNCTION IS HIT WHAT")
-        console.log("CLOSE FUNCTION IS HIT WHAT")
-        console.log("CLOSE FUNCTION IS HIT WHAT")
         console.log("CB", cb)
-        console.log("CB", cb)
-        console.log("CB", cb)
-        console.log("CB", cb)
-        console.log("this", this)
-        console.log("this", this)
-        console.log("this", this)
-        console.log("this", this)
         console.log("this", this)
         
         var notificationsVersion = window.localStorage.getItem('notificationsVersion')
@@ -157,7 +136,6 @@ class Notify {
         var notificationsHeight = parseInt(window.localStorage.getItem('notificationsHeight'))
         
         if (notificationsVersion === "V2") {
-          console.log("windows", Notify.openWindows);
           var conflict = false;
           var conflictIdx = -1;
           console.log("notificationWindows before pruning", Notify.openWindows)
@@ -165,8 +143,7 @@ class Notify {
             var childWindow = Notify.openWindows[i];
             console.log('childWindow.name', childWindow.name)
             if (childWindow.name === this.notification.name) {
-              console.log("IN CHILDWINDOW.NAME")
-              console.log(childWindow.name)
+              console.log("IN CHILDWINDOW.NAME", childWindow.name)
               console.log("INDEX", i);
               childWindow.close();
               conflictIdx = i;
@@ -177,7 +154,6 @@ class Notify {
           console.log("conflictIdx after pruning", conflictIdx);
           console.log("notificationsLocation", notificationsLocation)
           console.log("Notify.openWindows AFTER PRUNING", Notify.openWindows)
-          
           
           if (conflict && (notificationsLocation === "top-right" || notificationsLocation === "top-left")) {
             var windowsToShift = Notify.openWindows.slice(conflictIdx + 1);
@@ -236,7 +212,7 @@ class Notify {
                 cb({target:{callbackJSON:this._data}}); 
             }
         }
-      } else {        
+      } else if (notificationsVersion === "V2") {        
         if (event === 'click') {
           // On click of the body of the notification, the notification window is set to minimize, 
           // but on click of the "X", it closes. That way, we can choose to dismiss 
@@ -244,9 +220,14 @@ class Notify {
           
           fin.desktop.InterApplicationBus.subscribe("*", `${notificationName} body`, (message, uuid, name) => {
             console.log(`IN ${notificationName} body click IAB`)
-            cb({target:{callbackJSON:this._data}});
+            cb({
+              target: {
+                callbackJSON: this._data
+              }
+            });
             this.close();
           });
+          
           fin.desktop.InterApplicationBus.subscribe("*", `${notificationName} close`, (message, uuid, name) => {
             console.log(`IN ${notificationName} close click IAB`)
             this.close();
@@ -256,16 +237,7 @@ class Notify {
     }
 
     removeEventListener(event, cb){
-      var notificationsVersion = window.localStorage.getItem('notificationsVersion')
-      
-      if (notificationsVersion === "V2") {        
-        if (event === 'click') {
-          this.notification.removeEventListener('focused', () => {
-            cb({target:{callbackJSON:this._data}});
-            this.close();
-          });
-        }
-      }
+
         // if(event === 'click') {
         //     // this.notification.noteWin.onClick = () => {};
         // } else if(event === 'close') {
@@ -282,6 +254,9 @@ class Notify {
     }
 
     destroy(){
+      console.log("Destroy called");
+      console.log("arguments", arguments);
+      console.log("Destroy called");
         // How is this different from close?
     }
 }
@@ -332,13 +307,13 @@ window.addEventListener('load', () => {
       
       console.log("openNotificationWindows", openNotificationWindows);
       
-      
       var notificationsHeight = parseInt(window.localStorage.getItem('notificationsHeight'));
       var monitorInfo = JSON.parse(window.localStorage.getItem('monitorInfo'));
       var rightBound = monitorInfo.primaryMonitor.availableRect.right;
       var rightBoundPlacement = rightBound - 300;
       var bottomBound = monitorInfo.primaryMonitor.availableRect.bottom;
       var bottomBoundPlacement = bottomBound - notificationsHeight;
+      
       console.log("monitorInfo", monitorInfo)
       console.log("rightBound", rightBound)
       console.log("rightBoundPlacement", rightBoundPlacement)
@@ -405,11 +380,7 @@ window.addEventListener('load', () => {
   }
 
   if (thisWindow.name !== 'system-tray' && notificationsVersion === "V2"){
-    console.log("IN MAIN WINDOWWWWW")
-    console.log("IN MAIN WINDOWWWWW")
-    console.log("IN MAIN WINDOWWWWW")
-    console.log("IN MAIN WINDOWWWWW")
-    console.log("IN MAIN WINDOWWWWW")
+    console.log("IN MAIN WINDOW")
     
     function desktopAlertClickHandler(el) {
       el[0].children[0].addEventListener('click', (e) => {
