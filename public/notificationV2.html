@@ -1,0 +1,136 @@
+
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Symphony Notification</title>
+        <style>
+          body {
+            font-family: Helvetica, sans-serif;
+            background-color: #FFFFFF;
+            color:#FFFFFF;
+            margin:0;
+            overflow: hidden;
+            -webkit-user-select: none;
+            cursor: pointer;
+          }
+          
+          #notification-text {
+            font-weight: bold;
+          }
+          
+          #image {
+            height: 30px;
+            position:absolute;
+            top: 5px;
+            left: 5px;
+          }
+          
+          #title {
+            position:absolute;
+            top: 12px;
+            left: 40px;
+            font-weight: bold;
+            display: -webkit-box;
+            font-size: 14px;
+            width: 205px;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+          
+          #message {
+            position: absolute;
+            display: -webkit-box;
+            top: 26px;
+            left: 7px;
+            word-wrap: break-word;
+            width: 225px;
+            font-size: 12px;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            height: 50px;
+          }
+          
+          #close {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            fill: #fff;
+            height: 16px;
+            border-radius: 2px;
+          }
+          
+          #close:hover {
+            background-color: rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+          }
+        </style>
+    </head>
+
+    <body>
+        <div id="container">
+        	<div id="header">
+        		<img src="" id="image" />
+        		<span id="title"></span>
+        	</div>
+        	<p id="message"></p>
+        	<div id="close">
+        		<svg fill="#FFFFFF" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg">
+        		    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+        		    <path d="M0 0h24v24H0z" fill="none"/>
+        		</svg>
+        	</div>
+        </div>
+    </body>
+
+    <script type="text/javascript">
+      var notificationWindow = fin.desktop.Window.getCurrent();
+      console.log("notificationWindow", notificationWindow);
+    
+
+      var customData;
+      notificationWindow.getOptions(function(options) {
+        console.log("options", options);
+        customData = options.customData;
+        
+        document.querySelector('#close').addEventListener('click', (e) => {
+          e.stopPropagation();
+          fin.desktop.InterApplicationBus.publish(`${options.name} close`, "test");
+          console.log(`${options.name} close`)
+          notificationWindow.hide();
+        });
+        
+        document.addEventListener('click', (e) => {
+          fin.desktop.InterApplicationBus.publish(`${options.name} body`, "test");
+          console.log(`${options.name} body`)
+          notificationWindow.hide();
+        });
+        
+        document.querySelectorAll('#title')[0].innerText = customData.title || '';
+        document.querySelectorAll('#message')[0].innerHTML = customData.body || ' ';
+        if(!customData.icon) {
+          document.querySelectorAll('#image')[0].style.display = 'none';
+        } else {
+          document.querySelectorAll('#image')[0].src = customData.icon || '';
+        }
+        document.body.style.backgroundColor = "#" + customData.color || '000';
+        if (customData.flash) {
+          let origColor = document.body.style.backgroundColor;
+          setInterval(function() {
+            if (document.body.style.backgroundColor === 'red') {
+              document.body.style.backgroundColor = origColor;
+            } else {
+              document.body.style.backgroundColor = 'red';
+            }
+          }, 2000);
+        }
+      }, function (error) {
+        console.log("Error", error);
+      });
+      
+    </script>
+</html>

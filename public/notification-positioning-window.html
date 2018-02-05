@@ -1,0 +1,185 @@
+
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Symphony Notification Positioning Window</title>
+        <style>
+        body {
+          font-family: Helvetica, sans-serif;
+          background-color: #181818;
+          color: rgba(225, 225, 225, 0.88);
+          margin:0;
+          overflow: hidden;
+          -webkit-user-select: none;
+        }
+        
+        #container {
+          display: flex;
+          margin: 10px;
+          padding: 10px;
+          height: 70vh;
+          vertical-align: middle;
+          align-items: center;
+          justify-content: space-around;
+          box-sizing: border-box;
+          flex-direction: column;
+        }
+        
+        .current-monitor {
+          font-size: 20px;
+          font-weight: bold;
+          text-align: center;
+        }
+        
+        #monitor-button-container {
+          display: flex;
+          justify-content: center;
+        }
+        
+        .monitor-button {
+          width: 45%;
+          border: 2px solid #00a4b1;
+          padding: 5px;
+          text-align: center;
+          box-sizing: border-box;
+          margin: 5px;
+          font-size: 14px;
+          border-radius: 3px;
+        }
+        
+        .monitor-button:hover {
+          background: #00bccc;
+          cursor: pointer;
+        }
+        
+        .monitor-button:active {
+          background: #00ecff;
+        }
+        
+        .current-corner {
+          font-size: 20px;
+          font-weight: bold;
+          text-align: center;
+        }
+        
+        .corner-button-container {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+        
+        .corner-button {
+          width: 45%;
+          border: 2px solid #00a4b1;
+          padding: 5px;
+          text-align: center;
+          box-sizing: border-box;
+          margin: 5px;
+          font-size: 14px;
+          border-radius: 3px;
+        }
+        
+        .corner-button:hover {
+          background: #00bccc;
+          cursor: pointer;
+        }
+        
+        .corner-button:active {
+          background: #00ecff;
+        }
+        </style>
+    </head>
+
+    <body>
+        <div id="container">
+          <div id="monitors">
+            <div class="current-monitor"></div>
+            <div id="monitor-button-container"></div>
+            
+          </div>
+          <div class="corners">
+            <div class="current-corner"></div>
+            <div class="corner-button-container">
+              <div class="corner-button top-left">Top Left</div>
+              <div class="corner-button top-right">Top Right</div>
+              <div class="corner-button bottom-left">Bottom Left</div>
+              <div class="corner-button bottom-right">Bottom Right</div>
+            </div>
+          </div>
+        </div>
+    </body>
+
+    <script type="text/javascript">
+      window.addEventListener("load", function(event) {
+        fin.desktop.System.getMonitorInfo(function (monitorInfo) {
+          console.log("All resources finished loading!");
+          var corners = {
+            'top-right': "Top Right",
+            'top-left': "Top Left",
+            'bottom-left': "Bottom Left",
+            'bottom-right': "Bottom Right"
+          }
+          
+          var notificationsLocation = window.localStorage.getItem('notificationsLocation');
+          var notificationsMonitor = parseInt(window.localStorage.getItem('notificationsMonitor'));
+          
+          var monitorsContainer = document.getElementById('monitor-button-container');
+          
+          document.querySelectorAll('.current-monitor')[0].innerText = `Current Monitor: ${notificationsMonitor}`;
+          
+          
+          for (let i = 0; i < monitorInfo.nonPrimaryMonitors.length + 1; i++) {
+            var childMonitorDiv = document.createElement('div')
+            childMonitorDiv.innerHTML = `${i + 1}`
+            childMonitorDiv.className = "monitor-button"
+            childMonitorDiv.onclick = () => {
+              var monitorNumber = i + 1;
+              notificationsMonitor = monitorNumber;
+              document.querySelectorAll('.current-monitor')[0].innerText = `Current Monitor: ${monitorNumber}`;
+              fin.desktop.InterApplicationBus.publish('notificationsLocation', {
+                notificationsLocation: notificationsLocation,
+                notificationsMonitor: notificationsMonitor
+              });
+            }
+            monitorsContainer.appendChild(childMonitorDiv);
+          }
+          
+          document.querySelectorAll('.current-corner')[0].innerText = `Current Corner: ${corners[notificationsLocation]}`;
+          
+          document.querySelectorAll('.top-right')[0].addEventListener('click', function () {
+            document.querySelectorAll('.current-corner')[0].innerText = `Current Corner: Top Right`;
+            notificationsLocation = 'top-right';
+            fin.desktop.InterApplicationBus.publish('notificationsLocation', {
+              notificationsLocation: notificationsLocation,
+              notificationsMonitor: notificationsMonitor
+            });
+          })
+          document.querySelectorAll('.top-left')[0].addEventListener('click', function () {
+            document.querySelectorAll('.current-corner')[0].innerText = `Current Corner: Top Left`;
+            notificationsLocation = 'top-left';
+            fin.desktop.InterApplicationBus.publish('notificationsLocation', {
+              notificationsLocation: notificationsLocation,
+              notificationsMonitor: notificationsMonitor
+            });
+          })
+          document.querySelectorAll('.bottom-left')[0].addEventListener('click', function () {
+            document.querySelectorAll('.current-corner')[0].innerText = `Current Corner: Bottom Left`;
+            notificationsLocation = 'bottom-left';
+            fin.desktop.InterApplicationBus.publish('notificationsLocation', {
+              notificationsLocation: notificationsLocation,
+              notificationsMonitor: notificationsMonitor
+            });
+          })
+          document.querySelectorAll('.bottom-right')[0].addEventListener('click', function () {
+            document.querySelectorAll('.current-corner')[0].innerText = `Current Corner: Bottom Right`;
+            notificationsLocation = 'bottom-right';
+            fin.desktop.InterApplicationBus.publish('notificationsLocation', {
+              notificationsLocation: notificationsLocation,
+              notificationsMonitor: notificationsMonitor
+            });
+          })
+        });
+      });
+    </script>
+</html>

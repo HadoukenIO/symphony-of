@@ -53,6 +53,7 @@ window.addEventListener('load', () => {
 
         // Add logic to keep track of window positioning
         application.addEventListener("window-created", obj => {
+            console.log("obj", obj);
             window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
             let childWin = fin.desktop.Window.wrap(obj.uuid, obj.name)
             //update always on top option for Child Windows
@@ -199,13 +200,14 @@ window.addEventListener('load', () => {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
     const waitForElement = (query, count, cb) => {
-        let elements = document.querySelectorAll(query);  
-        if(elements.length) {            
+        let elements = document.querySelectorAll(query);
+        
+        if (elements.length) {
             cb(elements);
         } else {
-            if(count<15) {
+            if(count < 15) {
                 count++;
-                setTimeout(()=>waitForElement(query, count, cb),450)
+                setTimeout(() => waitForElement(query, count, cb), 450)
             }
         }
     };
