@@ -105,9 +105,15 @@
         });
         
         document.addEventListener('click', (e) => {
-          fin.desktop.InterApplicationBus.publish(`${options.name} body`, "test");
-          console.log(`${options.name} body`)
-          notificationWindow.hide();
+          if (customData.title === "Sample alert" || customData.title === "Sample Notification") {
+            fin.desktop.InterApplicationBus.publish(`${options.name} close`, "test");
+            console.log(`${options.name} close`)
+            notificationWindow.hide();
+          } else {
+            fin.desktop.InterApplicationBus.publish(`${options.name} body`, "test");
+            console.log(`${options.name} body`)
+            notificationWindow.hide();
+          }
         });
         
         document.querySelectorAll('#title')[0].innerText = customData.title || '';

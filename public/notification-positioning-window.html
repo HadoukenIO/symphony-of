@@ -88,6 +88,26 @@
         .corner-button:active {
           background: #00ecff;
         }
+        
+        .sample-notification {
+          padding: 4px 16px;
+          border-radius: 30px;
+          border: none;
+          color: #fff;
+          margin: 4px 0;
+          background-color: #00A4B1;
+          text-transform: uppercase;
+          cursor: pointer;
+          font-size: 12px;
+        }
+        
+        .sample-notification:hover {
+          background-color: #00bccb;
+        }
+        
+        .sample-notification:active {
+          background-color: #008c98;;
+        }
         </style>
     </head>
 
@@ -106,6 +126,9 @@
               <div class="corner-button bottom-left">Bottom Left</div>
               <div class="corner-button bottom-right">Bottom Right</div>
             </div>
+          </div>
+          <div class="sample-notification">
+            SEE SAMPLE
           </div>
         </div>
     </body>
@@ -128,7 +151,6 @@
           
           document.querySelectorAll('.current-monitor')[0].innerText = `Current Monitor: ${notificationsMonitor}`;
           
-          
           for (let i = 0; i < monitorInfo.nonPrimaryMonitors.length + 1; i++) {
             var childMonitorDiv = document.createElement('div')
             childMonitorDiv.innerHTML = `${i + 1}`
@@ -147,6 +169,13 @@
           
           document.querySelectorAll('.current-corner')[0].innerText = `Current Corner: ${corners[notificationsLocation]}`;
           
+          document.querySelectorAll('.sample-notification')[0].addEventListener('click', function () {
+            var createSampleNotification = `new window.SYM_API.Notification("Sample Notification", {body: "This is a sample notification", color: "58c6ff", flash: true, silent: true, sticky: true, tag: "test///test==", title: "Test Notification"})`
+            fin.desktop.Window.getCurrent().getParentWindow().executeJavaScript(createSampleNotification, () => { 
+              console.log('successfully created sample notification') ;
+            });
+          })
+          
           document.querySelectorAll('.top-right')[0].addEventListener('click', function () {
             document.querySelectorAll('.current-corner')[0].innerText = `Current Corner: Top Right`;
             notificationsLocation = 'top-right';
@@ -155,6 +184,7 @@
               notificationsMonitor: notificationsMonitor
             });
           })
+          
           document.querySelectorAll('.top-left')[0].addEventListener('click', function () {
             document.querySelectorAll('.current-corner')[0].innerText = `Current Corner: Top Left`;
             notificationsLocation = 'top-left';
@@ -163,6 +193,7 @@
               notificationsMonitor: notificationsMonitor
             });
           })
+          
           document.querySelectorAll('.bottom-left')[0].addEventListener('click', function () {
             document.querySelectorAll('.current-corner')[0].innerText = `Current Corner: Bottom Left`;
             notificationsLocation = 'bottom-left';
@@ -171,6 +202,7 @@
               notificationsMonitor: notificationsMonitor
             });
           })
+          
           document.querySelectorAll('.bottom-right')[0].addEventListener('click', function () {
             document.querySelectorAll('.current-corner')[0].innerText = `Current Corner: Bottom Right`;
             notificationsLocation = 'bottom-right';
