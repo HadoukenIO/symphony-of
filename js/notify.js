@@ -97,7 +97,7 @@ class Notify {
                   position: {
                     left: 0,
                     top: ((notificationsHeight + 10) * -1),
-                    duration: 250,
+                    duration: 100,
                     relative: true
                   }
                 }, {
@@ -118,7 +118,7 @@ class Notify {
                   position: {
                     left: 0,
                     top: (notificationsHeight + 10),
-                    duration: 250,
+                    duration: 100,
                     relative: true
                   }
                 }, {
@@ -146,10 +146,10 @@ class Notify {
             }
             
             var rightBound = monitor.availableRect.right;
-            var rightBoundPlacement = rightBound - 300;
+            var rightBoundPlacement = rightBound - 310;
             var bottomBound = monitor.availableRect.bottom;
             var bottomBoundPlacement = bottomBound - notificationsHeight - 10;
-            var leftBound = monitor.availableRect.left;
+            var leftBound = monitor.availableRect.left + 10;
             
             if (notificationsLocation === "top-right") {
               notification.moveTo(rightBoundPlacement, ((notificationsHeight + 10) * notificationPosition) + 10);
@@ -182,7 +182,7 @@ class Notify {
           position: {
             left: 0,
             top: ((notificationHeight + 10) * -1),
-            duration: 250,
+            duration: 100,
             relative: true
           }
         }, {
@@ -240,7 +240,7 @@ class Notify {
                 position: {
                   left: 0,
                   top: ((notificationsHeight + 10) * -1),
-                  duration: 250,
+                  duration: 100,
                   relative: true
                 }
               }, {
@@ -261,7 +261,7 @@ class Notify {
                 position: {
                   left: 0,
                   top: (notificationsHeight + 10),
-                  duration: 250,
+                  duration: 100,
                   relative: true
                 }
               }, {
@@ -402,10 +402,10 @@ window.addEventListener('load', () => {
       console.log("monitor", monitor)
       
       var rightBound = monitor.availableRect.right;
-      var rightBoundPlacement = rightBound - 300;
+      var rightBoundPlacement = rightBound - 310;
       var bottomBound = monitor.availableRect.bottom;
       var bottomBoundPlacement = bottomBound - notificationsHeight - 10;
-      var leftBound = monitor.availableRect.left;
+      var leftBound = monitor.availableRect.left + 10;
       
       if (notificationsLocation === 'top-right') {
         for (var i = 0; i < openNotificationWindows.length; i++) {
@@ -414,7 +414,7 @@ window.addEventListener('load', () => {
             position: {
               left: rightBoundPlacement,
               top: ((notificationsHeight + 10) * i) + 10,
-              duration: 500
+              duration: 250
             }
           }, {
             interrupt: false
@@ -427,7 +427,7 @@ window.addEventListener('load', () => {
             position: {
               left: leftBound,
               top: ((notificationsHeight + 10) * i) + 10,
-              duration: 500
+              duration: 250
             }
           }, {
             interrupt: false
@@ -441,7 +441,7 @@ window.addEventListener('load', () => {
             position: {
               left: leftBound,
               top: (bottomBoundPlacement - ((notificationsHeight + 10) * i)),
-              duration: 500
+              duration: 250
             }
           }, {
             interrupt: false
@@ -456,7 +456,7 @@ window.addEventListener('load', () => {
             position: {
               left: rightBoundPlacement,
               top: (bottomBoundPlacement - ((notificationsHeight + 10) * i)),
-              duration: 500
+              duration: 250
             }
           }, {
             interrupt: false
