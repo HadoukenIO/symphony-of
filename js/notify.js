@@ -62,7 +62,8 @@ class Notify {
             url: `${window.targetUrl}notificationV2.html`,
             showTaskBarIcon: false,
             opacity: 0.92,
-            alwaysOnTop: true
+            alwaysOnTop: true,
+            icon: `${window.targetUrl}favicon.ico`
           }, function (success) {
             console.log("Notify.openWindows AFTER SHIFTING", Notify.openWindows)
             
