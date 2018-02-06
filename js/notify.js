@@ -521,16 +521,19 @@ window.addEventListener('load', () => {
           el1[0].addEventListener('click', function () {
             console.log("clicked sym-menu-tooltip__overlay");
             
-            waitForElement('.tempo-tabs__tab', 0, el2 => {
+            waitForElement('.tempo-tabs__tab', 0, tabEls => {
               console.log("in tempo-tabs__tab");
               
-              el2[0].addEventListener('click', function () {
-                console.log("clicked tempo-tabs__tab");
-                waitForElement('.field-configure-desktop-alerts', 0, (el3) => desktopAlertClickHandler(el3))
-              })
+              for (var i = 0; i < tabEls.length; i++) {
+                tabEls[i].addEventListener('click', function () {
+                  console.log("clicked tempo-tabs__tab");
+                  waitForElement('.field-configure-desktop-alerts', 0, (el2) => desktopAlertClickHandler(el2))
+                })
+              }
+              
             })
             
-            waitForElement('.field-configure-desktop-alerts', 0, (el4) => desktopAlertClickHandler(el4))
+            waitForElement('.field-configure-desktop-alerts', 0, (el3) => desktopAlertClickHandler(el3))
           })
         })
       })
