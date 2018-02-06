@@ -484,7 +484,8 @@ window.addEventListener('load', () => {
           resizeable: false,
           url: `${window.targetUrl}notification-positioning-window.html`,
           opacity: 1,
-          alwaysOnTop: true
+          alwaysOnTop: true,
+          icon: `${window.targetUrl}favicon.ico`
         })
       })
     }
