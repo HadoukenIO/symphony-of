@@ -60,7 +60,7 @@ class Notify {
             frame: false,
             resizable: false,
             url: `${window.targetUrl}notificationV2.html`,
-            showTaskBarIcon: false,
+            showTaskbarIcon: false,
             opacity: 0.92,
             alwaysOnTop: true,
             icon: `${window.targetUrl}favicon.ico`
