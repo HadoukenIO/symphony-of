@@ -374,25 +374,6 @@ window.addEventListener('load', () => {
     });
   });
   
-  fin.desktop.InterApplicationBus.subscribe("*", `sampleNotification`, (message, uuid, name) => {
-    console.log("IN SAMPLENOTIFICATION")
-    console.log("this", this)
-    console.log("thisWindow", thisWindow)
-    console.log("uuid", uuid)
-    console.log("name", name)
-    console.log("thisWindow.name", thisWindow.name)
-    if (thisWindow.name !== name) {
-      console.log("IN IF")
-      console.log("this", this)
-      console.log("thisWindow", thisWindow)
-      console.log("uuid", uuid)
-      console.log("name", name)
-      console.log("thisWindow.name", thisWindow.name)
-      console.log(window.SYM_API.Notification);
-      // new window.SYM_API.Notification("Sample Notification", {body: "This is a sample notification", color: "58c6ff", flash: true, silent: true, sticky: true, tag: "test///test==", title: "Test Notification"})
-    }
-  });
-  
   function repositionWindows() {
     fin.desktop.Application.getCurrent().getChildWindows((childWindows) => {
       var openNotificationWindows = [];

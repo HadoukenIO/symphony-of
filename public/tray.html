@@ -51,28 +51,306 @@
             padding:0 6px 0 0;
         }
 
+        li#available-pods {
+            user-select: none;
+        }
+
         .dropdown-content li {
             transition: 0.3s;
         }
 
         /* Change color of dropdown links on hover */
-        .dropdown-content li:hover {
+        .dropdown-content > li:hover {
             background-color: #ebebeb
         }
+
+        li.pod-list {
+            /* display: none; */
+        }
+
+        li.hide {
+            display: none;
+        }
+
+        li.show {
+            display: block;
+        }
+
+        li > li {
+            padding: 0.7em 1.5em;
+        }
+
+        .sublist > li {
+            padding-left: 0.2em;
+        }
+
+        .sublist  {
+            padding-left: 0;
+        }
+
+        #add-pod-text {
+            display: block;
+        }
+        #new-pod-url {
+            display: none;
+            font-size: 0.9em;
+        }
+        .close {
+            float: right;
+        }
+        li.additional-pod {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        li.additional-pod > span.pod-text {
+            display: inline-block;
+            width: 90%;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden
+        }
+        #primary-pod {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
     </style>
 </head>
 <body>
     <div>
         <ul id="myDropdown" class="dropdown-content">
             <li onclick="about()">About Symphony</li>
+            <li id="available-pods">
+                <div class="li-header" onclick="podMgmt()">Symphony Pods</div>
+            </li>
+            <li class="checked pod-list" style="background-color: #a7a7fa" id="primary-pod">primary pod...</li>
+            <li class="pod-list" style="background-color: #b3e4af" id="add-pod">
+                <span onclick="addPodUrl()" id="add-pod-text">+ Add pod</span>
+                <input id="new-pod-url" type="text">
+            </li>
             <li id="systemStartup" onclick="autoLaunch()">Launch On Startup</li>    
             <li id="always-on-top" onclick="alwaysOnTop()">Always On Top</li>    
-            <li id="close-on-exit" onclick="closeOnExit()">Close On Exit</li>    
+            <li id="close-on-exit" onclick="closeOnExit()">Close On Exit</li>
             <li onclick="exit()">Quit Symphony</li>
         </ul>
     </div>
 </body>
 <script type="text/javascript">
+    const podList = document.getElementById('pod-list');
+    const myDropdown = document.getElementById('myDropdown');
+    const primaryPod = document.getElementById('primary-pod');
+    const addPod = document.getElementById('add-pod');
+    const addPodText = document.getElementById('add-pod-text');
+    const newPodUrl = document.getElementById('new-pod-url');
+    const POD_LS_KEY = 'pods';
+    const pods = new Set(JSON.parse(localStorage.getItem(POD_LS_KEY) || '[]'));
+
+    const thisWin = fin.desktop.Window.getCurrent();
+    const uuid = thisWin.uuid;
+    const symApp = fin.desktop.Application.wrap(uuid);
+    const symWin = fin.desktop.Window.wrap(uuid, uuid);
+    const baseDimentions = {
+        width: 200,
+        height: 163 + 33,
+    };
+
+    let clickBasey;
+
+    symWin.getInfo(i => {
+        primaryPod.innerHTML = stripProtocol(i.url); //.replace(/https?:\/\//, '').replace(/(\/$)/, '');
+    })
+
+    myDropdown.addEventListener('click', clickHandler);
+    
+
+    function makePromise (ofCall) {
+        return (...args) => new Promise((res, rej) => ofCall.apply(null, args.concat([res, rej])));
+    }
+
+    const setTrayIcon = makePromise(symApp.setTrayIcon.bind(symApp));
+    const manifest = makePromise(symApp.getManifest.bind(symApp));
+    const baseOpts = makePromise(symWin.getOptions.bind(symWin));
+    const thisWinBounds = makePromise(thisWin.getBounds.bind(thisWin));
+    
+    renderPodList();
+    podMgmt(true);
+
+    newPodUrl.addEventListener('keypress', evt => {
+        if (evt.key === 'Enter') {
+            const urlToAdd = newPodUrl.value.trim();
+
+            if (urlToAdd === '') return addPodUrl();
+
+            localStorage.setItem(POD_LS_KEY, JSON.stringify(Array.from(pods.add(urlToAdd))))
+            newPodUrl.value = '';
+            renderPodList();
+            growToFitPodList();
+            addPodUrl();
+        }
+
+        if (evt.key === 'Escape') addPodUrl();
+    });
+
+    async function clickHandler(evt) {
+
+        if (evt.target.classList.contains('close')) {
+            console.log(evt.target.parentElement.dataset.podUrl)
+            pods.delete(evt.target.parentElement.dataset.podUrl);
+            localStorage.setItem(POD_LS_KEY, JSON.stringify(Array.from(pods)));
+            growToFitPodList();
+            renderPodList();
+        }
+
+        if (evt.target.classList.contains('pod-text')) {
+            const target = evt.target.parentNode;
+            const podUrl = target.dataset.podUrl;
+
+            if (target.classList.contains('checked')) {
+                target.classList.remove('checked');
+                fin.desktop.Application.wrap(podUrl).close(true);
+            } else {
+                target.classList.add('checked');
+                const opts = await baseOpts();
+                opts.url = podUrl;
+                opts.uuid = podUrl;
+                const podApp = new fin.desktop.Application(opts, _ => podApp.run(), e => console.log(e));
+            }
+        }
+    }
+
+    function renderPodList() {
+        const frag = document.createDocumentFragment();
+        const checkMap = new Map();
+
+        for (const node of myDropdown.querySelectorAll('.additional-pod')) {
+            checkMap.set(node.dataset.podUrl, node.classList.contains('checked'))
+            node.parentElement.removeChild(node);
+        }
+        
+        for (const pod of pods) {
+            const li = document.createElement('li');
+            const close = document.createElement('span');
+            const podText = document.createElement('span');; //document.c pod-text
+            const liVal = document.createAttribute('data-pod-url');
+            
+            liVal.value = pod;
+            li.title = pod;
+            li.classList.add('additional-pod');
+            li.classList.add('pod-list');
+
+            if (checkMap.get(pod)) li.classList.add('checked');
+
+            podText.textContent = stripProtocol(pod);
+            podText.classList.add('pod-text');
+
+            close.textContent = '\u26DD';
+            close.classList.add('close');
+
+            li.appendChild(podText);
+            li.appendChild(close);
+            li.attributes.setNamedItem(liVal)
+
+            frag.appendChild(li);
+        }
+
+        // myDropdown.insertBefore(frag, addPod.nextSibling);
+        myDropdown.insertBefore(frag, addPod);
+    }
+
+    function addPodUrl () {
+        newPodUrl.style.display = newPodUrl.style.display === 'block' ?  'none' : 'block';
+        addPodText.style.display = newPodUrl.style.display === 'block' ?  'none' : 'block';
+        newPodUrl.value = 'https://';
+        newPodUrl.style.display === 'block' ? newPodUrl.focus() : null;
+        newPodUrl.selectionStart = newPodUrl.selectionEnd = newPodUrl.value.length;
+    }
+
+    async function growToFitPodList() {
+        const numNodes = pods.size;
+        const expandBy = 33*numNodes;
+        const baseHeight = 8*33;
+        const { height, left, top, width, right, bottom} = await thisWinBounds();
+        
+        // (left, top, width, height, callbackopt, errorCallbackopt)
+        thisWin.setBounds(left, clickBasey-baseHeight-expandBy, width, baseHeight+expandBy);
+    }
+
+    async function shrinkToFitHiddenPodList() {
+        const baseHeight = 6*33;
+
+        const { height, left, top, width, right, bottom} = await thisWinBounds();
+        
+        // (left, top, width, height, callbackopt, errorCallbackopt)
+        thisWin.setBounds(left, clickBasey - baseHeight, width, baseHeight);
+    }
+
+    async function podMgmt(init) {
+        const podNodes = myDropdown.querySelectorAll('.pod-list');
+        const numNodes = podNodes.length;
+        let isHidden;
+
+        for (const node of podNodes) {
+            if (init) {
+                node.classList.add('hide')
+            } else  {
+                isHidden = node.classList.contains('hide');
+                isHidden ? node.classList.remove('hide') : node.classList.add('hide');
+            }
+        }
+
+        if ( !init && podNodes[0] && !podNodes[0].classList.contains('hide')) {
+            growToFitPodList();
+        } else {
+            shrinkToFitHiddenPodList();
+        }
+
+    }
+
+    function stripProtocol(url) {
+        return url.replace(/https?:\/\//, '')
+            .replace(/(\/$)/, '');
+    }
+
+    const clickListener = clickInfo => {
+        if(clickInfo.button === 2) {
+            var sysTray = fin.desktop.Window.wrap(fin.desktop.Application.getCurrent().uuid, 'system-tray');
+            var width = 200;
+            var height = 163+33;
+            sysTray.isShowing(showing => {
+                if(!showing) {
+                    clickBasey = clickInfo.y;
+                    sysTray.showAt(clickInfo.x-width, clickInfo.y-height-5, true, ()=>sysTray.resizeBy(1,1,"bottom-right",sysTray.resizeBy(-1,-1,"bottom-right", sysTray.focus())));
+                } else {
+                    sysTray.hide();
+                }
+            });    
+        }
+    }
+
+
+    setTrayIcon(`${window.targetUrl}icon/symphony.png`, clickListener).then(() => {
+        const whenCreated = Date.now();
+
+        fin.desktop.InterApplicationBus.subscribe('*', 'sys-tray-created', (msg, senderUuid, senderName) => {
+            console.log('created!', msg, senderUuid, senderName);
+            if (senderUuid === uuid) return;
+
+            if (whenCreated > msg) {
+                symApp.removeTrayIcon(thisWin.close.bind(thisWin))
+            } else {
+                console.log('sender!', senderUuid, senderName, 'sys-tray-created', whenCreated);
+                fin.desktop.InterApplicationBus.send(senderUuid, senderName, 'sys-tray-created', whenCreated);
+            }
+        });
+
+        fin.desktop.InterApplicationBus.publish('sys-tray-created', whenCreated);
+    }).catch(e => {
+        console.log('BAD THING!', e);
+    })
+
+    
     // Initialization
     fin.desktop.InterApplicationBus.subscribe(fin.desktop.Window.getCurrent().uuid,'options', options => {
         window.trayOptions = JSON.parse(window.localStorage.getItem('tray')) || {};
@@ -125,6 +403,10 @@
     }
 
     // close system tray if not in focus
-    fin.desktop.Window.getCurrent().addEventListener('blurred', () => fin.desktop.Window.getCurrent().hide());
+    fin.desktop.Window.getCurrent().addEventListener('blurred', () => {
+        fin.desktop.Window.getCurrent().hide();
+        podMgmt(true);
+        shrinkToFitHiddenPodList();
+    });
     </script>
 </html>
