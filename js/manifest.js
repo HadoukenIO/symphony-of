@@ -11,8 +11,12 @@ fin.desktop.Application.getCurrent().getManifest(function (manifest) {
       window.localStorage.setItem('notificationsVersion', "V2");
       window.localStorage.setItem('notificationsHeight', 60);
     }
+	
+    let popoutChatNotificationFlag = manifest.startup_app.customData.popoutChatOnNotificationClick;
+    if (typeof popoutChatNotificationFlag !== 'undefined') {
+      window.localStorage.setItem('popoutChatNotification', popoutChatNotificationFlag);
+    }
   }
-  
 });
 
 if (window.localStorage.getItem('notificationsLocation') === null) {
