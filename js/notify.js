@@ -60,11 +60,74 @@ class Notify {
             frame: false,
             resizable: false,
             url: `${window.targetUrl}notificationV2.html`,
+            showTaskbarIcon: false,
             opacity: 0.92,
-            alwaysOnTop: true
+            alwaysOnTop: true,
+            icon: `${window.targetUrl}favicon.ico`
           }, function (success) {
-            
             console.log("Notify.openWindows AFTER SHIFTING", Notify.openWindows)
+            
+            var conflict = false;
+            var conflictIdx = -1;
+            console.log("notificationWindows before pruning", Notify.openWindows)
+            for (var i = 0; i < Notify.openWindows.length; i++) {
+              var childWindow = Notify.openWindows[i];
+              console.log('childWindow.name', childWindow.name)
+              if (childWindow.name.startsWith(msg.tag)) {
+                console.log("IN CHILDWINDOW.NAME", childWindow.name)
+                console.log("INDEX", i);
+                childWindow.close();
+                conflictIdx = i;
+                conflict = true;
+              }
+            }
+            
+            console.log("conflictIdx after pruning", conflictIdx);
+            console.log("notificationsLocation", notificationsLocation)
+            console.log("Notify.openWindows AFTER PRUNING", Notify.openWindows)
+            
+            if (conflict && (notificationsLocation === "top-right" || notificationsLocation === "top-left")) {
+              var windowsToShift = Notify.openWindows.slice(conflictIdx + 1);
+              console.log("IN SHIFT");
+              console.log("windowsToShift", windowsToShift);
+              
+              for (var i = 0; i < windowsToShift.length; i++) {
+                console.log("ANIMATING ", windowsToShift[i].name)
+                windowsToShift[i].animate({
+                  position: {
+                    left: 0,
+                    top: ((notificationsHeight + 10) * -1),
+                    duration: 100,
+                    relative: true
+                  }
+                }, {
+                  interrupt: false
+                });
+              } 
+              
+              Notify.openWindows.splice(conflictIdx, 1);
+            } else if (conflict && (notificationsLocation === "bottom-right" || notificationsLocation === "bottom-left")) {
+              var windowsToShift = Notify.openWindows.slice(0, conflictIdx);
+              console.log("IN BOTTOM")
+              console.log("windowsToShift", windowsToShift)
+              
+              console.log("IN BOTTOM SHIFT CONFLICT")
+              console.log("notificationsLocation", notificationsLocation)
+              for (var i = 0; i < windowsToShift.length; i++) {
+                windowsToShift[i].animate({
+                  position: {
+                    left: 0,
+                    top: (notificationsHeight + 10),
+                    duration: 100,
+                    relative: true
+                  }
+                }, {
+                  interrupt: false
+                });
+              }
+              
+              Notify.openWindows.splice(conflictIdx, 1);
+            }
             
             var notificationPosition = Notify.openWindows.length;
             
@@ -83,15 +146,15 @@ class Notify {
             }
             
             var rightBound = monitor.availableRect.right;
-            var rightBoundPlacement = rightBound - 300;
+            var rightBoundPlacement = rightBound - 310;
             var bottomBound = monitor.availableRect.bottom;
-            var bottomBoundPlacement = bottomBound - notificationsHeight;
-            var leftBound = monitor.availableRect.left;
+            var bottomBoundPlacement = bottomBound - notificationsHeight - 10;
+            var leftBound = monitor.availableRect.left + 10;
             
             if (notificationsLocation === "top-right") {
-              notification.moveTo(rightBoundPlacement, (notificationsHeight + 10) * notificationPosition);
+              notification.moveTo(rightBoundPlacement, ((notificationsHeight + 10) * notificationPosition) + 10);
             } else if (notificationsLocation === "top-left") {
-              notification.moveTo(leftBound, (notificationsHeight + 10) * notificationPosition);
+              notification.moveTo(leftBound, ((notificationsHeight + 10) * notificationPosition) + 10);
             } else if (notificationsLocation === "bottom-left") {
               Notify.shiftBottomWindowsBeforeCreation(Notify.openWindows, notificationsHeight);
               notification.moveTo(leftBound, bottomBoundPlacement);
@@ -108,6 +171,11 @@ class Notify {
           });
           
           this.notification = notification;
+          
+          fin.desktop.InterApplicationBus.subscribe("*", `${notification.name} close`, (message, uuid, name) => {
+            console.log(`IN ${notification.name} close click IAB`)
+            this.close();
+          });
         }
         
         this._data = msg.data || null;
@@ -119,7 +187,7 @@ class Notify {
           position: {
             left: 0,
             top: ((notificationHeight + 10) * -1),
-            duration: 250,
+            duration: 100,
             relative: true
           }
         }, {
@@ -177,7 +245,7 @@ class Notify {
                 position: {
                   left: 0,
                   top: ((notificationsHeight + 10) * -1),
-                  duration: 250,
+                  duration: 100,
                   relative: true
                 }
               }, {
@@ -198,7 +266,7 @@ class Notify {
                 position: {
                   left: 0,
                   top: (notificationsHeight + 10),
-                  duration: 250,
+                  duration: 100,
                   relative: true
                 }
               }, {
@@ -236,11 +304,6 @@ class Notify {
                 callbackJSON: this._data
               }
             });
-            this.close();
-          });
-          
-          fin.desktop.InterApplicationBus.subscribe("*", `${notificationName} close`, (message, uuid, name) => {
-            console.log(`IN ${notificationName} close click IAB`)
             this.close();
           });
         }
@@ -339,10 +402,10 @@ window.addEventListener('load', () => {
       console.log("monitor", monitor)
       
       var rightBound = monitor.availableRect.right;
-      var rightBoundPlacement = rightBound - 300;
+      var rightBoundPlacement = rightBound - 310;
       var bottomBound = monitor.availableRect.bottom;
-      var bottomBoundPlacement = bottomBound - notificationsHeight;
-      var leftBound = monitor.availableRect.left;
+      var bottomBoundPlacement = bottomBound - notificationsHeight - 10;
+      var leftBound = monitor.availableRect.left + 10;
       
       if (notificationsLocation === 'top-right') {
         for (var i = 0; i < openNotificationWindows.length; i++) {
@@ -350,8 +413,8 @@ window.addEventListener('load', () => {
           openNotificationWindow.animate({
             position: {
               left: rightBoundPlacement,
-              top: (notificationsHeight + 10) * i,
-              duration: 500
+              top: ((notificationsHeight + 10) * i) + 10,
+              duration: 250
             }
           }, {
             interrupt: false
@@ -363,8 +426,8 @@ window.addEventListener('load', () => {
           openNotificationWindow.animate({
             position: {
               left: leftBound,
-              top: (notificationsHeight + 10) * i,
-              duration: 500
+              top: ((notificationsHeight + 10) * i) + 10,
+              duration: 250
             }
           }, {
             interrupt: false
@@ -378,7 +441,7 @@ window.addEventListener('load', () => {
             position: {
               left: leftBound,
               top: (bottomBoundPlacement - ((notificationsHeight + 10) * i)),
-              duration: 500
+              duration: 250
             }
           }, {
             interrupt: false
@@ -393,7 +456,7 @@ window.addEventListener('load', () => {
             position: {
               left: rightBoundPlacement,
               top: (bottomBoundPlacement - ((notificationsHeight + 10) * i)),
-              duration: 500
+              duration: 250
             }
           }, {
             interrupt: false
@@ -421,7 +484,8 @@ window.addEventListener('load', () => {
           resizeable: false,
           url: `${window.targetUrl}notification-positioning-window.html`,
           opacity: 1,
-          alwaysOnTop: true
+          alwaysOnTop: true,
+          icon: `${window.targetUrl}favicon.ico`
         })
       })
     }
@@ -438,16 +502,19 @@ window.addEventListener('load', () => {
           el1[0].addEventListener('click', function () {
             console.log("clicked sym-menu-tooltip__overlay");
             
-            waitForElement('.tempo-tabs__tab', 0, el2 => {
+            waitForElement('.tempo-tabs__tab', 0, tabEls => {
               console.log("in tempo-tabs__tab");
               
-              el2[0].addEventListener('click', function () {
-                console.log("clicked tempo-tabs__tab");
-                waitForElement('.field-configure-desktop-alerts', 0, (el3) => desktopAlertClickHandler(el3))
-              })
+              for (var i = 0; i < tabEls.length; i++) {
+                tabEls[i].addEventListener('click', function () {
+                  console.log("clicked tempo-tabs__tab");
+                  waitForElement('.field-configure-desktop-alerts', 0, (el2) => desktopAlertClickHandler(el2))
+                })
+              }
+              
             })
             
-            waitForElement('.field-configure-desktop-alerts', 0, (el4) => desktopAlertClickHandler(el4))
+            waitForElement('.field-configure-desktop-alerts', 0, (el3) => desktopAlertClickHandler(el3))
           })
         })
       })
