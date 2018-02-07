@@ -198,16 +198,19 @@ window.addEventListener('load', () => {
     }
 });
 
+window.addEventListener('click', t => {
+    const a = t.target.closest('a');
+    if (a && a.target === '_blank') {
+        t.preventDefault();
+        t.stopPropagation();
+        fin.desktop.System.openUrlWithBrowser(a.href,
+            _ => console.log('opened ', a.href, 'from ', location.href),
+            e => console.log(e, location.href));
+    }
+}, true);
 
 window.addEventListener('load', () => {
-    window.addEventListener('click', t => {
-        if (t.target.nodeName === 'A' && t.target.target === '_blank') {
-            t.preventDefault();
-            fin.desktop.System.openUrlWithBrowser(t.target.href,
-                _ => console.log('opened ', t.target.href, 'from ', location.href),
-                e => console.log(e, location.href));
-        }
-    });
+    
 
     function timeout(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
