@@ -101,6 +101,7 @@
         li.additional-pod {
             white-space: nowrap;
             text-overflow: ellipsis;
+            background-color: #ebebeb; 
         }
 
         li.additional-pod > span.pod-text {
@@ -125,8 +126,8 @@
             <li id="available-pods">
                 <div class="li-header" onclick="podMgmt()">Symphony Pods</div>
             </li>
-            <li class="checked pod-list" style="background-color: #a7a7fa" id="primary-pod">primary pod...</li>
-            <li class="pod-list" style="background-color: #b3e4af" id="add-pod">
+            <li class="checked pod-list" style="background-color: #ebebeb" id="primary-pod">primary pod...</li>
+            <li class="pod-list" style="background-color: #ebebeb" id="add-pod">
                 <span onclick="addPodUrl()" id="add-pod-text">+ Add pod</span>
                 <input id="new-pod-url" type="text">
             </li>
@@ -146,20 +147,17 @@
     const newPodUrl = document.getElementById('new-pod-url');
     const POD_LS_KEY = 'pods';
     const pods = new Set(JSON.parse(localStorage.getItem(POD_LS_KEY) || '[]'));
+    const appsToClose = new Set();
 
     const thisWin = fin.desktop.Window.getCurrent();
     const uuid = thisWin.uuid;
     const symApp = fin.desktop.Application.wrap(uuid);
     const symWin = fin.desktop.Window.wrap(uuid, uuid);
-    const baseDimentions = {
-        width: 200,
-        height: 163 + 33,
-    };
-
     let clickBasey;
+    let teardownOtherPods = true;
 
     symWin.getInfo(i => {
-        primaryPod.innerHTML = stripProtocol(i.url); //.replace(/https?:\/\//, '').replace(/(\/$)/, '');
+        primaryPod.innerHTML = stripProtocol(i.url);
     })
 
     myDropdown.addEventListener('click', clickHandler);
@@ -215,6 +213,7 @@
                 const opts = await baseOpts();
                 opts.url = podUrl;
                 opts.uuid = podUrl;
+                appsToClose.add(podUrl);
                 const podApp = new fin.desktop.Application(opts, _ => podApp.run(), e => console.log(e));
             }
         }
@@ -245,7 +244,7 @@
             podText.textContent = stripProtocol(pod);
             podText.classList.add('pod-text');
 
-            close.textContent = '\u26DD';
+            close.textContent = '\u2716';
             close.classList.add('close');
 
             li.appendChild(podText);
@@ -337,10 +336,15 @@
             console.log('created!', msg, senderUuid, senderName);
             if (senderUuid === uuid) return;
 
-            if (whenCreated > msg) {
-                symApp.removeTrayIcon(thisWin.close.bind(thisWin))
+
+            if (whenCreated > msg) { // there is already another sys tray window
+                symApp.removeTrayIcon(() => {
+                    teardownOtherPods = false;
+                    thisWin.close(true);
+                });
+
+                fin.desktop.InterApplicationBus.send(uuid, uuid, 'must-close', true);
             } else {
-                console.log('sender!', senderUuid, senderName, 'sys-tray-created', whenCreated);
                 fin.desktop.InterApplicationBus.send(senderUuid, senderName, 'sys-tray-created', whenCreated);
             }
         });

@@ -3,6 +3,7 @@ let win = app.getWindow();
 window.rateLimiter = false;
 window.once = false;
 window.popoutChanges = [];
+window.mustClose = false;
 
 // Things to do ONLY once and ONLY in the main window:
 window.addEventListener('load', () => {
@@ -13,10 +14,22 @@ window.addEventListener('load', () => {
         //navigate to converation from main window on notification click
         window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
 
+        fin.desktop.InterApplicationBus.subscribe(application.uuid, 'system-tray', 'must-close', (msg, senderUuid) => {
+            window.mustClose = true;
+            // alert('i must close', application.uuid)
+        });
+
+        fin.desktop.InterApplicationBus.subscribe('*', 'teardown', (msg, senderUuid) => {
+            if (application.uuid === senderUuid) return;
+            // alert('teardown! ', );
+            application.close();
+        });
+
         //Overwrite closing of application to minimize instead
         currentWindow.addEventListener('close-requested',() => {
+            fin.desktop.InterApplicationBus.publish('teardown', true)
             window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
-            if(window.popouts.closeOnExit) {
+            if(window.popouts.closeOnExit || window.mustClose) {
                 fin.desktop.Application.getCurrent().close(true);
             } else {
                 fin.desktop.Application.getCurrent().getWindow().minimize();        
