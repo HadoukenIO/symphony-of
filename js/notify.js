@@ -299,7 +299,10 @@ class Notify {
           let divId = 'im' + data.streamId.replace(/\W/g, '');
           waitForElement(divId, 0, () => {
             let popoutIcon = document.getElementsByClassName('enhanced-pop-out')[0];
-            popoutIcon.click();
+            let inMainWindow = !window.location.pathname.includes('float');
+            if (popoutIcon && inMainWindow) {
+              popoutIcon.click();
+            }
           });
         }
       }
