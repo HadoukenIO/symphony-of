@@ -282,17 +282,43 @@ class Notify {
     addEventListener(event, cb) {
       var notificationsVersion = window.localStorage.getItem('notificationsVersion')
       var notificationName = this.notification.name
+      let popoutFunctionality = function(data) {
+        let popoutChat = window.localStorage.getItem('popoutChatNotification');
+        if (popoutChat === 'true') {
+          let waitForElement = (elementId, count, cb) => {
+            let element = document.getElementById(elementId);  
+            if(element) {            
+              cb(element);
+            } else {
+              if(count<15) {
+                count++;
+                setTimeout(()=>waitForElement(elementId, count, cb),450)
+              }
+            }
+          };
+          let divId = 'im' + data.streamId.replace(/\W/g, '');
+          waitForElement(divId, 0, () => {
+            let popoutIcon = document.getElementsByClassName('enhanced-pop-out')[0];
+            let inMainWindow = !window.location.pathname.includes('float');
+            if (popoutIcon && inMainWindow) {
+              popoutIcon.click();
+            }
+          });
+        }
+      }
       if (notificationsVersion === "V1") {
         if(event === 'click' && this.notification) {
             this.notification.noteWin.onClick = () => {
-                if (this.sticky) {
-                    this.notification.close();                    
-                }
+            popoutFunctionality(this._data);
+            if (this.sticky) {
+              this.notification.close();                    
+            }
                 cb({target:{callbackJSON:this._data}}); 
             }
         }
       } else if (notificationsVersion === "V2") {        
         if (event === 'click') {
+popoutFunctionality(this._data);
           // On click of the body of the notification, the notification window is set to minimize, 
           // but on click of the "X", it closes. That way, we can choose to dismiss 
           // notifications instead of always directing to the chat window.

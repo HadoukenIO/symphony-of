@@ -17,7 +17,8 @@
         "saveWindowState": false,
         "preload": "https://cdn.openfin.co/demos/symphony-of/bundle.js",
         "customData": {
-          "symphonyNotifications": "V2"
+          "symphonyNotifications": "V2",
+          "popoutChatOnNotificationClick": false
         }
     },
     "runtime": {
