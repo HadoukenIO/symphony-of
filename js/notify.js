@@ -383,9 +383,9 @@ window.addEventListener('load', () => {
         }
           cb(elements);
       } else {
-          if(count<15) {
+          if(count<30) {
               count++;
-              setTimeout(()=>waitForElement(query, count, cb),450)
+              setTimeout(()=>waitForElement(query, count, cb), 100)
           }
       }
   };
@@ -498,6 +498,8 @@ window.addEventListener('load', () => {
     console.log("IN MAIN WINDOW")
     
     function desktopAlertClickHandler(el) {
+      console.log("IN THE HANDLER: ", el)
+      console.log("el[0].children[0]", el[0].children[0])
       el[0].children[0].addEventListener('click', (e) => {
         console.log("CLICK EVENT", e)
         var notificationPositioning = new window.fin.desktop.Window({
@@ -528,19 +530,21 @@ window.addEventListener('load', () => {
           el1[0].addEventListener('click', function () {
             console.log("clicked sym-menu-tooltip__overlay");
             
-            waitForElement('.tempo-tabs__tab', 0, tabEls => {
-              console.log("in tempo-tabs__tab");
+            setTimeout(() => {
+              waitForElement('.tempo-tabs__tab', 0, tabEls => {
+                console.log("in tempo-tabs__tab");
+                
+                document.querySelectorAll('[data-tab="alerts"]')[0].addEventListener('click', function () {
+                  if (document.querySelectorAll('.app-settings-notifications').length === 0) {
+                  setTimeout(() => {
+                      waitForElement('.field-configure-desktop-alerts', 0, (el2) => desktopAlertClickHandler(el2))
+                  }, 200)
+                }
+                });
+              })
               
-              for (var i = 0; i < tabEls.length; i++) {
-                tabEls[i].addEventListener('click', function () {
-                  console.log("clicked tempo-tabs__tab");
-                  waitForElement('.field-configure-desktop-alerts', 0, (el2) => desktopAlertClickHandler(el2))
-                })
-              }
-              
-            })
-            
-            waitForElement('.field-configure-desktop-alerts', 0, (el3) => desktopAlertClickHandler(el3))
+              waitForElement('.field-configure-desktop-alerts', 25, (el3) => desktopAlertClickHandler(el3))
+            }, 100);
           })
         })
       })
