@@ -318,13 +318,13 @@ class Notify {
         }
       } else if (notificationsVersion === "V2") {        
         if (event === 'click') {
-popoutFunctionality(this._data);
           // On click of the body of the notification, the notification window is set to minimize, 
           // but on click of the "X", it closes. That way, we can choose to dismiss 
           // notifications instead of always directing to the chat window.
           
           fin.desktop.InterApplicationBus.subscribe("*", `${notificationName} body`, (message, uuid, name) => {
             console.log(`IN ${notificationName} body click IAB`)
+			popoutFunctionality(this._data);
             cb({
               target: {
                 callbackJSON: this._data
