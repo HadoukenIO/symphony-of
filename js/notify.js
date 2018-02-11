@@ -285,19 +285,19 @@ class Notify {
       let popoutFunctionality = function(data) {
         let popoutChat = window.localStorage.getItem('popoutChatNotification');
         if (popoutChat === 'true') {
-          let waitForElement = (elementId, count, cb) => {
-            let element = document.getElementById(elementId);  
+          let waitForElement = (streamId, count, cb) => {
+            let element = document.querySelector(`[id$="${streamId}"]`)
             if(element) {            
               cb(element);
             } else {
               if(count<15) {
                 count++;
-                setTimeout(()=>waitForElement(elementId, count, cb),450)
+                setTimeout(()=>waitForElement(streamId, count, cb),450)
               }
             }
           };
-          let divId = 'im' + data.streamId.replace(/\W/g, '');
-          waitForElement(divId, 0, () => {
+          let streamId = data.streamId.replace(/\W/g, '');
+          waitForElement(streamId, 0, () => {
             let popoutIcon = document.getElementsByClassName('enhanced-pop-out')[0];
             let inMainWindow = !window.location.pathname.includes('float');
             if (popoutIcon && inMainWindow) {
