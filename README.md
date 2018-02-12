@@ -1,8 +1,6 @@
 # OpenFin Sym Integration
-The Symphony application shimmed with the SSF API and implemented in the OpenFin runtime.
+This project implements the SSF API standard to integrate chat with the OpenFin OS. The SSF API is defined by the Symphony Software Foundation [Desktop Wrapper Working Group](https://symphonyoss.atlassian.net/wiki/spaces/WGDWAPI/pages).  Other implementations of the API include the [Symphony Electron](https://github.com/symphonyoss/SymphonyElectron/) project and [ContainerJS](https://github.com/symphonyoss/ContainerJS).
 
-## Overview
-OpenFin has created an open-source project that allows anyone to run the Symphony chat client on OpenFin. This moves the client into a secure, interoperable and deployable format that can be more conducive for enterprises that already leverage OpenFin for their own applications. 
 
 ## Notes
 - API implementations are in progress.  APIs are working off of what is defined here: https://symphonyoss.atlassian.net/wiki/display/WGDWAPI/Proposed+Standard+API+Specifications
@@ -25,4 +23,3 @@ OpenFin has created an open-source project that allows anyone to run the Symphon
 - Host the public folder on your web server
 - generate an [OpenFin Installer](https://install.openfin.co/) pointing at the `public/app.json` file or use another [deployment option](https://openfin.co/options/)
 - (optional) Notifications can be customized in the notification.html file
-
