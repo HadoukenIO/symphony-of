@@ -329,7 +329,7 @@
     }
 
 
-    setTrayIcon(`${window.targetUrl}icon/symphony.png`, clickListener).then(() => {
+    setTrayIcon('https://raw.githubusercontent.com/symphonyoss/SymphonyElectron/master/build/icon.ico', clickListener).then(() => {
         const whenCreated = Date.now();
 
         fin.desktop.InterApplicationBus.subscribe('*', 'sys-tray-created', (msg, senderUuid, senderName) => {
@@ -392,7 +392,7 @@
             resizable: false,
             autoShow: true,
             alwaysOnTop: true,
-            icon: `${window.targetUrl}icon/symphony.png`,
+            icon: 'https://raw.githubusercontent.com/symphonyoss/SymphonyElectron/master/build/icon.ico',
         }, () => about.setAsForeground());
     };
     const autoLaunch = () => fin.desktop.Application.getCurrent().getShortcuts(shortcuts=> {
