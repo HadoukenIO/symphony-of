@@ -6,7 +6,7 @@
         "name": "Symphony-OpenFin",
         "description": "Beta client for Symphony - running OpenFin",
         "url": "https://my.symphony.com",
-        "icon": "https://cdn.openfin.co/demos/symphony-of/icon/symphony.png",
+        "icon": "https://raw.githubusercontent.com/symphonyoss/SymphonyElectron/master/build/icon.ico",
         "uuid": "OpenFin-Symphony-udbrf2z9sehilik9",
         "autoShow": true,
         "frame": true,
