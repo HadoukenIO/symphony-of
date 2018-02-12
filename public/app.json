@@ -32,9 +32,7 @@
         "name": "Symphony-OpenFin",
         "icon": "https://symphony.com/favicon.ico"
     },
-    "splashScreenImage": "https://cdn.openfin.co/demos/symphony-of/symphony-splash.png",
     "dialogSettings": {
-        "logo": "https://cdn.openfin.co/demos/symphony-of/symphony-dialog.png",
         "bgColor": 4294967295,
         "textColor": 4278232241,
         "progressBarBgColor": 4289901234,
