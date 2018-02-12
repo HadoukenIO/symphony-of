@@ -69,7 +69,7 @@ if (isLocalBuild) {
 
 
 const launchAppUrl = `${targetUrl}symphony-launch.html`;
-const launchAppDialogLogo = `${targetUrl}symphony-dialog.png`;
+const launchAppDialogLogo = 'https://raw.githubusercontent.com/symphonyoss/SymphonyElectron/master/build/icon.ico';
 
 let app = require('./public/symphony-launch.json');
 app.startup_app.url = launchAppUrl;
