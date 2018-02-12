@@ -13,7 +13,7 @@ window.SYM_API = {
             let n = number > 9 ? '9+' : number;
             win.updateOptions({ icon: `${window.targetUrl}icon/icon${n}.png` },() => {win.flash();},() => {console.log("update options failed");});
         } else {
-            win.updateOptions({ icon: `${window.targetUrl}icon/symphony.png` });
+            win.updateOptions({ icon: 'https://raw.githubusercontent.com/symphonyoss/SymphonyElectron/master/build/icon.ico' });
         };
     },
     activate:function(windowName) {

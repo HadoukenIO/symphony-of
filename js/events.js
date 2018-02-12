@@ -164,7 +164,7 @@ window.addEventListener('load', () => {
             shadow: true,
             saveWindowState: false,
             alwaysOnTop: true,
-            icon: `${window.targetUrl}icon/symphony.png`,
+            icon: 'https://raw.githubusercontent.com/symphonyoss/SymphonyElectron/master/build/icon.ico',
         }, () => {
             console.log('this has created a sys tray window');
         });
