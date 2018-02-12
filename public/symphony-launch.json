@@ -19,12 +19,12 @@
         "fallbackVersion": "8.56.26.38"
     },
     "dialogSettings": {
-        "logo": "http://localhost:8080/symphony-dialog.png",
         "bgColor": 4294967295,
         "textColor": 4278232241,
         "progressBarBgColor": 4289901234,
         "progressBarFillColor": 4278232241,
-        "progressBarBorderColor": 4285361517
+        "progressBarBorderColor": 4285361517,
+        "logo": "http://localhost:8080/symphony-dialog.png"
     },
     "shortcut": {}
 }
