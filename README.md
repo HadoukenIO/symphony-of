@@ -24,7 +24,7 @@ This project implements the SSF API standard to integrate chat with the OpenFin 
 - Generate an [OpenFin Installer](https://install.openfin.co/) pointing at the `public/app.json` file or use another [deployment option](https://openfin.co/options/)
 - (optional) Notifications can be customized in the notification.html file
 
-## OpenFin Memory Consumption
+## Testing
 The client running in OpenFin is adding only a limited number of additions to the SSF API. These features pertain mainly to Windowing, Notifications, and a System Tray that exposes additional menu options to users. The Chat Application running in OpenFin is to have feature parity with the client running in Electron.
 
 ### Screen Layout
@@ -85,15 +85,15 @@ The following comprises a list of client features that are validated when using 
 
 (*) Currently not supported
 
-## Testing
-The following document highlights the memory consumption of the Chat Application running in Electron compared to running in OpenFin. The analysis is comprised of the following use cases:
+## Memory Consumption
+The following document highlights the memory consumption of the chat application running in OpenFin. The analysis is comprised of the following use cases:
 * Initial App Startup
 * Message Load
 * Multi Window Open/Close
 * Duration
+
 Memory numbers gathered via Task Manager.
 
-### Comparison
 **Environment Variables**
 <table>
 <tr><th></th><th>OpenFin</th></tr>
