@@ -10,7 +10,7 @@ window.addEventListener('load', () => {
     let currentWindow = fin.desktop.Window.getCurrent();
     let application = fin.desktop.Application.getCurrent();
 
-    if(currentWindow.uuid===currentWindow.name && !window.once) {
+    if(currentWindow.uuid===currentWindow.name && !parent.once) {
         //navigate to converation from main window on notification click
         window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
 
