@@ -1,4 +1,7 @@
 # OpenFin Sym Integration
+
+*Please note OpenFin Sym Integration is currently in beta and unsupported by Symphony*
+
 This project implements the SSF API standard to integrate chat with the OpenFin OS. The SSF API is defined by the Symphony Software Foundation [Desktop Wrapper Working Group](https://symphonyoss.atlassian.net/wiki/spaces/WGDWAPI/pages).  Other implementations of the API include the [Symphony Electron](https://github.com/symphonyoss/SymphonyElectron/) project and [ContainerJS](https://github.com/symphonyoss/ContainerJS).
 
 
