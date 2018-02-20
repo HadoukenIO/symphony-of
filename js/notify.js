@@ -504,12 +504,14 @@ window.addEventListener('load', () => {
       
       el[0].children[0].addEventListener('click', (e) => {
         console.log("CLICK EVENT", e);
+        let timeout = 50;
         
         fin.desktop.Application.getCurrent().getChildWindows((childWindows) => {
           for (var i = 0; i < childWindows.length; i++) {
             if (childWindows[i].name === "Notification Positioning Window") {
               console.log("CLOSING EXTRA WINDOWS")
               childWindows[i].close();
+              timeout = 1200;
             }
           }
           
@@ -526,8 +528,12 @@ window.addEventListener('load', () => {
               opacity: 1,
               alwaysOnTop: true,
               icon: `${window.targetUrl}favicon.ico`
+            }, function () {
+              console.log("Notification Positioning Window successfully created.");
+            }, function (error) {
+              console.log("Error creating Notification Positioning Window: ", error);
             })
-          }, 750)
+          }, timeout)
         })
       })
     }
