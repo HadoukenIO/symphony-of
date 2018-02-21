@@ -497,12 +497,53 @@ window.addEventListener('load', () => {
   if (thisWindow.name !== 'system-tray' && notificationsVersion === "V2"){
     console.log("IN MAIN WINDOW")
     
-    function desktopAlertClickHandler(el) {
+    // Create Desktop Position window on CONFIGURE DESKTOP ALERT POSITIONS button click
+    waitForElement('.sym-menu-tooltip__target', 0, gearIcon => {
+      console.log(" IN sym-menu-tooltip__target");
+      gearIcon[0].addEventListener('click', function () {
+        console.log("Clicked sym-menu-tooltip__target");
         
+        waitForElement('.sym-menu-tooltip__overlay', 0, dropdownMenu => {
+          console.log(" IN sym-menu-tooltip__overlay");
+          attachListenerToDropdown(dropdownMenu)
+          attachListenerToAlertsTooltip();
+        })
+      })
+    })
+    
+    function attachListenerToAlertsTooltip() {
+      document.getElementById('alertsSettingsTrigger').addEventListener('click', function () {
+        setTimeout(() => {
+          waitForElement('.field-configure-desktop-alerts', 0, (desktopAlertButton) => desktopAlertClickHandler(desktopAlertButton));
+        }, 400);
+      })
+    }
+    
+    function attachListenerToDropdown(dropdownMenu) {
+      dropdownMenu[0].addEventListener('click', function () {
+        console.log("clicked sym-menu-tooltip__overlay");
+        setTimeout(() => {
+          waitForElement('.tempo-tabs__tab', 0, tabEls => {
+            console.log("in tempo-tabs__tab");
+            
+            document.querySelectorAll('[data-tab="alerts"]')[0].addEventListener('click', function () {
+              if (document.querySelectorAll('.app-settings-notifications').length === 0) {
+                setTimeout(() => {
+                  waitForElement('.field-configure-desktop-alerts', 0, (desktopAlertButton) => desktopAlertClickHandler(desktopAlertButton))
+                }, 400)
+              }
+            });
+          })
+        }, 100);
+      })
+    }
+    
+    function desktopAlertClickHandler(el) {
       console.log("IN THE HANDLER: ", el)
-      console.log("el[0].children[0]", el[0].children[0])
+      const desktopAlertButton = el[0].children[0];
+      console.log("desktopAlertButton: ", desktopAlertButton)
       
-      el[0].children[0].addEventListener('click', (e) => {
+      desktopAlertButton.addEventListener('click', (e) => {
         console.log("CLICK EVENT", e);
         let timeout = 50;
         
@@ -537,41 +578,6 @@ window.addEventListener('load', () => {
         })
       })
     }
-    
-    // Create Desktop Position window on CONFIGURE DESKTOP ALERT POSITIONS button
-    waitForElement('.sym-menu-tooltip__target', 0, element => {
-      console.log(" IN sym-menu-tooltip__target");
-      element[0].addEventListener('click', function () {
-        console.log("Clicked sym-menu-tooltip__target");
-        
-        waitForElement('.sym-menu-tooltip__overlay', 0, el1 => {
-          console.log(" IN sym-menu-tooltip__overlay");
-          
-          document.getElementById('alertsSettingsTrigger').addEventListener('click', function (e) {
-            setTimeout(() => {
-              waitForElement('.field-configure-desktop-alerts', 0, (el3) => desktopAlertClickHandler(el3));
-            }, 200);
-          })
-          
-          el1[0].addEventListener('click', function () {
-            console.log("clicked sym-menu-tooltip__overlay");
-            setTimeout(() => {
-              waitForElement('.tempo-tabs__tab', 0, tabEls => {
-                console.log("in tempo-tabs__tab");
-                
-                document.querySelectorAll('[data-tab="alerts"]')[0].addEventListener('click', function () {
-                  if (document.querySelectorAll('.app-settings-notifications').length === 0) {
-                    setTimeout(() => {
-                      waitForElement('.field-configure-desktop-alerts', 0, (el2) => desktopAlertClickHandler(el2))
-                    }, 200)
-                  }
-                });
-              })
-            }, 100);
-          })
-        })
-      })
-    })
   }
 });
 
