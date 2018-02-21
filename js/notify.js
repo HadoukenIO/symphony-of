@@ -498,22 +498,42 @@ window.addEventListener('load', () => {
     console.log("IN MAIN WINDOW")
     
     function desktopAlertClickHandler(el) {
+        
       console.log("IN THE HANDLER: ", el)
       console.log("el[0].children[0]", el[0].children[0])
+      
       el[0].children[0].addEventListener('click', (e) => {
-        console.log("CLICK EVENT", e)
-        var notificationPositioning = new window.fin.desktop.Window({
-          autoShow: true,
-          name: 'Notification Positioning Window',
-          cornerRounding: {height: 2, width: 3},
-          defaultWidth: 300,
-          defaultHeight: 400,
-          frame: true,
-          resizeable: false,
-          url: `${window.targetUrl}notification-positioning-window.html`,
-          opacity: 1,
-          alwaysOnTop: true,
-          icon: `${window.targetUrl}favicon.ico`
+        console.log("CLICK EVENT", e);
+        let timeout = 50;
+        
+        fin.desktop.Application.getCurrent().getChildWindows((childWindows) => {
+          for (var i = 0; i < childWindows.length; i++) {
+            if (childWindows[i].name === "Notification Positioning Window") {
+              console.log("CLOSING EXTRA WINDOWS")
+              childWindows[i].close();
+              timeout = 1200;
+            }
+          }
+          
+          setTimeout(() => {
+            var notificationPositioning = new window.fin.desktop.Window({
+              autoShow: true,
+              name: 'Notification Positioning Window',
+              cornerRounding: {height: 2, width: 3},
+              defaultWidth: 300,
+              defaultHeight: 400,
+              frame: true,
+              resizeable: false,
+              url: `${window.targetUrl}notification-positioning-window.html`,
+              opacity: 1,
+              alwaysOnTop: true,
+              icon: `${window.targetUrl}favicon.ico`
+            }, function () {
+              console.log("Notification Positioning Window successfully created.");
+            }, function (error) {
+              console.log("Error creating Notification Positioning Window: ", error);
+            })
+          }, timeout)
         })
       })
     }
@@ -543,7 +563,7 @@ window.addEventListener('load', () => {
                 });
               })
               
-              waitForElement('.field-configure-desktop-alerts', 25, (el3) => desktopAlertClickHandler(el3))
+              waitForElement('.field-configure-desktop-alerts', 15, (el3) => desktopAlertClickHandler(el3))
             }, 100);
           })
         })
