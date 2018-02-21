@@ -547,23 +547,26 @@ window.addEventListener('load', () => {
         waitForElement('.sym-menu-tooltip__overlay', 0, el1 => {
           console.log(" IN sym-menu-tooltip__overlay");
           
+          document.getElementById('alertsSettingsTrigger').addEventListener('click', function (e) {
+            setTimeout(() => {
+              waitForElement('.field-configure-desktop-alerts', 0, (el3) => desktopAlertClickHandler(el3));
+            }, 200);
+          })
+          
           el1[0].addEventListener('click', function () {
             console.log("clicked sym-menu-tooltip__overlay");
-            
             setTimeout(() => {
               waitForElement('.tempo-tabs__tab', 0, tabEls => {
                 console.log("in tempo-tabs__tab");
                 
                 document.querySelectorAll('[data-tab="alerts"]')[0].addEventListener('click', function () {
                   if (document.querySelectorAll('.app-settings-notifications').length === 0) {
-                  setTimeout(() => {
+                    setTimeout(() => {
                       waitForElement('.field-configure-desktop-alerts', 0, (el2) => desktopAlertClickHandler(el2))
-                  }, 200)
-                }
+                    }, 200)
+                  }
                 });
               })
-              
-              waitForElement('.field-configure-desktop-alerts', 15, (el3) => desktopAlertClickHandler(el3))
             }, 100);
           })
         })
