@@ -123,7 +123,13 @@
         } else {
           document.querySelectorAll('#image')[0].src = customData.icon || '';
         }
-        document.body.style.backgroundColor = "#" + customData.color || '000';
+        let parsedColor = "#" + customData.color;
+        
+        if (customData.color.startsWith('#')) {
+          parsedColor = customData.color;
+        }
+        
+        document.body.style.backgroundColor = parsedColor || '#000';
         if (customData.flash) {
           let origColor = document.body.style.backgroundColor;
           setInterval(function() {
