@@ -54,7 +54,7 @@ class Notify {
           
           var notification = new window.fin.desktop.Window({
             customData: msg,
-            name: msg.tag + randomString,
+            name: 'Notify-' + msg.tag + randomString,
             defaultWidth: 300,
             defaultHeight: notificationsHeight,
             frame: false,
@@ -404,7 +404,7 @@ window.addEventListener('load', () => {
     fin.desktop.Application.getCurrent().getChildWindows((childWindows) => {
       var openNotificationWindows = [];
       for (var i = 0; i < childWindows.length; i++) {
-        if (childWindows[i].name.includes("///")) {
+        if (childWindows[i].name.startsWith("Notify-")) {
           openNotificationWindows.push(childWindows[i])
         }
       }
