@@ -2,6 +2,7 @@
     "licenseKey": "64605fac-add3-48a0-8710-64b38e96a2dd",
     "devtools_port": 9090,
     "offlineAccess": true,
+    "splashScreenImage": "",
     "startup_app": {
         "name": "Symphony-OpenFin",
         "description": "Beta client for Symphony - running OpenFin",
