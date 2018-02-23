@@ -4,11 +4,11 @@
     "offlineAccess": true,
     "splashScreenImage": "",
     "startup_app": {
-        "name": "OpenFin-Sym-Client-Staging",
+        "name": "OpenFin-Sym-Client",
         "description": "Beta Client for OpenFin Sym",
         "url": "https://my.symphony.com",
         "icon": "https://raw.githubusercontent.com/symphonyoss/SymphonyElectron/master/build/icon.ico",
-        "uuid": "OpenFin-Sym-Client-Staging",
+        "uuid": "OpenFin-Symphony-udbrf2z9sehilik9",
         "autoShow": true,
         "frame": true,
         "minHeight": 625,
@@ -30,7 +30,7 @@
     "shortcut": {
         "company": "OpenFin",
         "description": "Client for OpenFin Sym",
-        "name": "Staging OpenFin Sym",
+        "name": "OpenFin Sym",
         "icon": "https://symphony.com/favicon.ico"
     },
     "dialogSettings": {
