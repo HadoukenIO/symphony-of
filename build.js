@@ -62,8 +62,8 @@ if (isLocalBuild) {
         contentNavigation.whitelist.push(targetUrl + '*');
     }
     app.startup_app.preload = `${targetUrl}bundle.js`;
-    app.startup_app.name = `OpenFin-Symphony-Client-Local`;
-    app.startup_app.uuid = `OpenFin-Symphony-Client-Local`;
+    app.startup_app.name = `OpenFin-Sym-Client-Local`;
+    app.startup_app.uuid = `OpenFin-Sym-Client-Local`;
     fs.writeFileSync('./public/local.json', JSON.stringify(app, null, '    '));
 }
 

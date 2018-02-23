@@ -97,6 +97,7 @@
         console.log("options", options);
         customData = options.customData;
         
+        // Dismisses the notification without opening the corresponding chat.
         document.querySelector('#close').addEventListener('click', (e) => {
           e.stopPropagation();
           fin.desktop.InterApplicationBus.publish(`${options.name} close`, "test");
@@ -104,6 +105,7 @@
           notificationWindow.hide();
         });
         
+        // Dismisses the notification and opens the corresponding chat (unless it's a sample notification);
         document.addEventListener('click', (e) => {
           if (customData.title === "Sample alert" || customData.title === "Sample Notification") {
             fin.desktop.InterApplicationBus.publish(`${options.name} close`, "test");
@@ -116,6 +118,7 @@
           }
         });
         
+        // Adds data to notification.
         document.querySelectorAll('#title')[0].innerText = customData.title || '';
         document.querySelectorAll('#message')[0].innerHTML = customData.body || ' ';
         if(!customData.icon) {
@@ -123,7 +126,17 @@
         } else {
           document.querySelectorAll('#image')[0].src = customData.icon || '';
         }
-        document.body.style.backgroundColor = "#" + customData.color || '000';
+        
+        // Sets the background color (Sym sends in two different formats)
+        let parsedColor = "#" + customData.color;
+        
+        if (customData.color.startsWith('#')) {
+          parsedColor = customData.color;
+        }
+        
+        document.body.style.backgroundColor = parsedColor || '#000';
+        
+        // Sets flash on the notification if enabled
         if (customData.flash) {
           let origColor = document.body.style.backgroundColor;
           setInterval(function() {
@@ -133,6 +146,14 @@
               document.body.style.backgroundColor = 'red';
             }
           }, 2000);
+        }
+        
+        // Closes the notification if it's set to not persist
+        if (customData.sticky === false) {
+          setTimeout(() => {
+            fin.desktop.InterApplicationBus.publish(`${options.name} close`, "test");
+            notificationWindow.hide();
+          }, 5000);
         }
       }, function (error) {
         console.log("Error", error);
