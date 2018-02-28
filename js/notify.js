@@ -367,215 +367,151 @@ window.addEventListener('load', () => {
   var notificationsVersion = window.localStorage.getItem('notificationsVersion')
   var notificationsHeight = parseInt(window.localStorage.getItem('notificationsHeight'))
   var thisWindow = fin.desktop.Window.getCurrent();
+  let creatingPositioningWindow = false;
   
-  const waitForElement = (query, count, cb) => {
-      let elements = document.querySelectorAll(query);  
-      if (query === '.field-configure-desktop-alerts' || query === '.app-settings') {
-        console.log("ELEMENTS", elements);
-      }
-      if(elements.length) {            
-        if (query === '.field-configure-desktop-alerts' || query === '.app-settings') {
-          console.log("IN ELEMENTS LENGTH")
-          console.log(elements.length);
-          console.log(elements);
-          console.log(cb);
-          console.log(count);
-        }
-          cb(elements);
-      } else {
-          if(count<30) {
-              count++;
-              setTimeout(()=>waitForElement(query, count, cb), 100)
-          }
-      }
-  };
-  
-  fin.desktop.InterApplicationBus.subscribe("*", `notificationsLocation`, (message, uuid, name) => {
-    fin.desktop.System.getMonitorInfo(function (monitorInfo) {
-      window.localStorage.setItem('monitorInfo', JSON.stringify(monitorInfo));
-      console.log("RECEIVED LOCATION", message)
-      window.localStorage.setItem('notificationsLocation', message.notificationsLocation);
-      window.localStorage.setItem('notificationsMonitor', message.notificationsMonitor);
-      repositionWindows();
-    });
-  });
-  
-  function repositionWindows() {
-    fin.desktop.Application.getCurrent().getChildWindows((childWindows) => {
-      var openNotificationWindows = [];
-      for (var i = 0; i < childWindows.length; i++) {
-        if (childWindows[i].name.startsWith("Notify-")) {
-          openNotificationWindows.push(childWindows[i])
-        }
-      }
-      
-      console.log("openNotificationWindows", openNotificationWindows);
-      
-      var notificationsHeight = parseInt(window.localStorage.getItem('notificationsHeight'));
-      var notificationsLocation = window.localStorage.getItem('notificationsLocation');
-      var notificationsMonitor = parseInt(window.localStorage.getItem('notificationsMonitor'));
-      console.log("notificationsMonitor", notificationsMonitor)
-      var monitorInfo = JSON.parse(window.localStorage.getItem('monitorInfo'));
-      var monitor;
-      if (notificationsMonitor === 1) {
-        monitor = monitorInfo.primaryMonitor;
-      } else if (monitorInfo.nonPrimaryMonitors[notificationsMonitor - 2]) {
-        monitor = monitorInfo.nonPrimaryMonitors[notificationsMonitor - 2];
-      } else {
-        monitor = monitorInfo.primaryMonitor;
-      }
-      
-      console.log("monitor", monitor)
-      
-      var rightBound = monitor.availableRect.right;
-      var rightBoundPlacement = rightBound - 310;
-      var bottomBound = monitor.availableRect.bottom;
-      var bottomBoundPlacement = bottomBound - notificationsHeight - 10;
-      var leftBound = monitor.availableRect.left + 10;
-      
-      if (notificationsLocation === 'top-right') {
-        for (var i = 0; i < openNotificationWindows.length; i++) {
-          var openNotificationWindow = openNotificationWindows[i];
-          openNotificationWindow.animate({
-            position: {
-              left: rightBoundPlacement,
-              top: ((notificationsHeight + 10) * i) + 10,
-              duration: 250
-            }
-          }, {
-            interrupt: false
-          });
-        }
-      } else if (notificationsLocation === 'top-left') {
-        for (var i = 0; i < openNotificationWindows.length; i++) {
-          var openNotificationWindow = openNotificationWindows[i];
-          openNotificationWindow.animate({
-            position: {
-              left: leftBound,
-              top: ((notificationsHeight + 10) * i) + 10,
-              duration: 250
-            }
-          }, {
-            interrupt: false
-          });
-        }
-      } else if (notificationsLocation === 'bottom-left') {
-        var bottomIdx = openNotificationWindows.length - 1;
-        for (var i = 0; i < openNotificationWindows.length; i++) {
-          var openNotificationWindow = openNotificationWindows[bottomIdx];
-          openNotificationWindow.animate({
-            position: {
-              left: leftBound,
-              top: (bottomBoundPlacement - ((notificationsHeight + 10) * i)),
-              duration: 250
-            }
-          }, {
-            interrupt: false
-          });
-          bottomIdx--;
-        }
-      } else if (notificationsLocation === 'bottom-right') {
-        var bottomIdx = openNotificationWindows.length - 1;
-        for (var i = 0; i < openNotificationWindows.length; i++) {
-          var openNotificationWindow = openNotificationWindows[bottomIdx];
-          openNotificationWindow.animate({
-            position: {
-              left: rightBoundPlacement,
-              top: (bottomBoundPlacement - ((notificationsHeight + 10) * i)),
-              duration: 250
-            }
-          }, {
-            interrupt: false
-          });
-          bottomIdx--;
-        }
-      }
+  if (thisWindow.name !== 'system-tray' && notificationsVersion === "V2") {
+    fin.desktop.InterApplicationBus.subscribe("*", `notificationsLocation`, (message, uuid, name) => {
+      fin.desktop.System.getMonitorInfo(function (monitorInfo) {
+        window.localStorage.setItem('monitorInfo', JSON.stringify(monitorInfo));
+        console.log("RECEIVED LOCATION", message)
+        window.localStorage.setItem('notificationsLocation', message.notificationsLocation);
+        window.localStorage.setItem('notificationsMonitor', message.notificationsMonitor);
+        repositionWindows();
+      });
     });
     
-  }
-
-  if (thisWindow.name !== 'system-tray' && notificationsVersion === "V2"){
-    console.log("IN MAIN WINDOW")
-    
-    // Create Desktop Position window on CONFIGURE DESKTOP ALERT POSITIONS button click
-    waitForElement('.sym-menu-tooltip__target', 0, gearIcon => {
-      console.log(" IN sym-menu-tooltip__target");
-      gearIcon[0].addEventListener('click', function () {
-        console.log("Clicked sym-menu-tooltip__target");
-        
-        waitForElement('.sym-menu-tooltip__overlay', 0, dropdownMenu => {
-          console.log(" IN sym-menu-tooltip__overlay");
-          attachListenerToDropdown(dropdownMenu)
-          attachListenerToAlertsTooltip();
-        })
-      })
-    })
-    
-    function attachListenerToAlertsTooltip() {
-      document.getElementById('alertsSettingsTrigger').addEventListener('click', function () {
-        setTimeout(() => {
-          waitForElement('.field-configure-desktop-alerts', 0, (desktopAlertButton) => desktopAlertClickHandler(desktopAlertButton));
-        }, 400);
-      })
-    }
-    
-    function attachListenerToDropdown(dropdownMenu) {
-      dropdownMenu[0].addEventListener('click', function () {
-        console.log("clicked sym-menu-tooltip__overlay");
-        setTimeout(() => {
-          waitForElement('.tempo-tabs__tab', 0, tabEls => {
-            console.log("in tempo-tabs__tab");
-            
-            document.querySelectorAll('[data-tab="alerts"]')[0].addEventListener('click', function () {
-              if (document.querySelectorAll('.app-settings-notifications').length === 0) {
-                setTimeout(() => {
-                  waitForElement('.field-configure-desktop-alerts', 0, (desktopAlertButton) => desktopAlertClickHandler(desktopAlertButton))
-                }, 400)
-              }
-            });
-          })
-        }, 100);
-      })
-    }
-    
-    function desktopAlertClickHandler(el) {
-      console.log("IN THE HANDLER: ", el)
-      const desktopAlertButton = el[0].children[0];
-      console.log("desktopAlertButton: ", desktopAlertButton)
+    window.addEventListener('click', evt => {
+      var buttonElement = evt.target.closest('button');
       
-      desktopAlertButton.addEventListener('click', (e) => {
-        console.log("CLICK EVENT", e);
+      if (buttonElement && buttonElement.innerHTML === "Configure desktop alert positions" && creatingPositioningWindow === false) {
+        creatingPositioningWindow = true;
         let timeout = 50;
         
         fin.desktop.Application.getCurrent().getChildWindows((childWindows) => {
           for (var i = 0; i < childWindows.length; i++) {
             if (childWindows[i].name === "Notification Positioning Window") {
-              console.log("CLOSING EXTRA WINDOWS")
+              console.log("CLOSING EXTRA WINDOWS");
               childWindows[i].close();
               timeout = 1200;
             }
           }
           
-          setTimeout(() => {
-            var notificationPositioning = new window.fin.desktop.Window({
-              autoShow: true,
-              name: 'Notification Positioning Window',
-              cornerRounding: {height: 2, width: 3},
-              defaultWidth: 300,
-              defaultHeight: 400,
-              frame: true,
-              resizeable: false,
-              url: `${window.targetUrl}notification-positioning-window.html`,
-              opacity: 1,
-              alwaysOnTop: true,
-              icon: `${window.targetUrl}favicon.ico`
-            }, function () {
-              console.log("Notification Positioning Window successfully created.");
-            }, function (error) {
-              console.log("Error creating Notification Positioning Window: ", error);
-            })
-          }, timeout)
-        })
+          setTimeout(createPositioningWindow, timeout);
+        });
+      }
+    }, true);
+    
+    function repositionWindows() {
+      fin.desktop.Application.getCurrent().getChildWindows((childWindows) => {
+        var openNotificationWindows = [];
+        for (var i = 0; i < childWindows.length; i++) {
+          if (childWindows[i].name.startsWith("Notify-")) {
+            openNotificationWindows.push(childWindows[i])
+          }
+        }
+        
+        console.log("openNotificationWindows", openNotificationWindows);
+        
+        var notificationsHeight = parseInt(window.localStorage.getItem('notificationsHeight'));
+        var notificationsLocation = window.localStorage.getItem('notificationsLocation');
+        var notificationsMonitor = parseInt(window.localStorage.getItem('notificationsMonitor'));
+        console.log("notificationsMonitor", notificationsMonitor)
+        var monitorInfo = JSON.parse(window.localStorage.getItem('monitorInfo'));
+        var monitor;
+        if (notificationsMonitor === 1) {
+          monitor = monitorInfo.primaryMonitor;
+        } else if (monitorInfo.nonPrimaryMonitors[notificationsMonitor - 2]) {
+          monitor = monitorInfo.nonPrimaryMonitors[notificationsMonitor - 2];
+        } else {
+          monitor = monitorInfo.primaryMonitor;
+        }
+        
+        console.log("monitor", monitor)
+        
+        var rightBound = monitor.availableRect.right;
+        var rightBoundPlacement = rightBound - 310;
+        var bottomBound = monitor.availableRect.bottom;
+        var bottomBoundPlacement = bottomBound - notificationsHeight - 10;
+        var leftBound = monitor.availableRect.left + 10;
+        
+        if (notificationsLocation === 'top-right') {
+          for (var i = 0; i < openNotificationWindows.length; i++) {
+            var openNotificationWindow = openNotificationWindows[i];
+            openNotificationWindow.animate({
+              position: {
+                left: rightBoundPlacement,
+                top: ((notificationsHeight + 10) * i) + 10,
+                duration: 250
+              }
+            }, {
+              interrupt: false
+            });
+          }
+        } else if (notificationsLocation === 'top-left') {
+          for (var i = 0; i < openNotificationWindows.length; i++) {
+            var openNotificationWindow = openNotificationWindows[i];
+            openNotificationWindow.animate({
+              position: {
+                left: leftBound,
+                top: ((notificationsHeight + 10) * i) + 10,
+                duration: 250
+              }
+            }, {
+              interrupt: false
+            });
+          }
+        } else if (notificationsLocation === 'bottom-left') {
+          var bottomIdx = openNotificationWindows.length - 1;
+          for (var i = 0; i < openNotificationWindows.length; i++) {
+            var openNotificationWindow = openNotificationWindows[bottomIdx];
+            openNotificationWindow.animate({
+              position: {
+                left: leftBound,
+                top: (bottomBoundPlacement - ((notificationsHeight + 10) * i)),
+                duration: 250
+              }
+            }, {
+              interrupt: false
+            });
+            bottomIdx--;
+          }
+        } else if (notificationsLocation === 'bottom-right') {
+          var bottomIdx = openNotificationWindows.length - 1;
+          for (var i = 0; i < openNotificationWindows.length; i++) {
+            var openNotificationWindow = openNotificationWindows[bottomIdx];
+            openNotificationWindow.animate({
+              position: {
+                left: rightBoundPlacement,
+                top: (bottomBoundPlacement - ((notificationsHeight + 10) * i)),
+                duration: 250
+              }
+            }, {
+              interrupt: false
+            });
+            bottomIdx--;
+          }
+        }
+      });
+    }
+    
+    function createPositioningWindow() {
+      new window.fin.desktop.Window({
+        autoShow: true,
+        name: 'Notification Positioning Window',
+        cornerRounding: {height: 2, width: 3},
+        defaultWidth: 300,
+        defaultHeight: 400,
+        frame: true,
+        resizeable: false,
+        url: `${window.targetUrl}notification-positioning-window.html`,
+        opacity: 1,
+        alwaysOnTop: true,
+        icon: `${window.targetUrl}favicon.ico`
+      }, function () {
+        console.log("Notification Positioning Window successfully created.");
+        creatingPositioningWindow = false;
+      }, function (error) {
+        console.log("Error creating Notification Positioning Window: ", error);
       })
     }
   }
