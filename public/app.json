@@ -32,14 +32,7 @@
         "description": "Client for OpenFin Sym",
         "name": "OpenFin Sym",
         "icon": "https://symphony.com/favicon.ico"
-    },
-    "dialogSettings": {
-        "bgColor": 4294967295,
-        "textColor": 4278232241,
-        "progressBarBgColor": 4289901234,
-        "progressBarFillColor": 4278232241,
-        "progressBarBorderColor": 4285361517
-    },
+    }, 
     "appAssets": [
         {
             "src": "https://cdn.openfin.co/demos/symphony-of/OF-ScreenSnippet.zip",
