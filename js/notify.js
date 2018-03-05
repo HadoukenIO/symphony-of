@@ -73,7 +73,7 @@ class Notify {
             for (var i = 0; i < Notify.openWindows.length; i++) {
               var childWindow = Notify.openWindows[i];
               console.log('childWindow.name', childWindow.name)
-              if (childWindow.name.startsWith(msg.tag)) {
+              if (childWindow.name.startsWith('Notify-' + msg.tag)) {
                 console.log("IN CHILDWINDOW.NAME", childWindow.name)
                 console.log("INDEX", i);
                 childWindow.close();
@@ -206,9 +206,7 @@ class Notify {
     }
 
     close(cb) {
-        console.log("CLOSE FUNCTION IS HIT WHAT")
-        console.log("CB", cb)
-        console.log("this", this)
+        console.log("CLOSE FUNCTION IS HIT", this)
         
         var notificationsVersion = window.localStorage.getItem('notificationsVersion')
         var notificationsLocation = window.localStorage.getItem('notificationsLocation')
@@ -217,30 +215,22 @@ class Notify {
         if (notificationsVersion === "V2") {
           var conflict = false;
           var conflictIdx = -1;
-          console.log("notificationWindows before pruning", Notify.openWindows)
+          console.log("Notify.openWindows before pruning", Notify.openWindows)
           for (var i = 0; i < Notify.openWindows.length; i++) {
             var childWindow = Notify.openWindows[i];
-            console.log('childWindow.name', childWindow.name)
             if (childWindow.name === this.notification.name) {
-              console.log("IN CHILDWINDOW.NAME", childWindow.name)
-              console.log("INDEX", i);
               childWindow.close();
               conflictIdx = i;
               conflict = true;
             }
           }
-          
-          console.log("conflictIdx after pruning", conflictIdx);
-          console.log("notificationsLocation", notificationsLocation)
           console.log("Notify.openWindows AFTER PRUNING", Notify.openWindows)
           
           if (conflict && (notificationsLocation === "top-right" || notificationsLocation === "top-left")) {
             var windowsToShift = Notify.openWindows.slice(conflictIdx + 1);
-            console.log("IN SHIFT");
             console.log("windowsToShift", windowsToShift);
             
             for (var i = 0; i < windowsToShift.length; i++) {
-              console.log("ANIMATING ", windowsToShift[i].name)
               windowsToShift[i].animate({
                 position: {
                   left: 0,
@@ -256,11 +246,8 @@ class Notify {
             Notify.openWindows.splice(conflictIdx, 1);
           } else if (conflict && (notificationsLocation === "bottom-right" || notificationsLocation === "bottom-left")) {
             var windowsToShift = Notify.openWindows.slice(0, conflictIdx);
-            console.log("IN BOTTOM")
-            console.log("windowsToShift", windowsToShift)
+            console.log("windowsToShift IN BOTTOM SHIFT", windowsToShift);
             
-            console.log("IN BOTTOM SHIFT CONFLICT")
-            console.log("notificationsLocation", notificationsLocation)
             for (var i = 0; i < windowsToShift.length; i++) {
               windowsToShift[i].animate({
                 position: {
