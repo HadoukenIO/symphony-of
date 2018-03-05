@@ -65,34 +65,26 @@ class Notify {
             alwaysOnTop: true,
             icon: `${window.targetUrl}favicon.ico`
           }, function (success) {
-            console.log("Notify.openWindows AFTER SHIFTING", Notify.openWindows)
-            
             var conflict = false;
             var conflictIdx = -1;
+            
             console.log("notificationWindows before pruning", Notify.openWindows)
             for (var i = 0; i < Notify.openWindows.length; i++) {
               var childWindow = Notify.openWindows[i];
-              console.log('childWindow.name', childWindow.name)
               if (childWindow.name.startsWith('Notify-' + msg.tag)) {
-                console.log("IN CHILDWINDOW.NAME", childWindow.name)
-                console.log("INDEX", i);
                 childWindow.close();
                 conflictIdx = i;
                 conflict = true;
               }
             }
             
-            console.log("conflictIdx after pruning", conflictIdx);
-            console.log("notificationsLocation", notificationsLocation)
             console.log("Notify.openWindows AFTER PRUNING", Notify.openWindows)
             
             if (conflict && (notificationsLocation === "top-right" || notificationsLocation === "top-left")) {
               var windowsToShift = Notify.openWindows.slice(conflictIdx + 1);
-              console.log("IN SHIFT");
               console.log("windowsToShift", windowsToShift);
               
               for (var i = 0; i < windowsToShift.length; i++) {
-                console.log("ANIMATING ", windowsToShift[i].name)
                 windowsToShift[i].animate({
                   position: {
                     left: 0,
@@ -108,11 +100,8 @@ class Notify {
               Notify.openWindows.splice(conflictIdx, 1);
             } else if (conflict && (notificationsLocation === "bottom-right" || notificationsLocation === "bottom-left")) {
               var windowsToShift = Notify.openWindows.slice(0, conflictIdx);
-              console.log("IN BOTTOM")
-              console.log("windowsToShift", windowsToShift)
+              console.log("windowsToShift IN BOTTOM", windowsToShift)
               
-              console.log("IN BOTTOM SHIFT CONFLICT")
-              console.log("notificationsLocation", notificationsLocation)
               for (var i = 0; i < windowsToShift.length; i++) {
                 windowsToShift[i].animate({
                   position: {
@@ -132,9 +121,6 @@ class Notify {
             var notificationPosition = Notify.openWindows.length;
             
             console.log("BEFORE LOCATION PLACEMENT")
-            console.log("notificationPosition", notificationPosition);
-            console.log("notificationsLocation", notificationsLocation);
-            console.log("monitorInfo", monitorInfo)
             
             var monitor;
             if (notificationsMonitor === 1) {
