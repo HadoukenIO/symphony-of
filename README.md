@@ -113,8 +113,18 @@ Memory numbers gathered via Task Manager.
 </table>
 
 ## Release Notes
+### v1.0.18
+**Notifications**
+* Ability to configure desktop Notification positions
+* New Notifications replace existing Notifications from existing chats / rooms
+* Cleaned up Notification look and feel
+
+**Multi Pod Support**
+* Introduced ability to set up multiple Pods to a single instance
+
 ### v0.0.37
 **System Tray Menu**
+
 Added a System Tray menu that enables users access to the following features:
 * Launch on Startup
 * Always on Top
@@ -127,8 +137,6 @@ Added a System Tray menu that enables users access to the following features:
 * Resolved issue where clicking a notification did not bring the app into focus or restore it
 
 ## Roadmap
-* Multi Pod Support
-* Configure Alert Positions
 * Launch pop out chat windows on Notification Clicks
 * Spell Check Support
 * Screen Share Support
