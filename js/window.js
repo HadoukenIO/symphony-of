@@ -7,7 +7,7 @@ window.open = (...args) => {
   let w = originalOpen.apply(this, args);
    // Try catch for cross domain safeguard
   if(w && !w.name.includes('Notifications') && w.name !== 'queueCounter' && args[1] !== 'main') {
-    let stream = args[0].split('&')[1];
+    let stream = decodeURIComponent(args[0].split('&')[1]);
     if(stream) {
       let startIdx = stream.indexOf('=') + 1;
       let streamId = (startIdx > 5) ? stream.slice(startIdx) : 'inbox';
