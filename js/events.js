@@ -318,6 +318,7 @@ window.addEventListener('load', () => {
         Array.from(element).forEach(el => {
             
             el.addEventListener('click', (e) => {
+                let win = fin.desktop.Application.getCurrent().getWindow();
                 window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};                
                 let target = e.target;
                 let attr = target && target.attributes;
@@ -339,13 +340,12 @@ window.addEventListener('load', () => {
                         inboxTarget = window.popouts[pop]; 
                     }
                 }
-
                 // If both inbox and target are in main window do nothing
                 if (inboxTarget && !inboxTarget.hide) {
                     // Target conversation is in a popout, restore if minimized and set as foreground
                     let popWin = fin.desktop.Window.wrap(inboxTarget.uuid, inboxTarget.name);
                     window.winFocus(popWin);
-                } else if (fin.desktop.Window.getCurrent().name !== win.name) {
+                } else if (fin.desktop.Window.getCurrent().name !== win.name && target.className !== "inbox-message-list__empty-text" && target.className !== "inbox-message-list module-scrollable") {
                     // Inbox is in popout and target conversation is not - restore main window if minimized and bring to front
                     window.winFocus(win);
                 } 
@@ -361,8 +361,8 @@ window.addEventListener('load', () => {
         //set userId on window.popouts so that we can use later when necessary (on startup)
         waitForElement('.floater',0,element=>{
             waitForElement('.simple_grid_main_container',0,el=> {
-                window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};        
-                let streamId = el[0] && el[0].attributes['2'].value;
+                window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+                let streamId = el[0] && el[0].dataset.viewid;
                 // Set userId for startup
                 if(streamId.includes('chatroom')) {
                     streamId = streamId.slice(8);
@@ -411,6 +411,6 @@ window.addEventListener('load', () => {
 
     if (curWindow.name !== 'system-tray'){
         // Navigation from Inbox
-        waitForElement('#dock',0,el=> inboxNavigation(el));
+        waitForElement('.inbox-message-list',0,el=> inboxNavigation(el));
     }
 });
