@@ -113,6 +113,11 @@ Memory numbers gathered via Task Manager.
 </table>
 
 ## Release Notes
+### v1.0.23
+**Resolved Issues**
+* Resolved issue with popout window saved state not being observed post a Pod upgrade
+* Added runtime argument --winhttp-proxy-resolver to app config to address known chromium bug observed in OF 8
+
 ### v1.0.18
 **Notifications**
 * Ability to configure desktop Notification positions
@@ -138,5 +143,11 @@ Added a System Tray menu that enables users access to the following features:
 
 ## Roadmap
 * Launch pop out chat windows on Notification Clicks
-* Spell Check Support
-* Screen Share Support
+* Spell Check Support 
+* Support for “Meetings” and Screen Share (coming with OpenFin 9)
+
+## Known Issues
+* Content Navigation issues related to iFrames
+* Attachment feature no allowing to select ‘All File Types’
+* Notifications not observing “Color Coded Text” for specific Users
+
