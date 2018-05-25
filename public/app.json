@@ -20,7 +20,8 @@
         "customData": {
           "symphonyNotifications": "V2",
           "popoutChatOnNotificationClick": false
-        }
+        },
+        "spellCheck": true
     },
     "runtime": {
         "arguments": "--noerrdialogs --frameStrategy=frames --enable-aggressive-domstorage-flushing --winhttp-proxy-resolver",
