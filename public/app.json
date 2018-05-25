@@ -24,8 +24,8 @@
     },
     "runtime": {
         "arguments": "--noerrdialogs --frameStrategy=frames --enable-aggressive-domstorage-flushing --winhttp-proxy-resolver",
-        "version": "8.56.29.59",
-        "fallbackVersion": "8.56.26.38"
+        "version": "8.56.30.57",
+        "fallbackVersion": "8.56.29.59"
     },
     "shortcut": {
         "company": "OpenFin",
