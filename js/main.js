@@ -66,6 +66,27 @@ window.SYM_API = {
             }
             resolve(version)
         })
+    },
+    registerActivityDetection: function (throttle, callback) {
+        let keepActive;
+
+        function whilteActive() {
+            console.log("User active - whilteActive called.");
+            callback(1);
+        }
+
+        fin.desktop.System.addEventListener("idle-state-changed", event => {
+            console.log(`Idle State Changed: ${event.isIdle}`);
+            if (!event.isIdle) {
+                callback(1);
+                keepActive = setInterval(whilteActive, 60000);
+            } else {
+                console.log("Interval cleared.");
+                clearInterval(keepActive);
+            }
+        });
+        callback(1);
+        keepActive = setInterval(whilteActive, 60000);
     }
 }
 
