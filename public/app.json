@@ -25,7 +25,7 @@
     },
     "runtime": {
         "arguments": "--noerrdialogs --frameStrategy=frames --enable-aggressive-domstorage-flushing --winhttp-proxy-resolver",
-        "version": "9.61.32.34",
+        "version": "9.61.31.76",
         "fallbackVersion": "8.56.30.57"
     },
     "shortcut": {
