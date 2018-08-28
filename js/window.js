@@ -1,6 +1,9 @@
 /* override window.open to fix name issue */
 var originalOpen = window.open;
-window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+
+if(fin.desktop.Window.getCurrent().uuid === fin.desktop.Window.getCurrent().name) {
+  window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+}
 
 window.open = (...args) => {
   window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};  
@@ -20,12 +23,6 @@ window.open = (...args) => {
     let namesObj = { name: w.name, symName: args[1], hide: false, uuid: uuid }
     window.popouts[streamId] = window.popouts[streamId] ? Object.assign(window.popouts[streamId], namesObj) : namesObj;
     window.localStorage.setItem('wins', JSON.stringify(window.popouts));
-
-    try {
-        w.name = args[1];
-      } catch (e) {
-        console.log(e)
-      }
   }
 
   return w;

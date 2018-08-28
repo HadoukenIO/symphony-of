@@ -16,20 +16,20 @@ window.SYM_API = {
             win.updateOptions({ icon: 'https://raw.githubusercontent.com/symphonyoss/SymphonyElectron/master/build/icon.ico' });
         };
     },
-    activate:function(windowName) {
-        window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};        
-        let mainApp = fin.desktop.Application.getCurrent();
-        if(windowName === 'main') {
-            let mainWin = mainApp.getWindow();
-            window.winFocus(mainWin);
-        }
-        for (let pop of Object.keys(window.popouts)) {
-            if(window.popouts[pop].symName === windowName) {
-                let popWin = fin.desktop.Window.wrap(mainApp.uuid, window.popouts[pop].name);
-                window.winFocus(popWin);
-            }
-        }
-    },
+    // activate:function(windowName) {
+    //     window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};        
+    //     let mainApp = fin.desktop.Application.getCurrent();
+    //     if(windowName === 'main') {
+    //         let mainWin = mainApp.getWindow();
+    //         window.winFocus(mainWin);
+    //     }
+    //     for (let pop of Object.keys(window.popouts)) {
+    //         if(window.popouts[pop].symName === windowName) {
+    //             let popWin = fin.desktop.Window.wrap(mainApp.uuid, window.popouts[pop].name);
+    //             window.winFocus(popWin);
+    //         }
+    //     }
+    // },
     //undoced
     registerLogger:function() {
     },
