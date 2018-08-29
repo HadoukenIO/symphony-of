@@ -7,6 +7,16 @@ window.mustClose = false;
 
 // Things to do ONLY once and ONLY in the main window:
 window.addEventListener('load', () => {
+
+    window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+
+    if (window.localStorage.getItem('notificationsLocation') === null) {
+        window.localStorage.setItem('notificationsLocation', "top-right");
+    }
+    if (window.localStorage.getItem('notificationsMonitor') === null) {
+        window.localStorage.setItem('notificationsMonitor', 1);
+    }
+
     let currentWindow = fin.desktop.Window.getCurrent();
     let application = fin.desktop.Application.getCurrent();
 

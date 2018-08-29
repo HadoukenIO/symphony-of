@@ -1,6 +1,6 @@
 /* override window.open to fix name issue */
 var originalOpen = window.open;
-window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+window.popouts =  {};
 
 window.open = (...args) => {
   window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};  
