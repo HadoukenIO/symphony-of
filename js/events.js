@@ -97,13 +97,13 @@ window.addEventListener('load', () => {
                     li.appendChild(itemDiv);
                     itemDiv.addEventListener('click', () => {
                         openFile(arg.fileUuid);
-                        const currentItemDiv = document.querySelector(`#${downloadItemKey}`);
-                        ul.removeChild(currentItemDiv);
-                        if (!ul.hasChildNodes()) {
-                            console.log('no nodes!');
-                            const mainFooter = document.getElementById('footer');
-                            mainFooter.classList.add('hidden');
-                        }
+                        // const currentItemDiv = document.querySelector(`#${downloadItemKey}`);
+                        // ul.removeChild(currentItemDiv);
+                        // if (!ul.hasChildNodes()) {
+                        //     console.log('no nodes!');
+                        //     const mainFooter = document.getElementById('footer');
+                        //     mainFooter.classList.add('hidden');
+                        // }
                     });
 
                     let fileDetails = document.createElement('div');
@@ -131,6 +131,20 @@ window.addEventListener('load', () => {
                     h2FileName.innerHTML = fileDisplayName;
                     h2FileName.title = fileDisplayName;
                     fileNameDiv.appendChild(h2FileName);
+
+                    let fileProgressTitle = document.createElement('span');
+                    fileProgressTitle.id = 'per';
+                    fileProgressTitle.innerHTML = '0% Downloaded';
+                    fileNameDiv.appendChild(fileProgressTitle);
+
+                    currentWindow.addEventListener('file-download-progress', (downloadEvt) => {
+                        console.log(downloadEvt);
+                        const { downloadedBytes, totalBytes } = downloadEvt;
+                        const percent = totalBytes === 0 ? 100 : Math.floor((downloadedBytes / totalBytes) * 100);
+                        fileProgressTitle.innerHTML = percent + '% Downloaded';
+                    }, () => {
+                        console.log('file download completed event registered');
+                    });
 
                     currentWindow.addEventListener('file-download-completed', (downloadEvt) => {
                         console.log(downloadEvt);
