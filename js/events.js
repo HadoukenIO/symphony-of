@@ -54,23 +54,13 @@ window.addEventListener('load', () => {
 
         currentWindow.addEventListener('file-download-started', (downloadEvt) => {
             console.log(downloadEvt);
-            initiate();
-            createDOM(downloadEvt);
+            if (!downloadEvt.mimeType.includes('image')) {
+                initiate();
+                createDOM(downloadEvt);
+            }
         }, () => {
             console.log('file download started event registered');
         });
-
-        currentWindow.addEventListener('file-download-progress', (downloadEvt) => {
-            console.log(downloadEvt);
-        }, () => {
-            console.log('file download progress event registered');
-        });
-
-        // currentWindow.addEventListener('file-download-completed', (downloadEvt) => {
-        //     console.log(downloadEvt);
-        // }, () => {
-        //     console.log('file download completed event registered');
-        // });
 
         function openFile(id) {
             fin.desktop.System.launchExternalProcess({
@@ -107,13 +97,13 @@ window.addEventListener('load', () => {
                     li.appendChild(itemDiv);
                     itemDiv.addEventListener('click', () => {
                         openFile(arg.fileUuid);
-                        // const currentItemDiv = document.querySelector(`#${downloadItemKey}`);
-                        // ul.removeChild(currentItemDiv);
-                        // if (!ul.hasChildNodes()) {
-                        //     console.log('no nodes!');
-                        //     const mainFooter = document.getElementById('footer');
-                        //     mainFooter.classList.add('hidden');
-                        // }
+                        const currentItemDiv = document.querySelector(`#${downloadItemKey}`);
+                        ul.removeChild(currentItemDiv);
+                        if (!ul.hasChildNodes()) {
+                            console.log('no nodes!');
+                            const mainFooter = document.getElementById('footer');
+                            mainFooter.classList.add('hidden');
+                        }
                     });
 
                     let fileDetails = document.createElement('div');
@@ -124,22 +114,12 @@ window.addEventListener('load', () => {
                     downProgress.id = 'download-progress';
                     downProgress.classList.add('download-complete');
                     downProgress.classList.add('flash');
-                    // setTimeout(() => {
-                    //     downProgress.classList.remove('flash');
-                    // }, 4000);
                     fileDetails.appendChild(downProgress);
-
-
 
                     let fileIcon = document.createElement('span');
                     fileIcon.classList.add('tempo-icon');
                     fileIcon.classList.add('tempo-icon--download');
                     fileIcon.classList.add('download-complete-color');
-                    // setTimeout(() => {
-                    //     fileIcon.classList.remove('download-complete-color');
-                    //     fileIcon.classList.remove('tempo-icon--download');
-                    //     fileIcon.classList.add('tempo-icon--document');
-                    // }, 4000);
                     downProgress.appendChild(fileIcon);
 
                     let fileNameDiv = document.createElement('div');
