@@ -62,6 +62,46 @@ window.addEventListener('load', () => {
             console.log('file download started event registered');
         });
 
+        currentWindow.addEventListener('file-download-progress', (downloadEvt) => {
+            console.log(downloadEvt);
+            const downloadItemKey = `uuid-${downloadEvt.fileUuid}`;
+            const downloadItem = document.querySelector(`#${downloadItemKey}`);
+            const fileProgressTitle = downloadItem.querySelector('#per');
+            let { downloadedBytes, totalBytes } = downloadEvt;
+            let percent = totalBytes === 0 ? 100 : Math.floor((downloadedBytes / totalBytes) * 100);
+            fileProgressTitle.innerHTML = percent + '% Downloaded';
+        }, () => {
+            console.log('file download progress event registered');
+        });
+
+        currentWindow.addEventListener('file-download-completed', (downloadEvt) => {
+            console.log(downloadEvt);
+            const downloadItemKey = `uuid-${downloadEvt.fileUuid}`;
+            const downloadItem = document.querySelector(`#${downloadItemKey}`);
+
+            if (downloadItem && downloadEvt.state === 'cancelled') {
+                downloadItem.remove();
+                const downloadMain = document.getElementById('download-main');
+                if (!downloadMain.hasChildNodes()) {
+                    console.log('no nodes!');
+                    const mainFooter = document.getElementById('footer');
+                    mainFooter.classList.add('hidden');
+                }
+
+            } else if (downloadItem && downloadEvt.state === 'completed') {
+                const downProgress = downloadItem.querySelector('#download-progress');
+                downProgress.classList.remove('flash');
+
+                const fileIcon = downloadItem.querySelector('#file-icon');
+                fileIcon.classList.remove('download-complete-color');
+                fileIcon.classList.remove('tempo-icon--download');
+                fileIcon.classList.add('tempo-icon--document');
+                openFile(downloadEvt.fileUuid);
+            }
+        }, () => {
+            console.log('file download completed event registered');
+        });
+
         function openFile(id) {
             fin.desktop.System.launchExternalProcess({
                 fileUuid: id,
@@ -97,13 +137,13 @@ window.addEventListener('load', () => {
                     li.appendChild(itemDiv);
                     itemDiv.addEventListener('click', () => {
                         openFile(arg.fileUuid);
-                        // const currentItemDiv = document.querySelector(`#${downloadItemKey}`);
-                        // ul.removeChild(currentItemDiv);
-                        // if (!ul.hasChildNodes()) {
-                        //     console.log('no nodes!');
-                        //     const mainFooter = document.getElementById('footer');
-                        //     mainFooter.classList.add('hidden');
-                        // }
+                        let currentItemDiv = document.querySelector(`#${downloadItemKey}`);
+                        ul.removeChild(currentItemDiv);
+                        if (!ul.hasChildNodes()) {
+                            console.log('no nodes!');
+                            const mainFooter = document.getElementById('footer');
+                            mainFooter.classList.add('hidden');
+                        }
                     });
 
                     let fileDetails = document.createElement('div');
@@ -117,6 +157,7 @@ window.addEventListener('load', () => {
                     fileDetails.appendChild(downProgress);
 
                     let fileIcon = document.createElement('span');
+                    fileIcon.id = 'file-icon';
                     fileIcon.classList.add('tempo-icon');
                     fileIcon.classList.add('tempo-icon--download');
                     fileIcon.classList.add('download-complete-color');
@@ -136,29 +177,6 @@ window.addEventListener('load', () => {
                     fileProgressTitle.id = 'per';
                     fileProgressTitle.innerHTML = '0% Downloaded';
                     fileNameDiv.appendChild(fileProgressTitle);
-
-                    currentWindow.addEventListener('file-download-progress', (downloadEvt) => {
-                        console.log(downloadEvt);
-                        const { downloadedBytes, totalBytes } = downloadEvt;
-                        const percent = totalBytes === 0 ? 100 : Math.floor((downloadedBytes / totalBytes) * 100);
-                        fileProgressTitle.innerHTML = percent + '% Downloaded';
-                    }, () => {
-                        console.log('file download completed event registered');
-                    });
-
-                    currentWindow.addEventListener('file-download-completed', (downloadEvt) => {
-                        console.log(downloadEvt);
-                        if (downloadEvt.fileUuid === arg.fileUuid) {
-                            downProgress.classList.remove('flash');
-                            fileIcon.classList.remove('download-complete-color');
-                            fileIcon.classList.remove('tempo-icon--download');
-                            fileIcon.classList.add('tempo-icon--document');
-                            openFile(arg.fileUuid);
-                        }
-                    }, () => {
-                        console.log('file download completed event registered');
-                    });
-
                 }
             }
         }
