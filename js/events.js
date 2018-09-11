@@ -1,8 +1,6 @@
 let app = fin.desktop.Application.getCurrent();
 let win = app.getWindow();
-window.rateLimiter = false;
 window.once = false;
-window.popoutChanges = [];
 window.mustClose = false;
 
 window.addEventListener('load', () => {
