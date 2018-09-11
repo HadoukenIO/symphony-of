@@ -19,7 +19,7 @@ window.addEventListener('load', () => {
         window.saveBounds(symBounds);
     }
     if(currentWindow.uuid===currentWindow.name) {
-        currentWindow.addEventListener('bounds-changed', convertAndSaveBounds);
+        // Child Windows
         application.addEventListener('window-created', w => {
             if (w && !w.name.includes('Notifications') && !w.name.startsWith('Notify') && w.name !== 'queueCounter' && w.name !== 'system-tray' && w.name !== 'Notification Positioning Window') {
                 const ofWin = fin.desktop.Window.wrap(w.uuid, w.name);
@@ -31,17 +31,21 @@ window.addEventListener('load', () => {
                     ofWin.updateOptions({ alwaysOnTop:true })	
                 }
             }
-        })
+        })	
+        // Main Window
         if (window.popouts.main) {	
             const { left, top:tiptop, width, height } = window.popouts.main; 	
             currentWindow.setBounds(left, tiptop, width, height);	
-        }	
-        // save main window state	
+        }
+        if (window.popouts.alwaysOnTop) {	
+            currentWindow.updateOptions({ alwaysOnTop:true });
+        }
         currentWindow.addEventListener("bounds-changed", win => {	
             window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};	
             window.popouts.main = window.popouts.main ? Object.assign(window.popouts.main, win) : win;	
             window.localStorage.setItem('wins', JSON.stringify(window.popouts));                    		
         })
+
     } else {
         currentWindow.addEventListener('close-requested', e => {
             const closeArr = document.querySelectorAll('.close-module')
