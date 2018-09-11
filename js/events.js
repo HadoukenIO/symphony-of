@@ -1,5 +1,3 @@
-let app = fin.desktop.Application.getCurrent();
-let win = app.getWindow();
 window.once = false;
 window.mustClose = false;
 

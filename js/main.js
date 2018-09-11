@@ -8,7 +8,7 @@ window.SYM_API = {
     ScreenSnippet,
 
     setBadgeCount:function(number) {
-        let win = fin.desktop.Window.getCurrent();
+        let win = fin.desktop.Application.getCurrent().getWindow();
         if (number > 0) {
             let n = number > 9 ? '9+' : number;
             win.updateOptions({ icon: `${window.targetUrl}icon/icon${n}.png` },() => {win.flash();},() => {console.log("update options failed");});
