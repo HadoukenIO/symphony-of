@@ -28,7 +28,7 @@ window.addEventListener('load', () => {
 
                 window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};	
                 if (window.popouts.alwaysOnTop) {	
-                    childWin.updateOptions({ alwaysOnTop:true })	
+                    ofWin.updateOptions({ alwaysOnTop:true })	
                 }
             }
         })
