@@ -20,7 +20,6 @@ window.addEventListener('load', () => {
             height, 
             windowName: name
         }
-        console.log(symBounds);
         window.saveBounds(symBounds);
     }
     if(currentWindow.uuid===currentWindow.name) {
