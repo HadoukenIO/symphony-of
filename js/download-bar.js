@@ -1,15 +1,10 @@
-console.log('window once will be set to false by download');
 window.once2 = false;
-console.log(parent);
 
 window.addEventListener('load', () => {
     const currentWindow = fin.desktop.Window.getCurrent();
 
-    console.log(currentWindow);
-    console.log(parent);
-
     if (currentWindow.uuid === currentWindow.name && !parent.once2) {
-        console.log('in the if statement');
+
         const local = {
             downloadItems: []
         };
@@ -38,35 +33,30 @@ window.addEventListener('load', () => {
             const { fileUuid } = downloadEvt;
             const downloadItemKey = `uuid-${fileUuid}`;
             const downloadItem = document.querySelector(`#${downloadItemKey}`);
-            const itemDiv = downloadItem.querySelector('#item-div');
-            console.log(itemDiv);
+            const downloadMain = document.getElementById('download-main');
+            const mainFooter = document.getElementById('footer');
 
             if (downloadItem && downloadEvt.state === 'cancelled') {
                 downloadItem.remove();
-                const downloadMain = document.getElementById('download-main');
                 if (!downloadMain.hasChildNodes()) {
-                    const mainFooter = document.getElementById('footer');
                     mainFooter.classList.add('hidden');
                 }
-
             } else if (downloadItem && downloadEvt.state === 'completed') {
                 const downProgress = downloadItem.querySelector('#download-progress');
-                downProgress.classList.remove('flash');
-
+                const itemDiv = downloadItem.querySelector('#item-div');
                 const fileIcon = downloadItem.querySelector('#file-icon');
 
+                downProgress.classList.remove('flash');
                 fileIcon.classList.remove('download-complete-color');
                 fileIcon.classList.remove('tempo-icon--download');
                 fileIcon.classList.add('tempo-icon--document');
 
                 itemDiv.addEventListener('click', () => {
                     openFile(fileUuid);
-                    // ul.removeChild(li);
-                    // if (!ul.hasChildNodes()) {
-                    //     console.log('no nodes!');
-                    //     const mainFooter = document.getElementById('footer');
-                    //     mainFooter.classList.add('hidden');
-                    // }
+                    downloadItem.remove();
+                    if (!downloadMain.hasChildNodes()) {
+                        mainFooter.classList.add('hidden');
+                    }
                 });
 
                 openFile(fileUuid);
@@ -76,7 +66,6 @@ window.addEventListener('load', () => {
         });
 
         function openFile(id) {
-            console.log(id);
             fin.desktop.System.launchExternalProcess({
                 fileUuid: id,
                 arguments: "",
