@@ -18,14 +18,14 @@
         "saveWindowState": false,
         "preload": "https://cdn.openfin.co/demos/symphony-of/bundle.js",
         "customData": {
-          "symphonyNotifications": "V2",
-          "popoutChatOnNotificationClick": false
+            "symphonyNotifications": "V2",
+            "popoutChatOnNotificationClick": false
         },
         "spellCheck": true
     },
     "runtime": {
-        "arguments": "--noerrdialogs --frameStrategy=frames --enable-aggressive-domstorage-flushing --winhttp-proxy-resolver",
-        "version": "9.61.34.18",
+        "arguments": "--noerrdialogs --frameStrategy=frames --enable-aggressive-domstorage-flushing --winhttp-proxy-resolver --get-download-events",
+        "version": "9.61.34.22",
         "fallbackVersion": "8.56.30.57"
     },
     "shortcut": {
@@ -33,7 +33,7 @@
         "description": "Client for OpenFin Sym",
         "name": "OpenFin Sym",
         "icon": "https://symphony.com/favicon.ico"
-    }, 
+    },
     "appAssets": [
         {
             "src": "https://cdn.openfin.co/demos/symphony-of/OF-ScreenSnippet.zip",

@@ -8,17 +8,18 @@ window.addEventListener('load', () => {
 
     // *********** BOUNDS LOGIC ***************
     const convertAndSaveBounds = bounds => {
-        const { top, left, width, height, name } = bounds
+        const { top, left, width, height, name } = bounds;
         const symBounds = {
             x: left,
             y: top,
-            width, 
-            height, 
+            width,
+            height,
             windowName: name
-        }
+        };
         window.saveBounds(symBounds);
-    }
-    if(currentWindow.uuid===currentWindow.name) {
+    };
+
+    if (currentWindow.uuid === currentWindow.name) {
         // Child Windows
         application.addEventListener('window-created', w => {
             if (w && !w.name.includes('Notifications') && !w.name.startsWith('Notify') && w.name !== 'queueCounter' && w.name !== 'system-tray' && w.name !== 'Notification Positioning Window') {
@@ -26,32 +27,32 @@ window.addEventListener('load', () => {
                 ofWin.addEventListener('bounds-changed', convertAndSaveBounds);
                 ofWin.getBounds(convertAndSaveBounds);
 
-                window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};	
-                if (window.popouts.alwaysOnTop) {	
-                    ofWin.updateOptions({ alwaysOnTop:true })	
+                window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+                if (window.popouts.alwaysOnTop) {
+                    ofWin.updateOptions({ alwaysOnTop: true });
                 }
             }
-        })	
+        });
         // Main Window
-        if (window.popouts.main) {	
-            const { left, top:tiptop, width, height } = window.popouts.main; 	
-            currentWindow.setBounds(left, tiptop, width, height);	
+        if (window.popouts.main) {
+            const { left, top: tiptop, width, height } = window.popouts.main;
+            currentWindow.setBounds(left, tiptop, width, height);
         }
-        if (window.popouts.alwaysOnTop) {	
-            currentWindow.updateOptions({ alwaysOnTop:true });
+        if (window.popouts.alwaysOnTop) {
+            currentWindow.updateOptions({ alwaysOnTop: true });
         }
-        currentWindow.addEventListener("bounds-changed", win => {	
-            window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};	
-            window.popouts.main = window.popouts.main ? Object.assign(window.popouts.main, win) : win;	
-            window.localStorage.setItem('wins', JSON.stringify(window.popouts));                    		
-        })
+        currentWindow.addEventListener("bounds-changed", win => {
+            window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
+            window.popouts.main = window.popouts.main ? Object.assign(window.popouts.main, win) : win;
+            window.localStorage.setItem('wins', JSON.stringify(window.popouts));
+        });
 
     } else {
         currentWindow.addEventListener('close-requested', e => {
-            const closeArr = document.querySelectorAll('.close-module')
+            const closeArr = document.querySelectorAll('.close-module');
             closeArr[0].click();
             fin.desktop.Window.getCurrent().close(true);
-        })
+        });
     }
 
 
@@ -63,9 +64,9 @@ window.addEventListener('load', () => {
         window.localStorage.setItem('notificationsMonitor', 1);
     }
 
-    
+
     // *********** SYSTEM TRAY LOGIC ***************
-    if(currentWindow.uuid===currentWindow.name && !parent.once) {
+    if (currentWindow.uuid === currentWindow.name && !parent.once) {
         //navigate to converation from main window on notification click
         window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
 
@@ -79,19 +80,19 @@ window.addEventListener('load', () => {
         });
 
         //Overwrite closing of application to minimize instead
-        currentWindow.addEventListener('close-requested',() => {
-            fin.desktop.InterApplicationBus.publish('teardown', true)
+        currentWindow.addEventListener('close-requested', () => {
+            fin.desktop.InterApplicationBus.publish('teardown', true);
             window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
-            if(window.popouts.closeOnExit || window.mustClose) {
+            if (window.popouts.closeOnExit || window.mustClose) {
                 fin.desktop.Application.getCurrent().close(true);
             } else {
-                fin.desktop.Application.getCurrent().getWindow().minimize();        
+                fin.desktop.Application.getCurrent().getWindow().minimize();
             }
         });
 
         //add handling for navigation outside of symphony
         application.addEventListener("window-navigation-rejected", obj => {
-            if (name==='main') {
+            if (name === 'main') {
                 fin.desktop.System.openUrlWithBrowser(obj.url);
             }
         });
@@ -102,20 +103,20 @@ window.addEventListener('load', () => {
         });
 
         // subscribe to send options when tray is ready
-        fin.desktop.InterApplicationBus.subscribe(currentWindow.uuid,'system-tray','ready',(msg)=>{
+        fin.desktop.InterApplicationBus.subscribe(currentWindow.uuid, 'system-tray', 'ready', (msg) => {
             window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
             let trayOptions = {
                 'always-on-top': window.popouts.alwaysOnTop,
                 'close-on-exit': window.popouts.closeOnExit,
-            }
-            fin.desktop.InterApplicationBus.send(currentWindow.uuid,'system-tray','options', trayOptions);
-        })
+            };
+            fin.desktop.InterApplicationBus.send(currentWindow.uuid, 'system-tray', 'options', trayOptions);
+        });
         // create tray icon window
         var sysTray = new fin.desktop.Window({
             name: "system-tray",
             url: `${window.targetUrl}tray.html`,
             defaultWidth: 200,
-            defaultHeight: 6*33, // 6 base entries 33px tall
+            defaultHeight: 6 * 33, // 6 base entries 33px tall
             frame: false,
             autoShow: false,
             shadow: true,
@@ -127,7 +128,7 @@ window.addEventListener('load', () => {
         });
 
         // listen for always on top
-        fin.desktop.InterApplicationBus.subscribe(currentWindow.uuid,'system-tray','always-on-top',(msg)=>{
+        fin.desktop.InterApplicationBus.subscribe(currentWindow.uuid, 'system-tray', 'always-on-top', (msg) => {
             window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
             window.popouts.alwaysOnTop = msg;
             currentWindow.updateOptions({ alwaysOnTop: window.popouts.alwaysOnTop });
@@ -136,7 +137,7 @@ window.addEventListener('load', () => {
                 children.forEach(child => {
                     fin.desktop.Window.wrap(child.uuid, child.name).updateOptions({ alwaysOnTop: window.popouts.alwaysOnTop });;
                 });
-            });         
+            });
             window.localStorage.setItem('wins', JSON.stringify(window.popouts));
         });
 
@@ -145,7 +146,7 @@ window.addEventListener('load', () => {
         currentWindow.updateOptions({ alwaysOnTop: window.popouts.alwaysOnTop });
 
         // listen for close on exit
-        fin.desktop.InterApplicationBus.subscribe(currentWindow.uuid,'system-tray','close-on-exit',(msg)=>{
+        fin.desktop.InterApplicationBus.subscribe(currentWindow.uuid, 'system-tray', 'close-on-exit', (msg) => {
             window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
             window.popouts.closeOnExit = msg;
             window.localStorage.setItem('wins', JSON.stringify(window.popouts));
