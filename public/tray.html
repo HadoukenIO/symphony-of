@@ -360,8 +360,14 @@
         window.trayOptions = JSON.parse(window.localStorage.getItem('tray')) || {};
         window.trayOptions = Object.assign(window.trayOptions, options);
         for (const opt of Object.keys(options)) {
-            if(window.trayOptions[opt] && opt !== 'systemStartup') {
-                document.getElementById(opt).className += 'checked';
+            if(opt !== 'systemStartup') {
+                if(window.trayOptions[opt]) {
+                    const element = document.getElementById(opt)
+                    element.classList.add('checked');
+                } else {
+                    const element = document.getElementById(opt)
+                    element.classList.remove('checked');
+                }
             }
         }
         window.localStorage.setItem('tray', JSON.stringify(window.trayOptions));                    
@@ -369,8 +375,11 @@
         fin.desktop.InterApplicationBus.send(fin.desktop.Window.getCurrent().uuid, 'ready', 'ready')
     });
     fin.desktop.Application.getCurrent().getShortcuts(shortcuts=> {
+        const element = document.getElementById('systemStartup');
         if(shortcuts.systemStartup) {
-            document.getElementById('systemStartup').classList.toggle('checked');
+            element.classList.add('checked');
+        } else {
+            element.classList.remove('checked');
         }
     });
     const updateOption = option => {
@@ -398,7 +407,12 @@
     const autoLaunch = () => fin.desktop.Application.getCurrent().getShortcuts(shortcuts=> {
         let option = !shortcuts.systemStartup;
         fin.desktop.Application.getCurrent().setShortcuts({ systemStartup: option });
-        document.getElementById('systemStartup').classList.toggle('checked');
+        const element = document.getElementById('systemStartup');
+        if(option) {
+            element.classList.add('checked');
+        } else {
+            element.classList.remove('checked');
+        }
     })
     const alwaysOnTop = () => updateOption('always-on-top');
     const closeOnExit = () => updateOption('close-on-exit');

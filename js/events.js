@@ -49,8 +49,10 @@ window.addEventListener('load', () => {
     } else {
         currentWindow.addEventListener('close-requested', e => {
             const closeArr = document.querySelectorAll('.close-module')
-            closeArr[0].click();
-            fin.desktop.Window.getCurrent().close(true);
+            if(closeArr[0] && typeof closeArr[0].click === 'function') {
+                closeArr[0].click();
+            }
+            currentWindow.close(true);
         })
     }
 
