@@ -5,10 +5,7 @@ window.addEventListener('load', () => {
 
     if (currentWindow.uuid === currentWindow.name && !parent.once2) {
 
-        const local = {
-            downloadItems: []
-        };
-
+        // Add download item to the download bar when a file starts downloading
         currentWindow.addEventListener('file-download-started', (downloadEvt) => {
             if (!downloadEvt.mimeType.includes('image')) {
                 initiate();
@@ -18,12 +15,13 @@ window.addEventListener('load', () => {
             console.log('file download started event registered');
         });
 
+        // Update download completion percentage while download progresses
         currentWindow.addEventListener('file-download-progress', (downloadEvt) => {
             const downloadItemKey = `uuid-${downloadEvt.fileUuid}`;
             const downloadItem = document.querySelector(`#${downloadItemKey}`);
             const fileProgressTitle = downloadItem.querySelector('#per');
-            let { downloadedBytes, totalBytes } = downloadEvt;
-            let percent = totalBytes === 0 ? 100 : Math.floor((downloadedBytes / totalBytes) * 100);
+            const { downloadedBytes, totalBytes } = downloadEvt;
+            const percent = totalBytes === 0 ? 100 : Math.floor((downloadedBytes / totalBytes) * 100);
             fileProgressTitle.innerHTML = percent + '% Downloaded';
         }, () => {
             console.log('file download progress event registered');
@@ -36,11 +34,13 @@ window.addEventListener('load', () => {
             const downloadMain = document.getElementById('download-main');
             const mainFooter = document.getElementById('footer');
 
+            // Remove download item from download bar if download is cancelled
             if (downloadItem && downloadEvt.state === 'cancelled') {
                 downloadItem.remove();
                 if (!downloadMain.hasChildNodes()) {
                     mainFooter.classList.add('hidden');
                 }
+                // Make sure download item is clickable when download completes successfully
             } else if (downloadItem && downloadEvt.state === 'completed') {
                 const downProgress = downloadItem.querySelector('#download-progress');
                 const itemDiv = downloadItem.querySelector('#item-div');
@@ -85,48 +85,46 @@ window.addEventListener('load', () => {
                 const fileDisplayName = arg.fileName;
                 const downloadItemKey = `uuid-${arg.fileUuid}`;
 
-                local.downloadItems.push(arg);
-
-                let ul = document.getElementById('download-main');
+                const ul = document.getElementById('download-main');
                 if (ul) {
-                    let li = document.createElement('li');
+                    const li = document.createElement('li');
                     li.id = downloadItemKey;
                     li.classList.add('download-element');
                     ul.insertBefore(li, ul.childNodes[0]);
 
-                    let itemDiv = document.createElement('div');
+                    const itemDiv = document.createElement('div');
                     itemDiv.classList.add('download-item');
                     itemDiv.id = 'item-div';
                     li.appendChild(itemDiv);
 
-                    let fileDetails = document.createElement('div');
+                    const fileDetails = document.createElement('div');
                     fileDetails.classList.add('file');
                     itemDiv.appendChild(fileDetails);
 
-                    let downProgress = document.createElement('div');
+                    const downProgress = document.createElement('div');
                     downProgress.id = 'download-progress';
                     downProgress.classList.add('download-complete');
                     downProgress.classList.add('flash');
                     fileDetails.appendChild(downProgress);
 
-                    let fileIcon = document.createElement('span');
+                    const fileIcon = document.createElement('span');
                     fileIcon.id = 'file-icon';
                     fileIcon.classList.add('tempo-icon');
                     fileIcon.classList.add('tempo-icon--download');
                     fileIcon.classList.add('download-complete-color');
                     downProgress.appendChild(fileIcon);
 
-                    let fileNameDiv = document.createElement('div');
+                    const fileNameDiv = document.createElement('div');
                     fileNameDiv.classList.add('downloaded-filename');
                     itemDiv.appendChild(fileNameDiv);
 
-                    let h2FileName = document.createElement('h2');
+                    const h2FileName = document.createElement('h2');
                     h2FileName.classList.add('text-cutoff');
                     h2FileName.innerHTML = fileDisplayName;
                     h2FileName.title = fileDisplayName;
                     fileNameDiv.appendChild(h2FileName);
 
-                    let fileProgressTitle = document.createElement('span');
+                    const fileProgressTitle = document.createElement('span');
                     fileProgressTitle.id = 'per';
                     fileProgressTitle.innerHTML = '0% Downloaded';
                     fileNameDiv.appendChild(fileProgressTitle);
@@ -164,7 +162,6 @@ window.addEventListener('load', () => {
                 let closeDownloadManager = document.getElementById('close-download-bar');
                 if (closeDownloadManager) {
                     closeDownloadManager.addEventListener('click', () => {
-                        local.downloadItems = [];
                         document.getElementById('footer').classList.add('hidden');
                         document.getElementById('download-main').innerHTML = '';
                     });
