@@ -1,5 +1,7 @@
 window.popouts =  {};
 
+window.saveBounds = () => {};
+
 window.winFocus = (ofWin) => {
   ofWin.getState(state => {
     if (state === 'minimized') {

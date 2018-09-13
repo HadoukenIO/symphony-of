@@ -16,7 +16,9 @@ window.addEventListener('load', () => {
             height, 
             windowName: name
         }
-        window.saveBounds(symBounds);
+        if (typeof window.saveBounds === 'function') {
+            window.saveBounds(symBounds);
+        }
     }
     if(currentWindow.uuid===currentWindow.name) {
         // Child Windows
@@ -33,7 +35,7 @@ window.addEventListener('load', () => {
             }
         })	
         // Main Window
-        if (window.popouts.main) {	
+        if (window.popouts.main) {
             const { left, top:tiptop, width, height } = window.popouts.main; 	
             currentWindow.setBounds(left, tiptop, width, height);	
         }
