@@ -15,20 +15,12 @@ window.addEventListener('load', () => {
             width,
             height,
             windowName: name
-<<<<<<< HEAD
         }
         if (typeof window.saveBounds === 'function') {
             window.saveBounds(symBounds);
         }
     }
     if(currentWindow.uuid===currentWindow.name) {
-=======
-        };
-        window.saveBounds(symBounds);
-    };
-
-    if (currentWindow.uuid === currentWindow.name) {
->>>>>>> a380614fc8ecc9e0af181c20b973f1dc77df081b
         // Child Windows
         application.addEventListener('window-created', w => {
             if (w && !w.name.includes('Notifications') && !w.name.startsWith('Notify') && w.name !== 'queueCounter' && w.name !== 'system-tray' && w.name !== 'Notification Positioning Window') {
@@ -44,13 +36,8 @@ window.addEventListener('load', () => {
         });
         // Main Window
         if (window.popouts.main) {
-<<<<<<< HEAD
-            const { left, top:tiptop, width, height } = window.popouts.main; 	
-            currentWindow.setBounds(left, tiptop, width, height);	
-=======
             const { left, top: tiptop, width, height } = window.popouts.main;
             currentWindow.setBounds(left, tiptop, width, height);
->>>>>>> a380614fc8ecc9e0af181c20b973f1dc77df081b
         }
         if (window.popouts.alwaysOnTop) {
             currentWindow.updateOptions({ alwaysOnTop: true });
@@ -63,19 +50,12 @@ window.addEventListener('load', () => {
 
     } else {
         currentWindow.addEventListener('close-requested', e => {
-<<<<<<< HEAD
             const closeArr = document.querySelectorAll('.close-module')
             if(closeArr[0] && typeof closeArr[0].click === 'function') {
                 closeArr[0].click();
             }
             currentWindow.close(true);
         })
-=======
-            const closeArr = document.querySelectorAll('.close-module');
-            closeArr[0].click();
-            fin.desktop.Window.getCurrent().close(true);
-        });
->>>>>>> a380614fc8ecc9e0af181c20b973f1dc77df081b
     }
 
 
