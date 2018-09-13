@@ -1,12 +1,14 @@
 window.once2 = false;
 
 window.addEventListener('load', () => {
+    const app = fin.desktop.Application.getCurrent();
     const currentWindow = fin.desktop.Window.getCurrent();
 
     if (currentWindow.uuid === currentWindow.name && !parent.once2) {
+        window.once2 = true;
 
         // Add download item to the download bar when a file starts downloading
-        currentWindow.addEventListener('file-download-started', (downloadEvt) => {
+        app.addEventListener('window-file-download-started', (downloadEvt) => {
             if (!downloadEvt.mimeType.includes('image')) {
                 initiate();
                 createDOM(downloadEvt);
@@ -16,7 +18,7 @@ window.addEventListener('load', () => {
         });
 
         // Update download completion percentage while download progresses
-        currentWindow.addEventListener('file-download-progress', (downloadEvt) => {
+        app.addEventListener('window-file-download-progress', (downloadEvt) => {
             const downloadItemKey = `uuid-${downloadEvt.fileUuid}`;
             const downloadItem = document.querySelector(`#${downloadItemKey}`);
             const fileProgressTitle = downloadItem.querySelector('#per');
@@ -27,7 +29,7 @@ window.addEventListener('load', () => {
             console.log('file download progress event registered');
         });
 
-        currentWindow.addEventListener('file-download-completed', (downloadEvt) => {
+        app.addEventListener('window-file-download-completed', (downloadEvt) => {
             const { fileUuid } = downloadEvt;
             const downloadItemKey = `uuid-${fileUuid}`;
             const downloadItem = document.querySelector(`#${downloadItemKey}`);
@@ -169,5 +171,4 @@ window.addEventListener('load', () => {
             }
         }
     }
-    window.once2 = true;
 });
