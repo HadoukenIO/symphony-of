@@ -21,10 +21,15 @@
             "symphonyNotifications": "V2",
             "popoutChatOnNotificationClick": false
         },
-        "spellCheck": true
+        "spellCheck": true,
+        "experimental": {
+            "api": {
+                "fileDownloadApi": true
+            }
+        }
     },
     "runtime": {
-        "arguments": "--noerrdialogs --frameStrategy=frames --enable-aggressive-domstorage-flushing --winhttp-proxy-resolver --get-download-events",
+        "arguments": "--noerrdialogs --frameStrategy=frames --enable-aggressive-domstorage-flushing --winhttp-proxy-resolver",
         "version": "9.61.34.22",
         "fallbackVersion": "8.56.30.57"
     },
