@@ -37,6 +37,7 @@
         "company": "OpenFin",
         "description": "Client for OpenFin Sym",
         "name": "OpenFin Sym",
+        "target": ["start-menu", "desktop", "automatic-start-up"],
         "icon": "https://symphony.com/favicon.ico"
     },
     "appAssets": [
