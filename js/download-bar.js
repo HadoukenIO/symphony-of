@@ -35,7 +35,7 @@ window.addEventListener('load', () => {
             const downloadItem = document.querySelector(`#${downloadItemKey}`);
             const downloadMain = document.getElementById('download-main');
             const mainFooter = document.getElementById('footer');
-            const dlWin = fin.desktop.Window.wrap(app.uuid, downloadEvt.name);
+
 
             // Remove download item from download bar if download is cancelled
             if (downloadItem && downloadEvt.state === 'cancelled') {
@@ -65,7 +65,11 @@ window.addEventListener('load', () => {
                 openFile(fileUuid);
             }
 
-            dlWin.close();
+            if (downloadEvt.name !== app.getWindow().name) {
+                const dlWin = fin.desktop.Window.wrap(app.uuid, downloadEvt.name);
+                dlWin.close();
+            }
+
         }, () => {
             console.log('file download completed event registered');
         });
