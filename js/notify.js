@@ -58,7 +58,7 @@ class Notify {
             for (var i = 0; i < Notify.openWindows.length; i++) {
               var childWindow = Notify.openWindows[i];
               if (childWindow.name.startsWith('Notify-' + msg.tag)) {
-                childWindow.close();
+                childWindow.close(true);
                 conflictIdx = i;
                 conflict = true;
               }
@@ -146,7 +146,7 @@ class Notify {
           
           fin.desktop.InterApplicationBus.subscribe("*", `${notification.name} close`, (message, uuid, name) => {
             console.log(`IN ${notification.name} close click IAB`)
-            this.close();
+            this.close(true);
           });
         }
         
@@ -191,7 +191,7 @@ class Notify {
           for (var i = 0; i < Notify.openWindows.length; i++) {
             var childWindow = Notify.openWindows[i];
             if (childWindow.name === this.notification.name) {
-              childWindow.close();
+              childWindow.close(true);
               conflictIdx = i;
               conflict = true;
             }
@@ -270,7 +270,7 @@ class Notify {
             this.notification.noteWin.onClick = () => {
             popoutFunctionality(this._data);
             if (this.sticky) {
-              this.notification.close();                    
+              this.notification.close(true);                    
             }
                 cb({target:{callbackJSON:this._data}}); 
             }
@@ -289,7 +289,7 @@ class Notify {
                 callbackJSON: this._data
               }
             });
-            this.close();
+            this.close(true);
           });
         }
       }
@@ -350,7 +350,7 @@ window.addEventListener('load', () => {
           for (var i = 0; i < childWindows.length; i++) {
             if (childWindows[i].name === "Notification Positioning Window") {
               console.log("CLOSING EXTRA WINDOWS");
-              childWindows[i].close();
+              childWindows[i].close(true);
               timeout = 1200;
             }
           }
