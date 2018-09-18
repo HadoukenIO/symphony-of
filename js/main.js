@@ -20,6 +20,10 @@ window.SYM_API = {
         var app = fin.desktop.Application.getCurrent();
         var ofWin = fin.desktop.Window.wrap(app.uuid, windowName);
 
+        if (windowName === 'main') {
+            ofWin = app.getWindow();
+        }
+
         ofWin.getState(state => {
             if (state === 'minimized') {
                 ofWin.restore(() => {ofWin.setAsForeground();},e=>console.log(e));                            
