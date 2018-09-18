@@ -36,6 +36,7 @@ window.addEventListener('load', () => {
             const downloadMain = document.getElementById('download-main');
             const mainFooter = document.getElementById('footer');
 
+
             // Remove download item from download bar if download is cancelled
             if (downloadItem && downloadEvt.state === 'cancelled') {
                 downloadItem.remove();
@@ -63,6 +64,12 @@ window.addEventListener('load', () => {
 
                 openFile(fileUuid);
             }
+
+            if (downloadEvt.name !== app.getWindow().name) {
+                const dlWin = fin.desktop.Window.wrap(app.uuid, downloadEvt.name);
+                dlWin.close();
+            }
+
         }, () => {
             console.log('file download completed event registered');
         });
