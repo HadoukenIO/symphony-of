@@ -56,10 +56,6 @@ window.addEventListener('load', () => {
 
                 itemDiv.addEventListener('click', () => {
                     openFile(fileUuid);
-                    downloadItem.remove();
-                    if (!downloadMain.hasChildNodes()) {
-                        mainFooter.classList.add('hidden');
-                    }
                 });
 
                 openFile(fileUuid);
