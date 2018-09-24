@@ -64,12 +64,6 @@ window.addEventListener('load', () => {
 
                 openFile(fileUuid);
             }
-
-            if (downloadEvt.name !== app.getWindow().name) {
-                const dlWin = fin.desktop.Window.wrap(app.uuid, downloadEvt.name);
-                dlWin.close();
-            }
-
         }, () => {
             console.log('file download completed event registered');
         });
