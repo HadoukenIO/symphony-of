@@ -9,9 +9,12 @@ window.addEventListener('load', () => {
 
         // Add download item to the download bar when a file starts downloading
         app.addEventListener('window-file-download-started', (downloadEvt) => {
+            if (!downloadEvt.fileName) {
+                return;
+            }
+            
             if (!downloadEvt.mimeType.includes('image')) {
-                initiate();
-                createDOM(downloadEvt);
+                getDOM(downloadEvt);
             }
         }, () => {
             console.log('file download started event registered');
@@ -19,8 +22,11 @@ window.addEventListener('load', () => {
 
         // Update download completion percentage while download progresses
         app.addEventListener('window-file-download-progress', (downloadEvt) => {
-            const downloadItemKey = `uuid-${downloadEvt.fileUuid}`;
-            const downloadItem = document.querySelector(`#${downloadItemKey}`);
+            if (!downloadEvt.fileName) {
+                return;
+            }
+            
+            const downloadItem = getDOM(downloadEvt);
             const fileProgressTitle = downloadItem.querySelector('#per');
             const { downloadedBytes, totalBytes } = downloadEvt;
             const percent = totalBytes === 0 ? 100 : Math.floor((downloadedBytes / totalBytes) * 100);
@@ -30,12 +36,14 @@ window.addEventListener('load', () => {
         });
 
         app.addEventListener('window-file-download-completed', (downloadEvt) => {
+            if (!downloadEvt.fileName) {
+                return;
+            }           
+            
             const { fileUuid } = downloadEvt;
-            const downloadItemKey = `uuid-${fileUuid}`;
-            const downloadItem = document.querySelector(`#${downloadItemKey}`);
+            const downloadItem = getDOM(downloadEvt);
             const downloadMain = document.getElementById('download-main');
             const mainFooter = document.getElementById('footer');
-
 
             // Remove download item from download bar if download is cancelled
             if (downloadItem && downloadEvt.state === 'cancelled') {
@@ -77,9 +85,19 @@ window.addEventListener('load', () => {
                 console.log('Error:', r);
             });
         }
+        
+        function getDOM(arg) {
+          let downloadItem = document.querySelector(`#uuid-${arg.fileUuid}`);
+          
+          if(!downloadItem) {
+            initiate();
+            downloadItem = createDOM(arg);
+          }
+          
+          return downloadItem;
+        }
 
         function createDOM(arg) {
-
             if (arg && arg.fileUuid) {
                 const fileDisplayName = arg.fileName;
                 const downloadItemKey = `uuid-${arg.fileUuid}`;
@@ -127,8 +145,11 @@ window.addEventListener('load', () => {
                     fileProgressTitle.id = 'per';
                     fileProgressTitle.innerHTML = '0% Downloaded';
                     fileNameDiv.appendChild(fileProgressTitle);
+                    
+                    return li;
                 }
             }
+            return undefined;
         }
 
         function initiate() {
@@ -136,7 +157,6 @@ window.addEventListener('load', () => {
             let mainDownloadDiv = document.getElementById('download-manager-footer');
 
             if (mainDownloadDiv) {
-
                 mainFooter.classList.remove('hidden');
 
                 let ulFind = document.getElementById('download-main');
