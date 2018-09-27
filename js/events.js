@@ -1,13 +1,31 @@
 window.once = false;
 window.mustClose = false;
 
+// rewrite window.open so it will set the correct position for each popout window
+let myWinOpen = window.open;
+
+window.open = (...args) => {
+    if (args[0].startsWith('float.html')) {
+        let left = /x=(\d+)/.exec(args[0])[1];
+        let top = /y=(\d+)/.exec(args[0])[1];
+        let height = /height=(\d+)/.exec(args[2])[1];
+        let width = /width=(\d+)/.exec(args[2])[1];
+
+        if (left && top && height && width) {
+            let query = `chrome=yes,resizable=yes,top=${top},left=${left},height=${height},width=${width}`;
+            return myWinOpen(args[0], args[1], query);
+        }
+    }
+    return myWinOpen(...args);
+};
+
 window.addEventListener('load', () => {
     const currentWindow = fin.desktop.Window.getCurrent();
     const application = fin.desktop.Application.getCurrent();
     window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
-    
+
     // *********** BOUNDS LOGIC ***************
-    if(currentWindow.uuid===currentWindow.name) {
+    if (currentWindow.uuid === currentWindow.name) {
         const convertAndSaveBounds = bounds => {
             const { top, left, width, height, name } = bounds;
             const symBounds = {
@@ -16,11 +34,11 @@ window.addEventListener('load', () => {
                 width,
                 height,
                 windowName: name
-            }
+            };
             if (typeof window.saveBounds === 'function') {
                 window.saveBounds(symBounds);
             }
-        }
+        };
         // Child Windows
         application.addEventListener('window-created', w => {
             if (w && !w.name.includes('Notifications') && !w.name.startsWith('Notify') && w.name !== 'queueCounter' && w.name !== 'system-tray' && w.name !== 'Notification Positioning Window') {
@@ -50,12 +68,12 @@ window.addEventListener('load', () => {
 
     } else {
         currentWindow.addEventListener('close-requested', e => {
-            const closeArr = document.querySelectorAll('.close-module')
-            if(closeArr[0] && typeof closeArr[0].click === 'function') {
+            const closeArr = document.querySelectorAll('.close-module');
+            if (closeArr[0] && typeof closeArr[0].click === 'function') {
                 closeArr[0].click();
             }
             currentWindow.close(true);
-        })
+        });
     }
 
 
