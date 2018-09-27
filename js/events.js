@@ -2,7 +2,7 @@ window.once = false;
 window.mustClose = false;
 
 // rewrite window.open so it will set the correct position for each popout window
-let myWinOpen = window.open;
+let defaultWindowOpen = window.open;
 
 window.open = (url, windowName, windowFeatures, ...rest) => {
     if (url.startsWith('float.html')) {
@@ -13,10 +13,10 @@ window.open = (url, windowName, windowFeatures, ...rest) => {
 
         if (left && top && height && width) {
             let query = `chrome=yes,resizable=yes,top=${top},left=${left},height=${height},width=${width}`;
-            return myWinOpen(url, windowName, query, ...rest);
+            return defaultWindowOpen(url, windowName, query, ...rest);
         }
     }
-    return myWinOpen(url, windowName, windowFeatures, ...rest);
+    return defaultWindowOpen(url, windowName, windowFeatures, ...rest);
 };
 
 window.addEventListener('load', () => {
