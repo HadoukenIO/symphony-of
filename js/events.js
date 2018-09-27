@@ -6,14 +6,19 @@ let defaultWindowOpen = window.open;
 
 window.open = function (url, windowName, windowFeatures, ...rest) {
     if (url.startsWith('float.html')) {
-        let left = /x=(\d+)/.exec(url)[1];
-        let top = /y=(\d+)/.exec(url)[1];
-        let height = /height=(\d+)/.exec(windowFeatures)[1];
-        let width = /width=(\d+)/.exec(windowFeatures)[1];
+        try {
+            let left = /x=(\d+)/.exec(url)[1];
+            let top = /y=(\d+)/.exec(url)[1];
+            let height = /height=(\d+)/.exec(windowFeatures)[1];
+            let width = /width=(\d+)/.exec(windowFeatures)[1];
 
-        if (left && top && height && width) {
-            let query = `chrome=yes,resizable=yes,top=${top},left=${left},height=${height},width=${width}`;
-            return defaultWindowOpen(url, windowName, query, ...rest);
+            if (left && top && height && width) {
+                let query = `chrome=yes,resizable=yes,top=${top},left=${left},height=${height},width=${width}`;
+                return defaultWindowOpen(url, windowName, query, ...rest);
+            }
+        } catch (error) {
+            console.log(error);
+            return defaultWindowOpen(url, windowName, windowFeatures, ...rest);
         }
     }
     return defaultWindowOpen(url, windowName, windowFeatures, ...rest);
