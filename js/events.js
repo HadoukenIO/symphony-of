@@ -82,7 +82,7 @@ window.addEventListener('load', () => {
                 if (w && !w.name.includes('Notifications') && !w.name.startsWith('Notify') && w.name !== 'queueCounter' && w.name !== 'system-tray' && w.name !== 'Notification Positioning Window') {
                     const ofWin = fin.desktop.Window.wrap(w.uuid, w.name);
                     ofWin.addEventListener('bounds-changed', convertAndSaveBounds);
-                    // ofWin.getBounds(convertAndSaveBounds);
+                    ofWin.getBounds(convertAndSaveBounds);
 
                     window.popouts = JSON.parse(window.localStorage.getItem('wins')) || {};
                     if (window.popouts.alwaysOnTop) {
