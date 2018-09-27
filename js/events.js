@@ -4,7 +4,7 @@ window.mustClose = false;
 // rewrite window.open so it will set the correct position for each popout window
 let defaultWindowOpen = window.open;
 
-window.open = (url, windowName, windowFeatures, ...rest) => {
+window.open = function (url, windowName, windowFeatures, ...rest) {
     if (url.startsWith('float.html')) {
         let left = /x=(\d+)/.exec(url)[1];
         let top = /y=(\d+)/.exec(url)[1];
