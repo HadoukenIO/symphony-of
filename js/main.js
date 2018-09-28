@@ -11,9 +11,9 @@ window.SYM_API = {
         let win = fin.desktop.Application.getCurrent().getWindow();
         if (number > 0) {
             let n = number > 9 ? '9+' : number;
-            win.updateOptions({ icon: `${window.targetUrl}icon/icon${n}.png` },() => {win.flash();},() => {console.log("update options failed");});
+            win.updateOptions({ icon: `${fin.symphony.settings.targetUrl}icon/icon${n}.png` },() => {win.flash();},() => {console.log("update options failed");});
         } else {
-            win.updateOptions({ icon: 'https://raw.githubusercontent.com/symphonyoss/SymphonyElectron/master/build/icon.ico' });
+            win.updateOptions({ icon: fin.symphony.settings.iconUrl });
         };
     },
     activate:function(windowName) {
@@ -40,13 +40,16 @@ window.SYM_API = {
     },
     getVersionInfo: function() {
         return new Promise((resolve, reject) => {
-            // Where to keep version information?
-            let version = {
-                containerIdentifier: "SymphonyOpenFin",
-                containerVer: window.symphonyOpenFinVersion,
-                apiVer: "1.0.0"
-            }
-            resolve(version)
+            fin.desktop.System.getRvmInfo(function (rvmInfo) { 
+                let versionInfo = {
+                    containerIdentifier: "SymphonyOpenFin",
+                    containerVersion: fin.symphony.version,
+                    runtimeVersion: fin.desktop.getVersion(),
+                    rvmVersion: rvmInfo.version,
+                    apiVer: "1.0.0"
+                }
+                resolve(versionInfo);
+            });
         })
     },
     registerActivityDetection: function (throttle, callback) {

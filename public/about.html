@@ -25,7 +25,7 @@
         .copyright-text {
             flex: 1;
             font-size: 0.6em;
-            color: white;
+            color: gray;
         }
         .content {
             text-align: center;
@@ -46,32 +46,32 @@
 </head>
 <body>
     <div class="content">
-        <img class="logo" src="https://raw.githubusercontent.com/symphonyoss/SymphonyElectron/master/build/icon.ico">
-        <span id="app-name" class="name">Symphony via OpenFin Sym</span>
-        <span id="pod-name" class="version-text"></span>
-        <span id="staging" class="copyright-text"></span>
-        <span id="version" class="copyright-text"></span>
+        <template class="string-literal">
+            <img class="logo" src="${fin.symphony.settings.iconUrl}"/>
+            <span id="app-name" class="name">Symphony via OpenFin Sym</span>
+            <span id="pod-name" class="version-text">${podName}</span>
+            <span id="staging" class="copyright-text">${staging}</span>
+            <span id="version" class="copyright-text">Container ${versionInfo.containerVersion}</span>
+            <span id="version" class="copyright-text">Runtime ${versionInfo.runtimeVersion}</span>
+            <span id="version" class="copyright-text">RVM ${versionInfo.rvmVersion}</span>
+        </template>
     </div>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            var stage = location.href;
-            fin.desktop.Application.getCurrent().getManifest(manifest => {
-                let pod = document.getElementById('pod-name');
-                let location = manifest.startup_app.url;
-                if (location.includes('https://')) {
-                    pod.innerHTML += location.slice(8);
-                } else {
-                    pod.innerHTML += manifest.startup_app.url;
-                }
-                if(stage.includes('staging')) {
-                    let stage = document.getElementById('staging');
-                    stage.innerHTML += '(staging)';
-                }
-                let version = document.getElementById('version');
-                window.ssf.getVersionInfo().then(info => {
-                    version.innerHTML += `v${info.containerVer}`;
+            window.ssf.getVersionInfo().then(versionInfo => {           
+                let podUrl = fin.symphony.settings.podUrl;
+                let podName = podUrl
+                    .replace(/^https?:[\/]+/,'')
+                    .replace(/\/+$/,'');
+                let staging = location.href.includes('staging') ? '(staging)' : '';
+
+                window.evalAllTemplates({
+                    podName,
+                    podName,
+                    staging,
+                    versionInfo
                 });
-            })
+            });
         })
     </script>
 </body>

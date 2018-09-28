@@ -1,0 +1,9 @@
+{
+    "appUuid": "Symphony-OpenFin-Landing",
+    "podUrl": "https://openfin.symphony.com/",
+    "targetUrl": "https://cdn.openfin.co/demos/symphony-of/",
+    "iconUrl": "https://raw.githubusercontent.com/symphonyoss/SymphonyElectron/master/build/icon.ico",
+    "shortcutIconUrl": "https://symphony.com/favicon.ico",
+    "notificationsVersion": "V2",
+    "popoutChatOnNotificationClick": false
+}

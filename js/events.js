@@ -117,7 +117,7 @@ window.addEventListener('load', () => {
         // create tray icon window
         var sysTray = new fin.desktop.Window({
             name: "system-tray",
-            url: `${window.targetUrl}tray.html`,
+            url: `${fin.symphony.settings.targetUrl}tray.html`,
             defaultWidth: 200,
             defaultHeight: 6 * 33, // 6 base entries 33px tall
             frame: false,
@@ -125,7 +125,7 @@ window.addEventListener('load', () => {
             shadow: true,
             saveWindowState: false,
             alwaysOnTop: true,
-            icon: 'https://raw.githubusercontent.com/symphonyoss/SymphonyElectron/master/build/icon.ico',
+            icon: fin.symphony.settings.iconUrl,
         }, () => {
             console.log('this has created a sys tray window');
         });
