@@ -5,5 +5,7 @@
     "iconUrl": "https://raw.githubusercontent.com/symphonyoss/SymphonyElectron/master/build/icon.ico",
     "shortcutIconUrl": "https://symphony.com/favicon.ico",
     "notificationsVersion": "V2",
-    "popoutChatOnNotificationClick": false
+    "popoutChatOnNotificationClick": false,
+    "runtimeArguments": "--noerrdialogs --frameStrategy=frames --enable-aggressive-domstorage-flushing --winhttp-proxy-resolver --enable-chromium-renderer-fork",
+    "navigationWhitelist": [ ]
 }

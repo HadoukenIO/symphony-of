@@ -75,15 +75,6 @@ fs.copyFileSync(customSrcPath, customDestPath);
 let manifest = require(path.join(__dirname, "manifest-template.json"));
 let contentNavigation = manifest.startup_app.contentNavigation;
 
-// TODO: Ask Xavier about Content Navigation Rules
-
-/*if (contentNavigation) {
-    contentNavigation.whitelist = contentNavigation.whitelist.filter(
-        x => !/localhost/.test(x)
-    );
-    contentNavigation.whitelist.push(targetUrl + "*");
-}*/
-
 Object.assign(manifest.startup_app, {
     url: settings.podUrl,
     uuid: settings.appUuid,
@@ -101,9 +92,13 @@ Object.assign(manifest.startup_app, {
     ]
 });
 
-manifest.shortcut.icon = settings.shortcutIconUrl;
+if(settings.navigationWhitelist.length > 0) {
+    manifest.startup_app.contentNavigation = { whitelist: settings.navigationWhitelist };
+}
 
+manifest.shortcut.icon = settings.shortcutIconUrl;
 manifest.appAssets[0].src = `${settings.targetUrl}OF-ScreenSnippet.zip`;
+manifest.runtime.arguments = settings.runtimeArguments;
 
 fs.writeFileSync(
     path.join(__dirname, "public", "app.json"),
