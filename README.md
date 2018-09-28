@@ -13,19 +13,13 @@ This project implements the SSF API standard to integrate chat with the OpenFin 
 - `npm install`
 - `npm run build local`
 - `npm start`
-- `openfin -l -c public/local.json`
+- `openfin -l -c public/app.json`
 
 ## Production Setup
+- Update the Pod URL and target URL (your web server which hosts the application) inside `config/settings.json`
 - `npm run build`
-- Change the startup app url in `public/app.json` to point to your company POD url (i.e. `https://MyCORP.DOMAIN.COM`)
-- Replace the mentions of `https://cdn.openfin.co/demos/symphony-of/` with the address to your web server: 
-~~~~
-    1. 5 mentions in the `public/app.json`
-    2. The first line of the `public/bundle.js` file
-~~~~
-- Host the public folder on your web server
+- Deploy and host the `public` folder on your web server
 - Generate an [OpenFin Installer](https://install.openfin.co/) pointing at the `public/app.json` file or use another [deployment option](https://openfin.co/options/)
-- (optional) Notifications can be customized in the notification.html file
 
 ## Testing
 The client running in OpenFin is adding only a limited number of additions to the SSF API. These features pertain mainly to Windowing, Notifications, and a System Tray that exposes additional menu options to users. The client running in OpenFin is to have feature parity with the client running in Electron.
