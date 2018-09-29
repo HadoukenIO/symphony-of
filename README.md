@@ -11,13 +11,17 @@ This project implements the SSF API standard to integrate chat with the OpenFin 
 ## Development Setup
 - Install the [OpenFin CLI Tool](https://github.com/openfin/openfin-cli) globally `npm install -g openfin-cli`
 - `npm install`
-- `npm run build local`
+- `npm run build` (or `node build`)
 - `npm start`
 - `openfin -l -c public/app.json`
 
 ## Production Setup
+
+This project allows for multiple build configurations (by default there are three: `local`, `staging`, and `prod`) to allow customized server and Pod URLs (and a number of other settings). These settings are defined in the `config/settings.json` file which is generated on during install or on the first build if it does not exist. Settings defined in `"default"` apply to all configurations and can be overwritten by values supplied in the other configurations.
+
+- `npm install` (or `node build --init`)
 - Update the Pod URL and target URL (your web server which hosts the application) inside `config/settings.json`
-- `npm run build`
+- `npm run build prod`
 - Deploy and host the `public` folder on your web server
 - Generate an [OpenFin Installer](https://install.openfin.co/) pointing at the `public/app.json` file or use another [deployment option](https://openfin.co/options/)
 
