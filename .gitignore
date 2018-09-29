@@ -1,5 +1,7 @@
 node_modules
 .DS_Store
+Thumbs.db
+config
 public/bundle.js
 public/customization.js
 public/app.json

@@ -14,7 +14,8 @@
   "homepage": "https://github.com/openfin/symphony-of",
   "scripts": {
     "start": "http-server public -c-1",
-    "build": "node build.js"
+    "build": "node build",
+    "postinstall": "node build --init"
   },
   "devDependencies": {
     "http-server": "0.8.5",

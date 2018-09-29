@@ -2,40 +2,47 @@ const fs = require("fs");
 const path = require("path");
 const newLine = require("os").EOL;
 
-const env = process.argv[2];
-const port = process.argv[3] || "8080";
+const configuration = process.argv[2] || "local";
 const version = require("./package.json").version;
 
-const settings = require("./config/settings.json");
+// File and Directory Constants
+const resDir = path.join(__dirname, "res");
+const configDir = path.join(__dirname, "config");
+const jsDir = path.join(__dirname, "js");
+const publicDir = path.join(__dirname, "public");
 
-switch (env) {
-    case "staging": {
-            settings.targetUrl = "https://cdn.openfin.co/demos/symphony-of-staging/";
-            settings.appUuid = "Symphony-OpenFin-Landing-Staging";
-        }
-        break;
-    case "local": {
-            settings.targetUrl = `http://localhost:${port}/`;
-            settings.appUuid = "Symphony-OpenFin-Landing-Local";
-        }
-        break;
-    case "prod":
-    default: {
-        // Do not override any settings, keep them as-declared in settings.json
-    }
+const getTemplateFilePath = fileName => path.join(resDir, "template-" + fileName);
+
+const settingsFileName = "settings.json";
+const customizationFileName = "customization.js";
+const settingsFilePath = path.join(configDir, settingsFileName);
+const customizationFilePath = path.join(configDir, customizationFileName);
+
+if(!fs.existsSync(configDir)) {
+    console.log("No configuration files found. Generating new settings from defaults.");
+    fs.mkdirSync(configDir);
+    fs.copyFileSync(getTemplateFilePath(settingsFileName), settingsFilePath);
+    fs.copyFileSync(getTemplateFilePath(customizationFileName), customizationFilePath);
 }
 
+if(configuration === "--init") {
+    return;
+}
+
+// Parse and import application settings
+const settingsFile = require(settingsFilePath);
+const settings = Object.assign(settingsFile.default, settingsFile[configuration]);
 
 // Generate the Preload Bundle File
 const buildFiles = [
-    path.join("js", "window.js"),
-    path.join("js", "notify.js"),
-    path.join("js", "manifest.js"),
-    path.join("js", "screensnippet.js"),
-    path.join("js", "main.js"),
-    path.join("js", "utils.js"),
-    path.join("js", "events.js"),
-    path.join("js", "download-bar.js")
+    "window.js",
+    "notify.js",
+    "manifest.js",
+    "screensnippet.js",
+    "main.js",
+    "utils.js",
+    "events.js",
+    "download-bar.js"
 ];
 
 let fileContents = [
@@ -44,7 +51,6 @@ let fileContents = [
   '*          file will be overwritten by the build script!',
   '*/',
   '',
-  `window.symphonyOpenFinVersion = '${version}';`,
   `window.fin.symphony = ${JSON.stringify({version, settings}, null, 2)};`
 ].join(newLine) + newLine;
 
@@ -56,24 +62,21 @@ fileContents += buildFiles
     '* --------------------------------',
     '*/',
     '',
-    fs.readFileSync(path.join(__dirname, filePath), "utf8")
+    fs.readFileSync(path.join(jsDir, filePath), "utf8")
     ].join(newLine))
   .join(newLine);
 
-const bundlePath = path.join(__dirname, "public", "bundle.js");
+const bundlePath = path.join(publicDir, "bundle.js");
 
 fs.writeFileSync(bundlePath, fileContents, "utf8");
 
 // Copy over the Customization Preload
-const customSrcPath = path.join(__dirname, "config", "customization.js");
-const customDestPath = path.join(__dirname, "public", "customization.js");
-
-fs.copyFileSync(customSrcPath, customDestPath);
+const customizationFileOutputPath = path.join(publicDir, "customization.js");
+fs.copyFileSync(customizationFilePath, customizationFileOutputPath);
 
 // Generate App Manifest
 
-let manifest = require(path.join(__dirname, "manifest-template.json"));
-let contentNavigation = manifest.startup_app.contentNavigation;
+let manifest = require(getTemplateFilePath("app.json"));
 
 Object.assign(manifest.startup_app, {
     url: settings.podUrl,
@@ -96,12 +99,12 @@ if(settings.navigationWhitelist.length > 0) {
     manifest.startup_app.contentNavigation = { whitelist: settings.navigationWhitelist };
 }
 
+manifest.runtime.arguments += settings.runtimeArguments; // Arguments are appended, not overwritten
 manifest.shortcut.icon = settings.shortcutIconUrl;
 manifest.appAssets[0].src = `${settings.targetUrl}OF-ScreenSnippet.zip`;
-manifest.runtime.arguments = settings.runtimeArguments;
 
 fs.writeFileSync(
-    path.join(__dirname, "public", "app.json"),
+    path.join(publicDir, "app.json"),
     JSON.stringify(manifest, null, 2)
 );
 
@@ -109,13 +112,14 @@ fs.writeFileSync(
 // Generate Launcher Page
 const launchAppUrl = `${settings.targetUrl}symphony-launch.html`;
 
-let launchManifest = require(path.join(__dirname, "public", "symphony-launch.json"));
+let launchManifest = require(path.join(publicDir, "symphony-launch.json"));
 launchManifest.startup_app.url = launchAppUrl;
 launchManifest.startup_app.uuid = 'Symphony-OpenFin-Landing';
 launchManifest.dialogSettings.logo = settings.iconUrl;
 fs.writeFileSync(
-    path.join(__dirname, "public", "symphony-launch.json"),
+    path.join(publicDir, "symphony-launch.json"),
     JSON.stringify(launchManifest, null, 2)
 );
 
-console.log(`built env: ${settings.targetUrl}`);
+console.log(`Build Configuration "${configuration}" Complete!`)
+console.log(`Deploy /public to: ${settings.targetUrl}`);

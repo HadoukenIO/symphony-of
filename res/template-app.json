@@ -20,8 +20,9 @@
         }
     },
     "runtime": {
-        "version": "9.61.34.24",
-        "fallbackVersion": "8.56.30.57"
+        "version": "9.61.34.25",
+        "fallbackVersion": "8.56.30.57",
+        "arguments": "--noerrdialogs --frameStrategy=frames --enable-aggressive-domstorage-flushing --winhttp-proxy-resolver --enable-chromium-renderer-fork "
     },
     "shortcut": {
         "company": "OpenFin",
