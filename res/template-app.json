@@ -4,11 +4,7 @@
     "offlineAccess": true,
     "splashScreenImage": "",
     "startup_app": {
-        "name": "OpenFin-Sym-Client",
         "description": "Beta Client for OpenFin Sym",
-        "url": "https://my.symphony.com",
-        "icon": "https://raw.githubusercontent.com/symphonyoss/SymphonyElectron/master/build/icon.ico",
-        "uuid": "OpenFin-Symphony-udbrf2z9sehilik9",
         "autoShow": true,
         "frame": true,
         "minHeight": 625,
@@ -16,11 +12,6 @@
         "defaultWidth": 800,
         "minWidth": 625,
         "saveWindowState": false,
-        "preload": "https://cdn.openfin.co/demos/symphony-of/bundle.js",
-        "customData": {
-            "symphonyNotifications": "V2",
-            "popoutChatOnNotificationClick": false
-        },
         "spellCheck": true,
         "experimental": {
             "api": {
@@ -29,20 +20,18 @@
         }
     },
     "runtime": {
-        "arguments": "--noerrdialogs --frameStrategy=frames --enable-aggressive-domstorage-flushing --winhttp-proxy-resolver --enable-chromium-renderer-fork",
-        "version": "9.61.34.24",
-        "fallbackVersion": "8.56.30.57"
+        "version": "9.61.34.25",
+        "fallbackVersion": "8.56.30.57",
+        "arguments": "--noerrdialogs --frameStrategy=frames --enable-aggressive-domstorage-flushing --winhttp-proxy-resolver --enable-chromium-renderer-fork "
     },
     "shortcut": {
         "company": "OpenFin",
         "description": "Client for OpenFin Sym",
         "name": "OpenFin Sym",
-        "target": ["start-menu", "desktop", "automatic-start-up"],
-        "icon": "https://symphony.com/favicon.ico"
+        "target": ["start-menu", "desktop", "automatic-start-up"]
     },
     "appAssets": [
         {
-            "src": "https://cdn.openfin.co/demos/symphony-of/OF-ScreenSnippet.zip",
             "version": "5.0.0",
             "alias": "ScreenSnippet",
             "target": "OF-ScreenSnippet/ScreenSnippet.exe"

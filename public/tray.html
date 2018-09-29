@@ -133,7 +133,7 @@
             </li>
             <li id="systemStartup" onclick="autoLaunch()">Launch On Startup</li>    
             <li id="always-on-top" onclick="alwaysOnTop()">Always On Top</li>    
-            <li id="close-on-exit" onclick="closeOnExit()">Close On Exit</li>
+            <li id="close-on-exit" onclick="closeOnExit()">Exit on Close</li>
             <li onclick="exit()">Quit</li>
         </ul>
     </div>
@@ -329,7 +329,7 @@
     }
 
 
-    setTrayIcon('https://raw.githubusercontent.com/symphonyoss/SymphonyElectron/master/build/icon.ico', clickListener).then(() => {
+    setTrayIcon(fin.symphony.settings.iconUrl, clickListener).then(() => {
         const whenCreated = Date.now();
 
         fin.desktop.InterApplicationBus.subscribe('*', 'sys-tray-created', (msg, senderUuid, senderName) => {
@@ -393,15 +393,15 @@
     const about = () => {
         var about = new fin.desktop.Window({
             name: "about",
-            url: `${window.targetUrl}about.html`,
+            url: `${fin.symphony.settings.targetUrl}about.html`,
             defaultWidth: 400,
             defaultHeight: 300,
-            maxHeight:300,
+            maxHeight: 300,
             defaultCenter:true,
             resizable: false,
             autoShow: true,
             alwaysOnTop: true,
-            icon: 'https://raw.githubusercontent.com/symphonyoss/SymphonyElectron/master/build/icon.ico',
+            icon: fin.symphony.settings.iconUrl,
         }, () => about.setAsForeground());
     };
     const autoLaunch = () => fin.desktop.Application.getCurrent().getShortcuts(shortcuts=> {

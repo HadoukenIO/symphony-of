@@ -1,0 +1,21 @@
+{
+    "default": {
+        "appUuid": "OpenFin-Symphony-udbrf2z9sehilik9",
+        "podUrl": "https://openfin.symphony.com/",
+        "iconUrl": "https://raw.githubusercontent.com/symphonyoss/SymphonyElectron/master/build/icon.ico",
+        "shortcutIconUrl": "https://symphony.com/favicon.ico",
+        "notificationsVersion": "V2",
+        "popoutChatOnNotificationClick": false,
+        "runtimeArguments": "",
+        "navigationWhitelist": [ ]
+    },
+    "local": {
+        "targetUrl": "http://localhost:8080/"
+    },
+    "staging": {
+        "targetUrl": "https://cdn.openfin.co/demos/symphony-of-staging/"
+    },
+    "prod": {
+        "targetUrl": "https://cdn.openfin.co/demos/symphony-of/"
+    }
+}

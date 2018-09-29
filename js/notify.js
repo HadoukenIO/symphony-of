@@ -2,14 +2,13 @@
 * Class representing a Symphony notification
 */
 
-
-
 class Notify {
 
     constructor(title,options){
-        var notificationsVersion = window.localStorage.getItem('notificationsVersion');
+        var notificationsVersion = fin.symphony.settings.notificationsVersion;
+        var notificationsHeight = fin.symphony.settings.notificationsVersion === "V2" ? 60 : 80;
+
         var notificationsLocation = window.localStorage.getItem('notificationsLocation');
-        var notificationsHeight = parseInt(window.localStorage.getItem('notificationsHeight'));
         var notificationsMonitor = parseInt(window.localStorage.getItem('notificationsMonitor'));
         var monitorInfo = JSON.parse(window.localStorage.getItem('monitorInfo'));
         
@@ -24,7 +23,7 @@ class Notify {
         }
         if (notificationsVersion === "V1") {
           this.notification = new window.fin.desktop.Notification({
-              url: `${window.targetUrl}notificationV1.html`,
+              url: `${fin.symphony.settings.targetUrl}notificationV1.html`,
               message: msg,
               timeout,
               opacity: 0.92
@@ -45,11 +44,11 @@ class Notify {
             maxHeight: notificationsHeight,
             frame: false,
             resizable: false,
-            url: `${window.targetUrl}notificationV2.html`,
+            url: `${fin.symphony.settings.targetUrl}notificationV2.html`,
             showTaskbarIcon: false,
             opacity: 0.92,
             alwaysOnTop: true,
-            icon: `${window.targetUrl}favicon.ico`
+            icon: `${fin.symphony.settings.targetUrl}favicon.ico`
           }, function (success) {
             var conflict = false;
             var conflictIdx = -1;
@@ -180,9 +179,10 @@ class Notify {
     close(cb) {
         console.log("CLOSE FUNCTION IS HIT", this)
         
-        var notificationsVersion = window.localStorage.getItem('notificationsVersion')
+        var notificationsVersion = fin.symphony.settings.notificationsVersion;
+        var notificationsHeight = fin.symphony.settings.notificationsVersion === "V2" ? 60 : 80;
+
         var notificationsLocation = window.localStorage.getItem('notificationsLocation')
-        var notificationsHeight = parseInt(window.localStorage.getItem('notificationsHeight'))
         
         if (notificationsVersion === "V2") {
           var conflict = false;
@@ -239,11 +239,13 @@ class Notify {
     }
 
     addEventListener(event, cb) {
-      var notificationsVersion = window.localStorage.getItem('notificationsVersion')
+      var notificationsVersion = fin.symphony.settings.notificationsVersion;
+      var notificationsHeight = fin.symphony.settings.notificationsVersion === "V2" ? 60 : 80;
+
       var notificationName = this.notification.name
       let popoutFunctionality = function(data) {
-        let popoutChat = window.localStorage.getItem('popoutChatNotification');
-        if (popoutChat === 'true') {
+        let popoutChat = !!fin.symphony.settings.popoutChatOnNotificationClick;
+        if (popoutChat) {
           let waitForElement = (streamId, count, cb) => {
             let element = document.querySelector(`[id$="${streamId}"]`)
             if(element) {            
@@ -323,8 +325,9 @@ class Notify {
 Notify.openWindows = [];
 
 window.addEventListener('load', () => {
-  var notificationsVersion = window.localStorage.getItem('notificationsVersion')
-  var notificationsHeight = parseInt(window.localStorage.getItem('notificationsHeight'))
+  var notificationsVersion = fin.symphony.settings.notificationsVersion;
+  var notificationsHeight = fin.symphony.settings.notificationsVersion === "V2" ? 60 : 80;
+  
   var thisWindow = fin.desktop.Window.getCurrent();
   let creatingPositioningWindow = false;
   
@@ -462,10 +465,10 @@ window.addEventListener('load', () => {
         defaultHeight: 400,
         frame: true,
         resizeable: false,
-        url: `${window.targetUrl}notification-positioning-window.html`,
+        url: `${fin.symphony.settings.targetUrl}notification-positioning-window.html`,
         opacity: 1,
         alwaysOnTop: true,
-        icon: `${window.targetUrl}favicon.ico`
+        icon: `${fin.symphony.settings.targetUrl}favicon.ico`
       }, function () {
         console.log("Notification Positioning Window successfully created.");
         creatingPositioningWindow = false;
