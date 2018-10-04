@@ -1,5 +1,6 @@
 {
     "default": {
+        "licenseKey": "64605fac-add3-48a0-8710-64b38e96a2dd",
         "appUuid": "OpenFin-Symphony-udbrf2z9sehilik9",
         "podUrl": "https://openfin.symphony.com/",
         "iconUrl": "https://raw.githubusercontent.com/symphonyoss/SymphonyElectron/master/build/icon.ico",
@@ -7,15 +8,21 @@
         "notificationsVersion": "V2",
         "popoutChatOnNotificationClick": false,
         "runtimeArguments": "",
-        "navigationWhitelist": [ ]
+        "navigationWhitelist": [ ],
+        "description": "Symphony via OpenFin Sym",
+        "company": "OpenFin",
+        "allowUninstall": true
     },
     "local": {
+        "name": "OpenFin Sym (Local)",
         "targetUrl": "http://localhost:8080/"
     },
     "staging": {
+        "name": "OpenFin Sym (Staging)",
         "targetUrl": "https://cdn.openfin.co/demos/symphony-of-staging/"
     },
     "prod": {
+        "name": "OpenFin Sym",
         "targetUrl": "https://cdn.openfin.co/demos/symphony-of/"
     }
 }

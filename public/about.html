@@ -38,7 +38,7 @@
         }
         .logo {
             margin: auto;
-            padding-top:30px;
+            padding-top:10px;
             width:75px;
             height:75px;
         }
@@ -48,17 +48,18 @@
     <div class="content">
         <template class="string-literal">
             <img class="logo" src="${fin.symphony.settings.iconUrl}"/>
-            <span id="app-name" class="name">Symphony via OpenFin Sym</span>
+            <span id="app-name" class="name">${fin.symphony.settings.description}</span>
             <span id="pod-name" class="version-text">${podName}</span>
             <span id="staging" class="copyright-text">${staging}</span>
-            <span id="version" class="copyright-text">Container ${versionInfo.containerVersion}</span>
-            <span id="version" class="copyright-text">Runtime ${versionInfo.runtimeVersion}</span>
-            <span id="version" class="copyright-text">RVM ${versionInfo.rvmVersion}</span>
+            <span id="revision" class="copyright-text">Revision ${versionInfo.siteRevision}</span>
+            <span id="container" class="copyright-text">Container ${versionInfo.containerVersion}</span>
+            <span id="runtime" class="copyright-text">Runtime ${versionInfo.runtimeVersion}</span>
+            <span id="rvm" class="copyright-text">RVM ${versionInfo.rvmVersion}</span>
         </template>
     </div>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            window.ssf.getVersionInfo().then(versionInfo => {           
+            window.ssf.getVersionInfo().then(versionInfo => {         
                 let podUrl = fin.symphony.settings.podUrl;
                 let podName = podUrl
                     .replace(/^https?:[\/]+/,'')
