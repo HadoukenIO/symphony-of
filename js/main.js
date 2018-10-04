@@ -43,6 +43,7 @@ window.SYM_API = {
             fin.desktop.System.getRvmInfo(function (rvmInfo) { 
                 let versionInfo = {
                     containerIdentifier: "SymphonyOpenFin",
+                    siteRevision: fin.symphony.revision,
                     containerVersion: fin.symphony.version,
                     runtimeVersion: fin.desktop.getVersion(),
                     rvmVersion: rvmInfo.version,

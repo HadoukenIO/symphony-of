@@ -32,6 +32,7 @@ if(configuration === "--init") {
 // Parse and import application settings
 const settingsFile = require(settingsFilePath);
 const settings = Object.assign(settingsFile.default, settingsFile[configuration]);
+const revision = (new Date()).toISOString().replace(/^(\d+).(\d+).(\d+)T(\d+).(\d+).*/, "$1$2$3$4$5");
 
 // Generate the Preload Bundle File
 const buildFiles = [
@@ -51,7 +52,7 @@ let fileContents = [
   '*          file will be overwritten by the build script!',
   '*/',
   '',
-  `window.fin.symphony = ${JSON.stringify({version, settings}, null, 2)};`
+  `window.fin.symphony = ${JSON.stringify({version, revision, settings}, null, 2)};`
 ].join(newLine) + newLine;
 
 fileContents += buildFiles
@@ -78,10 +79,16 @@ fs.copyFileSync(customizationFilePath, customizationFileOutputPath);
 
 let manifest = require(getTemplateFilePath("app.json"));
 
+Object.assign(manifest, {
+    licenseKey: settings.licenseKey,
+    assetsUrl: settings.assetsUrl
+});
+
 Object.assign(manifest.startup_app, {
     url: settings.podUrl,
     uuid: settings.appUuid,
-    name: settings.appUuid,
+    name: settings.name,
+    description: settings.description,
     icon: settings.iconUrl,
     preload: [
         {
@@ -95,12 +102,20 @@ Object.assign(manifest.startup_app, {
     ]
 });
 
+Object.assign(manifest.shortcut, {
+    icon: settings.shortcutIconUrl,
+    name: settings.name,
+    description: settings.description,
+    company: settings.company,
+    "uninstall-shortcut": settings.allowUninstall
+});
+
 if(settings.navigationWhitelist.length > 0) {
     manifest.startup_app.contentNavigation = { whitelist: settings.navigationWhitelist };
 }
 
 manifest.runtime.arguments += settings.runtimeArguments; // Arguments are appended, not overwritten
-manifest.shortcut.icon = settings.shortcutIconUrl;
+
 manifest.appAssets[0].src = `${settings.targetUrl}OF-ScreenSnippet.zip`;
 
 fs.writeFileSync(
