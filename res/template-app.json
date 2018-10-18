@@ -18,7 +18,7 @@
         }
     },
     "runtime": {
-        "version": "9.61.34.25",
+        "version": "beta",
         "fallbackVersion": "8.56.30.57",
         "arguments": "--noerrdialogs --frameStrategy=frames --enable-aggressive-domstorage-flushing --winhttp-proxy-resolver --enable-chromium-renderer-fork "
     },
