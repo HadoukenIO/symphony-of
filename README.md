@@ -1,3 +1,9 @@
+[![FINOS - Archived](https://cdn.rawgit.com/finos/contrib-toolbox/master/images/badge-archived.svg)](https://finosfoundation.atlassian.net/wiki/display/FINOS/Archived)
+
+# Archived Project
+
+This project was archived 2018-10-31. For more information on how this may affect consumers and contributors of this project, please see the FINOS Foundation [Project Lifecycle documentation](https://finosfoundation.atlassian.net/wiki/spaces/FINOS/pages/75530756/Project+and+Working+Group+Lifecycles).
+
 # OpenFin Sym Integration
 
 *Please note OpenFin Sym Integration is currently in beta and unsupported by Symphony*
