@@ -31,5 +31,9 @@
             "alias": "ScreenSnippet",
             "target": "OF-ScreenSnippet/ScreenSnippet.exe"
         }
-    ]
+    ],
+    "services":
+        [
+            {"name":"layouts"}
+        ]
 }
