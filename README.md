@@ -155,3 +155,5 @@ Added a System Tray menu that enables users access to the following features:
 * Attachment feature no allowing to select ‘All File Types’
 * Notifications not observing “Color Coded Text” for specific Users
 
+## License
+The code in this repository is covered by the included license. If you run this code, it may call on the OpenFin RVM or OpenFin Runtime, which are subject to OpenFin's [Developer License](https://openfin.co/developer-agreement/). If you have questions, please contact support@openfin.co
