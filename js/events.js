@@ -54,7 +54,7 @@ window.addEventListener('load', () => {
                 const closeArr = t.target.closest('.close-module');
 
                 if (popInBtn || closeArr) {
-                    currentWindow.close(true);
+                    currentWindow.close();
                 }
 
             }, true);
